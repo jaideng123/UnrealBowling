@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BowlerPawn.h"
 #include "GameFramework/PlayerController.h"
 #include "BowlerPlayerController.generated.h"
 
@@ -13,5 +14,5 @@ UCLASS()
 class BOWLING_API ABowlerPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+	virtual void BeginPlay() override;
 };

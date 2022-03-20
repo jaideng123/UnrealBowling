@@ -14,13 +14,16 @@ ABowlerPawn::ABowlerPawn()
 
 	//Create our components
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
+	StaticMeshRoot = CreateDefaultSubobject<USceneComponent>(TEXT("StaticMeshRoot"));
 	StaticMeshComp = CreateDefaultSubobject <UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 
 	//Attach our components
-	StaticMeshComp->SetupAttachment(RootComponent);
-	SpringArmComp->SetupAttachment(StaticMeshComp);
+	StaticMeshRoot->SetupAttachment(RootComponent);
+	StaticMeshComp->SetupAttachment(StaticMeshRoot);
+	
+	SpringArmComp->SetupAttachment(RootComponent);
 	CameraComp->SetupAttachment(SpringArmComp,USpringArmComponent::SocketName);
 
 	//Assign SpringArm class variables.
@@ -30,21 +33,34 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp->CameraLagSpeed = 3.0f;
 }
 
-// Called when the game starts or when spawned
+// Called when the game starts or when spawned2
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation(), GetActorRotation());
+	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
 }
 
 // Called every frame
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(CurrentBall != nullptr)
+	{
+		CurrentBall->SetActorLocation(GetActorLocation() + BallSpawnOffset);
+	}
 }
 
 // Called to bind functionality to input
 void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ABowlerPawn::MoveX(float value)
+{
+	UE_LOG(LogTemp,Display,TEXT("Here"));
+	FVector Location = GetActorLocation();
+	Location.X += value;
+	SetActorLocation(Location);
 }

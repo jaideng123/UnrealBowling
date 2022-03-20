@@ -20,6 +20,9 @@ public:
 	ABallBase* CurrentBall;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector BallSpawnOffset = FVector(0);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -27,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* StaticMeshComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* StaticMeshRoot;
 
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
@@ -41,4 +47,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void MoveX(float value);
 };
