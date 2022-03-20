@@ -19,6 +19,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	ABallBase* CurrentBall;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UCameraComponent* CameraComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* StaticMeshComp;
+
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
 
