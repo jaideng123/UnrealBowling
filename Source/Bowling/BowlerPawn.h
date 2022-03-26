@@ -33,7 +33,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* StaticMeshRoot;
-
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
 
@@ -49,4 +48,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveX(float value);
+	void GripBall();
+	void ReleaseBall();
 };

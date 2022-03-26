@@ -3,6 +3,7 @@
 
 #include "BowlerPawn.h"
 
+#include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -15,16 +16,16 @@ ABowlerPawn::ABowlerPawn()
 	//Create our components
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
 	StaticMeshRoot = CreateDefaultSubobject<USceneComponent>(TEXT("StaticMeshRoot"));
-	StaticMeshComp = CreateDefaultSubobject <UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 
 	//Attach our components
 	StaticMeshRoot->SetupAttachment(RootComponent);
 	StaticMeshComp->SetupAttachment(StaticMeshRoot);
-	
+
 	SpringArmComp->SetupAttachment(RootComponent);
-	CameraComp->SetupAttachment(SpringArmComp,USpringArmComponent::SocketName);
+	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 
 	//Assign SpringArm class variables.
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 50.0f), FRotator(-60.0f, 0.0f, 0.0f));
@@ -37,7 +38,8 @@ ABowlerPawn::ABowlerPawn()
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	CurrentBall = GetWorld()->SpawnActor<
+		ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
 }
 
@@ -45,9 +47,12 @@ void ABowlerPawn::BeginPlay()
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(CurrentBall != nullptr)
+	if (CurrentBall != nullptr)
 	{
-		CurrentBall->SetActorLocation(GetActorLocation() + BallSpawnOffset);
+		CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
+		DrawDebugDirectionalArrow(GetWorld(), CurrentBall->GetActorLocation(),
+		                          CurrentBall->GetActorLocation() + GetActorForwardVector() * 100, 100, FColor::Green,
+		                          false, -1, 1, 5);
 	}
 }
 
@@ -59,8 +64,29 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABowlerPawn::MoveX(float value)
 {
-	UE_LOG(LogTemp,Display,TEXT("Here"));
+	if (value != 0)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), value);
+	}
 	FVector Location = GetActorLocation();
-	Location.X += value;
+	Location += GetActorRightVector() * value;
 	SetActorLocation(Location);
+}
+
+void ABowlerPawn::GripBall()
+{
+	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
+}
+
+void ABowlerPawn::ReleaseBall()
+{
+	if (CurrentBall == nullptr)
+	{
+		return;
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("Ball released"));
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
+	CurrentBall->PhysicsComponent->AddImpulse(GetActorForwardVector() * 1000, NAME_None, true);
+	CurrentBall = nullptr;
 }
