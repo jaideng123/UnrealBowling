@@ -38,6 +38,9 @@ ABowlerPawn::ABowlerPawn()
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SpringArmComp->TargetOffset = BallSpawnOffset / 2;
+
 	CurrentBall = GetWorld()->SpawnActor<
 		ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
@@ -49,9 +52,20 @@ void ABowlerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (CurrentBall != nullptr)
 	{
-		CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
+		FVector BallPivot = GetActorLocation() + BallSpawnOffset;
+		FVector BallDown = GetActorUpVector() * -1 * 50;
+		if (BallGripped)
+		{
+			FRotator Rotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
+		}
+		else
+		{
+			CurrentBall->SetActorLocation(BallPivot);
+		}
 		DrawDebugDirectionalArrow(GetWorld(), CurrentBall->GetActorLocation(),
-		                          CurrentBall->GetActorLocation() + GetActorForwardVector() * 100, 100, FColor::Green,
+		                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() * 100, 100,
+		                          FColor::Green,
 		                          false, -1, 1, 5);
 	}
 }
@@ -64,29 +78,41 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABowlerPawn::MoveX(float value)
 {
-	if (value != 0)
+	if (value == 0 || BallGripped)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), value);
+		return;
 	}
+	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), value);
 	FVector Location = GetActorLocation();
 	Location += GetActorRightVector() * value;
 	SetActorLocation(Location);
 }
 
+void ABowlerPawn::MoveBallY(float value)
+{
+	if (value == 0 || !BallGripped)
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), value);
+	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + value, -110, 110);
+}
+
 void ABowlerPawn::GripBall()
 {
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
+	BallGripped = true;
 }
 
 void ABowlerPawn::ReleaseBall()
 {
-	if (CurrentBall == nullptr)
+	if (CurrentBall == nullptr || !BallGripped)
 	{
 		return;
 	}
-
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
+	BallGripped = false;
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
-	CurrentBall->PhysicsComponent->AddImpulse(GetActorForwardVector() * 1000, NAME_None, true);
+	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * 1000, NAME_None, true);
 	CurrentBall = nullptr;
 }

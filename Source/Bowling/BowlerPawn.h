@@ -33,6 +33,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* StaticMeshRoot;
+
+	UPROPERTY(VisibleInstanceOnly)
+	bool BallGripped = false;
+
+	UPROPERTY(VisibleInstanceOnly)
+	float BallRotationOffset = 0.0f;
+	
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
 
@@ -48,6 +55,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveX(float value);
+	void MoveBallY(float value);
 	void GripBall();
 	void ReleaseBall();
 };
