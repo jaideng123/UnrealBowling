@@ -39,6 +39,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly)
 	float BallRotationOffset = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly)
+	float BallVelocity = 0.0f;
 	
 	// Sets default values for this pawn's properties
 	ABowlerPawn();

@@ -34,16 +34,16 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp->CameraLagSpeed = 3.0f;
 }
 
-// Called when the game starts or when spawned2
+// Called when the game starts or when spawned
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpringArmComp->TargetOffset = BallSpawnOffset / 2;
+	SpringArmComp->TargetOffset = BallSpawnOffset;
 
 	CurrentBall = GetWorld()->SpawnActor<
 		ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
-	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
+	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 }
 
 // Called every frame
@@ -57,10 +57,17 @@ void ABowlerPawn::Tick(float DeltaTime)
 		if (BallGripped)
 		{
 			FRotator Rotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			FVector LastBallPosition = CurrentBall->GetActorLocation();
+			// CurrentBall->PhysicsComponent->MoveComponentImpl(
+			// 	(BallPivot + Rotation.RotateVector(BallDown)) - CurrentBall->GetActorLocation(), Rotation.Quaternion(),
+			// 	false);
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
+			// Need to figure out a better way to accumulate this
+			// BallVelocity = FVector::Distance(LastBallPosition, CurrentBall->GetActorLocation()) / DeltaTime;
 		}
 		else
 		{
+			BallVelocity = 1;
 			CurrentBall->SetActorLocation(BallPivot);
 		}
 		DrawDebugDirectionalArrow(GetWorld(), CurrentBall->GetActorLocation(),
@@ -112,7 +119,7 @@ void ABowlerPawn::ReleaseBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
-	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
-	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * 1000, NAME_None, true);
+	CurrentBall->PhysicsComponent->SetEnableGravity(true);
+	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * 1000, NAME_None,true);
 	CurrentBall = nullptr;
 }
