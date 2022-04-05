@@ -42,6 +42,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly)
 	float BallVelocity = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly)
+	float BallReleaseMultiplier = 1000.0f;
 	
 	// Sets default values for this pawn's properties
 	ABowlerPawn();

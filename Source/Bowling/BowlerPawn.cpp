@@ -62,7 +62,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			// 	(BallPivot + Rotation.RotateVector(BallDown)) - CurrentBall->GetActorLocation(), Rotation.Quaternion(),
 			// 	false);
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
-			// Need to figure out a better way to accumulate this
+			// Need to figure out a better way to accumulate this2
 			// BallVelocity = FVector::Distance(LastBallPosition, CurrentBall->GetActorLocation()) / DeltaTime;
 		}
 		else
@@ -71,7 +71,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			CurrentBall->SetActorLocation(BallPivot);
 		}
 		DrawDebugDirectionalArrow(GetWorld(), CurrentBall->GetActorLocation(),
-		                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() * 100, 100,
+		                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() * BallReleaseMultiplier, 100,
 		                          FColor::Green,
 		                          false, -1, 1, 5);
 	}
@@ -107,6 +107,10 @@ void ABowlerPawn::MoveBallY(float value)
 
 void ABowlerPawn::GripBall()
 {
+	if (CurrentBall == nullptr)
+	{
+		return;
+	}
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
 	BallGripped = true;
 }
@@ -120,6 +124,6 @@ void ABowlerPawn::ReleaseBall()
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
-	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * 1000, NAME_None,true);
+	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * BallReleaseMultiplier, NAME_None,true);
 	CurrentBall = nullptr;
 }
