@@ -56,24 +56,26 @@ void ABowlerPawn::Tick(float DeltaTime)
 		FVector BallDown = GetActorUpVector() * -1 * 50;
 		if (BallGripped)
 		{
+			ThrowTime += DeltaTime;
 			FRotator Rotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
-			FVector LastBallPosition = CurrentBall->GetActorLocation();
-			// CurrentBall->PhysicsComponent->MoveComponentImpl(
-			// 	(BallPivot + Rotation.RotateVector(BallDown)) - CurrentBall->GetActorLocation(), Rotation.Quaternion(),
-			// 	false);
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
-			// Need to figure out a better way to accumulate this2
-			// BallVelocity = FVector::Distance(LastBallPosition, CurrentBall->GetActorLocation()) / DeltaTime;
+			DrawDebugDirectionalArrow(GetWorld(),
+			                          CurrentBall->GetActorLocation(),
+			                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() *
+			                          (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
+			                          100,
+			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
+			                                                    FMath::Abs(CalculateReleaseForce()) / MaxBallForce)
+			                          .Quantize(),
+			                          false,
+			                          -1,
+			                          1,
+			                          5);
 		}
 		else
 		{
-			BallVelocity = 1;
 			CurrentBall->SetActorLocation(BallPivot);
 		}
-		DrawDebugDirectionalArrow(GetWorld(), CurrentBall->GetActorLocation(),
-		                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() * BallReleaseMultiplier, 100,
-		                          FColor::Green,
-		                          false, -1, 1, 5);
 	}
 }
 
@@ -97,12 +99,18 @@ void ABowlerPawn::MoveX(float value)
 
 void ABowlerPawn::MoveBallY(float value)
 {
-	if (value == 0 || !BallGripped)
+	if (!BallGripped)
 	{
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), value);
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + value, -110, 110);
+	if ((value >= 0) != (ThrowDistance >= 0) || value == 0)
+	{
+		ThrowDistance = 0;
+		ThrowTime = 0;
+	}
+	ThrowDistance += value;
 }
 
 void ABowlerPawn::GripBall()
@@ -124,6 +132,14 @@ void ABowlerPawn::ReleaseBall()
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
-	CurrentBall->PhysicsComponent->AddImpulse(CurrentBall->GetActorForwardVector() * BallReleaseMultiplier, NAME_None,true);
+	CurrentBall->PhysicsComponent->AddImpulse(
+		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
+		true);
 	CurrentBall = nullptr;
+}
+
+float ABowlerPawn::CalculateReleaseForce() const
+{
+	return FMath::Clamp((ThrowDistance / ThrowTime) * BallReleaseMultiplier, -MaxBallForce,
+	                    MaxBallForce);
 }

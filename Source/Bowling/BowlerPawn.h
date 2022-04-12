@@ -41,10 +41,19 @@ public:
 	float BallRotationOffset = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly)
-	float BallVelocity = 0.0f;
+	float ThrowDistance = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly)
-	float BallReleaseMultiplier = 1000.0f;
+	float ThrowTime = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly)
+	float LastInput = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BallReleaseMultiplier = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxBallForce = 1000.0f;
 	
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
@@ -64,4 +73,6 @@ public:
 	void MoveBallY(float value);
 	void GripBall();
 	void ReleaseBall();
+private:
+	float CalculateReleaseForce() const;
 };
