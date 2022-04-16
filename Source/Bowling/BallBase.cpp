@@ -3,7 +3,9 @@
 
 #include "BallBase.h"
 
+#include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 ABallBase::ABallBase()
@@ -16,6 +18,19 @@ ABallBase::ABallBase()
 
 	VisualMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	VisualMesh->SetupAttachment(PhysicsComponent);
+
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+
+	SpringArmComp->SetupAttachment(PhysicsComponent);
+	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
+
+	//Assign SpringArm class variables.
+	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0), FRotator(-60.0f, 0.0f, 0.0f));
+	SpringArmComp->TargetArmLength = 400.f;
+	SpringArmComp->bEnableCameraLag = true;
+	SpringArmComp->CameraLagSpeed = 3.0f;
+	SpringArmComp->SetAbsolute(false, true, false);
 }
 
 // Called when the game starts or when spawned

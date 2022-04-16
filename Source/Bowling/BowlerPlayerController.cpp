@@ -3,12 +3,15 @@
 
 #include "BowlerPlayerController.h"
 
+#include "Camera/CameraComponent.h"
+
 void ABowlerPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	APlayerController::SetupInputComponent();
 	check(InputComponent);
 	ABowlerPawn* ControlledBowler = Cast<ABowlerPawn>(GetPawn());
+	SetViewTarget(ControlledBowler);
 	check(ControlledBowler != nullptr);
 		
 	InputComponent->BindAxis("XMovement", ControlledBowler, &ABowlerPawn::MoveX);
@@ -17,4 +20,5 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
 
 	InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
+	
 }

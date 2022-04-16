@@ -3,7 +3,7 @@
 
 #include "BowlerPawn.h"
 
-#include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -66,7 +66,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			                          100,
 			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
 			                                                    FMath::Abs(CalculateReleaseForce()) / MaxBallForce)
-			                          .Quantize(),
+			                          .QuantizeFloor(),
 			                          false,
 			                          -1,
 			                          1,
@@ -130,7 +130,9 @@ void ABowlerPawn::ReleaseBall()
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
+	
 	BallGripped = false;
+	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
 	CurrentBall->PhysicsComponent->AddImpulse(
 		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
