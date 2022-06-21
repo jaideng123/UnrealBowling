@@ -74,7 +74,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 		}
 		else
 		{
-			CurrentBall->SetActorLocation(BallPivot);
+			CurrentBall->SetActorLocation(BallPivot + BallDown);
 		}
 	}
 }
@@ -130,7 +130,7 @@ void ABowlerPawn::ReleaseBall()
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
-	
+
 	BallGripped = false;
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
