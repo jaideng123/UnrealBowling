@@ -39,6 +39,9 @@ void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Center the ball
+	SetActorLocation(GetActorLocation() - BallSpawnOffset);
+
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
 	CurrentBall = GetWorld()->SpawnActor<
@@ -104,6 +107,7 @@ void ABowlerPawn::MoveBallY(float value)
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), value);
+	// TODO: add decay factor
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + value, -110, 110);
 	if ((value >= 0) != (ThrowDistance >= 0) || value == 0)
 	{
