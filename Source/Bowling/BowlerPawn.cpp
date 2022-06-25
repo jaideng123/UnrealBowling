@@ -56,7 +56,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 	if (CurrentBall != nullptr)
 	{
 		FVector BallPivot = GetActorLocation() + BallSpawnOffset;
-		FVector BallDown = GetActorUpVector() * -1 * 50;
+		FVector BallDown = GetActorUpVector() * -1 * 60;
 		if (BallGripped)
 		{
 			ThrowTime += DeltaTime;
@@ -113,8 +113,18 @@ void ABowlerPawn::MoveBallY(float value)
 	{
 		ThrowDistance = 0;
 		ThrowTime = 0;
+		BallSpinAmount = 0;
 	}
 	ThrowDistance += value;
+}
+
+void ABowlerPawn::MoveBallX(float value)
+{
+	if (!BallGripped)
+	{
+		return;
+	}
+	BallSpinAmount += value;
 }
 
 void ABowlerPawn::GripBall()
@@ -141,6 +151,7 @@ void ABowlerPawn::ReleaseBall()
 	CurrentBall->PhysicsComponent->AddImpulse(
 		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
 		true);
+	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(GetActorForwardVector()*-30*BallSpinAmount, NAME_None, true);
 	CurrentBall = nullptr;
 }
 

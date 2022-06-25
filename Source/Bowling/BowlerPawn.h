@@ -41,6 +41,9 @@ public:
 	float BallRotationOffset = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly)
+	float BallSpinAmount = 0.0f;
+
+	UPROPERTY(VisibleInstanceOnly)
 	float ThrowDistance = 0.0f;
 
 	UPROPERTY(VisibleInstanceOnly)
@@ -71,6 +74,7 @@ public:
 
 	void MoveX(float value);
 	void MoveBallY(float value);
+	void MoveBallX(float value);
 	void GripBall();
 	void ReleaseBall();
 private:
