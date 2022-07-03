@@ -14,14 +14,9 @@ class BOWLING_API ABowlerPawn : public APawn
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<ABallBase> BallClass = ABallBase::StaticClass();
-	UPROPERTY(VisibleAnywhere)
-	ABallBase* CurrentBall;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector BallSpawnOffset = FVector(0);
-
+	// Components
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USpringArmComponent* SpringArmComp;
 
@@ -34,29 +29,73 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* StaticMeshRoot;
 
-	UPROPERTY(VisibleInstanceOnly)
-	bool BallGripped = false;
+	// Tuning Variables
 
-	UPROPERTY(VisibleInstanceOnly)
-	float BallRotationOffset = 0.0f;
+	// Which ball to spawn and throw
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ABallBase> BallClass = ABallBase::StaticClass();
 
-	UPROPERTY(VisibleInstanceOnly)
-	float BallSpinAmount = 0.0f;
+	// Where to spawn + hold ball relative to player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector BallSpawnOffset = FVector(0);
 
-	UPROPERTY(VisibleInstanceOnly)
-	float ThrowDistance = 0.0f;
-
-	UPROPERTY(VisibleInstanceOnly)
-	float ThrowTime = 0.0f;
-
-	UPROPERTY(VisibleInstanceOnly)
-	float LastInput = 0.0f;
-
+	// Force multiplier for velocity of ball
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BallReleaseMultiplier = 10.0f;
 
+	// Force multiplier for spin of ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BallSpinMultiplier = 10.0f;
+
+	// Max velocity for ball on release
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxBallForce = 1000.0f;
+
+	// Max angle of ball spin on release
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxBallSpin = 45.0f;
+
+	// Max angle of bowler's arm while holding ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxArmAngle = 110.0f;
+
+	// Min angle of bowler's arm while holding ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MinArmAngle = -110.0f;
+
+	// Length between pivot of arm and the ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ArmLength = 60.0f;
+
+	// Increases decay of throw force over time
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ThrowForceDecay = 2.0f;
+
+	// State Variables
+
+	// Ball currently held
+	UPROPERTY(VisibleAnywhere)
+	ABallBase* CurrentBall;
+
+	// Is ball being gripped? (being wound up)
+	UPROPERTY(VisibleInstanceOnly)
+	bool BallGripped = false;
+
+	// Current rotation of the ball
+	UPROPERTY(VisibleInstanceOnly)
+	float BallRotationOffset = 0.0f;
+
+	// Current spin amount
+	UPROPERTY(VisibleInstanceOnly)
+	float BallSpinAmount = 0.0f;
+
+	// Current distance travelled during throw
+	UPROPERTY(VisibleInstanceOnly)
+	float ThrowDistance = 0.0f;
+
+	// Current time of throw
+	UPROPERTY(VisibleInstanceOnly)
+	float ThrowTime = 0.0f;
 	
 	// Sets default values for this pawn's properties
 	ABowlerPawn();

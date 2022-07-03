@@ -56,7 +56,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 	if (CurrentBall != nullptr)
 	{
 		FVector BallPivot = GetActorLocation() + BallSpawnOffset;
-		FVector BallDown = GetActorUpVector() * -1 * 60;
+		FVector BallDown = GetActorUpVector() * -1 * ArmLength;
 		if (BallGripped)
 		{
 			ThrowTime += DeltaTime;
@@ -88,43 +88,44 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABowlerPawn::MoveX(float value)
+void ABowlerPawn::MoveX(float input)
 {
-	if (value == 0 || BallGripped)
+	if (input == 0 || BallGripped)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), value);
+	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
 	FVector Location = GetActorLocation();
-	Location += GetActorRightVector() * value;
+	Location += GetActorRightVector() * input;
 	SetActorLocation(Location);
 }
 
-void ABowlerPawn::MoveBallY(float value)
+void ABowlerPawn::MoveBallY(float input)
 {
 	if (!BallGripped)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), value);
+	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), input);
 	// TODO: add decay factor
-	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + value, -110, 110);
-	if ((value >= 0) != (ThrowDistance >= 0) || value == 0)
+	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
+	// If input has changed direction or is 0
+	if ((input >= 0) != (ThrowDistance >= 0) || input == 0)
 	{
 		ThrowDistance = 0;
 		ThrowTime = 0;
 		BallSpinAmount = 0;
 	}
-	ThrowDistance += value;
+	ThrowDistance += input;
 }
 
-void ABowlerPawn::MoveBallX(float value)
+void ABowlerPawn::MoveBallX(float input)
 {
 	if (!BallGripped)
 	{
 		return;
 	}
-	BallSpinAmount += value;
+	BallSpinAmount += input;
 }
 
 void ABowlerPawn::GripBall()
@@ -148,15 +149,20 @@ void ABowlerPawn::ReleaseBall()
 	BallGripped = false;
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
+	
 	CurrentBall->PhysicsComponent->AddImpulse(
 		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
 		true);
-	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(GetActorForwardVector()*-30*BallSpinAmount, NAME_None, true);
+	
+	const float BallSpin = FMath::ClampAngle(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
+	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
+		GetActorForwardVector() * -BallSpin, NAME_None, true);
+	
 	CurrentBall = nullptr;
 }
 
 float ABowlerPawn::CalculateReleaseForce() const
 {
-	return FMath::Clamp((ThrowDistance / ThrowTime) * BallReleaseMultiplier, -MaxBallForce,
+	return FMath::Clamp((ThrowDistance / (ThrowTime * ThrowForceDecay)) * BallReleaseMultiplier, -MaxBallForce,
 	                    MaxBallForce);
 }
