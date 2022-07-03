@@ -154,7 +154,8 @@ void ABowlerPawn::ReleaseBall()
 		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
 		true);
 	
-	const float BallSpin = FMath::ClampAngle(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
+	const float BallSpin = FMath::Clamp(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
+	BallSpinAmount = BallSpin;
 	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
 		GetActorForwardVector() * -BallSpin, NAME_None, true);
 	
