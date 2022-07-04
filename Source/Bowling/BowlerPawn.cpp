@@ -5,6 +5,7 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Components/DecalComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -19,6 +20,7 @@ ABowlerPawn::ABowlerPawn()
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	GuideDecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("GuideDecal"));
 
 	//Attach our components
 	StaticMeshRoot->SetupAttachment(RootComponent);
@@ -26,6 +28,8 @@ ABowlerPawn::ABowlerPawn()
 
 	SpringArmComp->SetupAttachment(RootComponent);
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
+
+	GuideDecalComp->SetupAttachment(RootComponent);
 
 	//Assign SpringArm class variables.
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 50.0f), FRotator(-60.0f, 0.0f, 0.0f));
@@ -47,6 +51,10 @@ void ABowlerPawn::BeginPlay()
 	CurrentBall = GetWorld()->SpawnActor<
 		ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
+
+	// TODO: Figure out why I need to hack the location to align it with the ball
+	GuideDecalComp->SetRelativeLocation(
+		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + GetActorRightVector() * 3);
 }
 
 // Called every frame
@@ -147,18 +155,19 @@ void ABowlerPawn::ReleaseBall()
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 
 	BallGripped = false;
+	GuideDecalComp->SetFadeOut(0, 1.0f, false);
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
-	
+
 	CurrentBall->PhysicsComponent->AddImpulse(
 		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
 		true);
-	
+
 	const float BallSpin = FMath::Clamp(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
 	BallSpinAmount = BallSpin;
 	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
 		GetActorForwardVector() * -BallSpin, NAME_None, true);
-	
+
 	CurrentBall = nullptr;
 }
 

@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* StaticMeshRoot;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDecalComponent* GuideDecalComp;
 
 	// Tuning Variables
 
