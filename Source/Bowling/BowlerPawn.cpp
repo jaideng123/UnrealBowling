@@ -118,7 +118,7 @@ void ABowlerPawn::MoveBallY(float input)
 	// TODO: add decay factor
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
 	// If input has changed direction or is 0
-	if ((input >= 0) != (ThrowDistance >= 0) || input == 0)
+	if ((input >= 0) != (ThrowDistance >= 0))
 	{
 		ThrowDistance = 0;
 		ThrowTime = 0;
@@ -155,7 +155,6 @@ void ABowlerPawn::ReleaseBall()
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 
 	BallGripped = false;
-	GuideDecalComp->SetFadeOut(0, 1.0f, false);
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
 
