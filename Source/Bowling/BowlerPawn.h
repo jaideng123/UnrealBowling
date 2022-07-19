@@ -74,7 +74,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ThrowForceDecay = 2.0f;
 
-	// Increases decay of throw force over time
+	// Limits the lateral movement of the bowler
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MovementLimit = 100.0f;
 
@@ -104,9 +104,9 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowTime = 0.0f;
 
-	// Current time of throw
+	// Starting position when the player spawns
 	UPROPERTY(VisibleInstanceOnly)
-	FVector OriginalPosition = FVector(0);
+	FVector StartingPosition = FVector(0);
 	
 	
 	// Sets default values for this pawn's properties

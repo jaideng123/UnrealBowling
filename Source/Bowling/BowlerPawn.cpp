@@ -105,15 +105,16 @@ void ABowlerPawn::MoveX(float input)
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
-	const FVector OriginalLocation = GetActorLocation();
-	const FVector DesiredLocation = OriginalLocation + GetActorRightVector() * input;
+	const FVector CurrentLocation = GetActorLocation();
+	const FVector DesiredLocation = CurrentLocation + GetActorRightVector() * input;
+	// StartingPosition.Z = OriginalLocation.Z?
 
 	// TODO: this doesnt work, fix it
-	const FVector DesiredOffset = DesiredLocation - OriginalPosition; 
+	const FVector DesiredOffset = DesiredLocation - StartingPosition; 
 	if(DesiredOffset.Length() >= MovementLimit)
 	{
 		const FVector clampedOffset = GetActorRightVector() * MovementLimit * FMath::Sign(DesiredOffset.Dot(GetActorRightVector()));
-		SetActorLocation(OriginalPosition + clampedOffset);
+		SetActorLocation(StartingPosition + clampedOffset);
 	}
 	else
 	{
