@@ -43,6 +43,8 @@ void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OriginalPosition = GetActorLocation();
+
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
@@ -103,9 +105,20 @@ void ABowlerPawn::MoveX(float input)
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
-	FVector Location = GetActorLocation();
-	Location += GetActorRightVector() * input;
-	SetActorLocation(Location);
+	const FVector OriginalLocation = GetActorLocation();
+	const FVector DesiredLocation = OriginalLocation + GetActorRightVector() * input;
+
+	// TODO: this doesnt work, fix it
+	const FVector DesiredOffset = DesiredLocation - OriginalPosition; 
+	if(DesiredOffset.Length() >= MovementLimit)
+	{
+		const FVector clampedOffset = GetActorRightVector() * MovementLimit * FMath::Sign(DesiredOffset.Dot(GetActorRightVector()));
+		SetActorLocation(OriginalPosition + clampedOffset);
+	}
+	else
+	{
+		SetActorLocation(DesiredLocation);
+	}
 }
 
 void ABowlerPawn::MoveBallY(float input)
