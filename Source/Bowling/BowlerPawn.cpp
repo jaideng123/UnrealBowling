@@ -42,9 +42,7 @@ ABowlerPawn::ABowlerPawn()
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OriginalPosition = GetActorLocation();
-
+	
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
