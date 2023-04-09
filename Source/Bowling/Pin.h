@@ -16,7 +16,7 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	UPrimitiveComponent* PrimitiveComponent;
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	APinSpawnPoint* OriginalSpawn;
 	
 	// Sets default values for this actor's properties

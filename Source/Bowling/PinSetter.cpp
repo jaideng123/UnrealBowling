@@ -18,6 +18,7 @@ void APinSetter::SpawnPins()
 	{
 		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType,spawnPoint->GetActorLocation(), spawnPoint->GetActorRotation());
 		SpawnedPin->OriginalSpawn = spawnPoint;
+		SpawnedPins.Add(SpawnedPin);
 	}
 }
 
@@ -36,7 +37,8 @@ void APinSetter::RaiseStandingPins()
 {
 	for (auto SpawnedPin : SpawnedPins)
 	{
-		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		// TODO: check dist to spawn / not in drop zone
+		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
 		{
 			SpawnedPin->RaisePin(GetActorLocation().Y);
 		}
@@ -47,7 +49,8 @@ void APinSetter::LowerStandingPins()
 {
 	for (auto SpawnedPin : SpawnedPins)
 	{
-		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		// TODO: this is a bad check, should keep list of raised pins
+		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
 		{
 			SpawnedPin->LowerPin();
 		}

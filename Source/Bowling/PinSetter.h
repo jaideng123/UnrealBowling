@@ -34,10 +34,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Exec)
 	void SweepPins();
 
-	UFUNCTION(BlueprintCallable, Exec)
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void RaiseStandingPins();
 
-	UFUNCTION(BlueprintCallable, Exec)
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void LowerStandingPins();
 
 	// Called when the game starts or when spawned

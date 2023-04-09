@@ -42,7 +42,7 @@ ABowlerPawn::ABowlerPawn()
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
@@ -61,11 +61,11 @@ void ABowlerPawn::BeginPlay()
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (CurrentBall != nullptr)
+	if(CurrentBall != nullptr)
 	{
 		FVector BallPivot = GetActorLocation() + BallSpawnOffset;
 		FVector BallDown = GetActorUpVector() * -1 * ArmLength;
-		if (BallGripped)
+		if(BallGripped)
 		{
 			ThrowTime += DeltaTime;
 			FRotator Rotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
@@ -98,31 +98,19 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABowlerPawn::MoveX(float input)
 {
-	if (input == 0 || BallGripped)
+	if(input == 0 || BallGripped)
 	{
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
 	const FVector CurrentLocation = GetActorLocation();
 	const FVector DesiredLocation = CurrentLocation + GetActorRightVector() * input;
-	// StartingPosition.Z = OriginalLocation.Z?
-
-	// TODO: this doesnt work, fix it
-	const FVector DesiredOffset = DesiredLocation - StartingPosition; 
-	if(DesiredOffset.Length() >= MovementLimit)
-	{
-		const FVector clampedOffset = GetActorRightVector() * MovementLimit * FMath::Sign(DesiredOffset.Dot(GetActorRightVector()));
-		SetActorLocation(StartingPosition + clampedOffset);
-	}
-	else
-	{
-		SetActorLocation(DesiredLocation);
-	}
+	SetActorLocation(DesiredLocation);
 }
 
 void ABowlerPawn::MoveBallY(float input)
 {
-	if (!BallGripped)
+	if(!BallGripped)
 	{
 		return;
 	}
@@ -130,7 +118,7 @@ void ABowlerPawn::MoveBallY(float input)
 	// TODO: add decay factor
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
 	// If input has changed direction or is 0
-	if ((input >= 0) != (ThrowDistance >= 0))
+	if((input >= 0) != (ThrowDistance >= 0))
 	{
 		ThrowDistance = 0;
 		ThrowTime = 0;
@@ -141,7 +129,7 @@ void ABowlerPawn::MoveBallY(float input)
 
 void ABowlerPawn::MoveBallX(float input)
 {
-	if (!BallGripped)
+	if(!BallGripped)
 	{
 		return;
 	}
@@ -150,7 +138,7 @@ void ABowlerPawn::MoveBallX(float input)
 
 void ABowlerPawn::GripBall()
 {
-	if (CurrentBall == nullptr)
+	if(CurrentBall == nullptr)
 	{
 		return;
 	}
@@ -160,7 +148,7 @@ void ABowlerPawn::GripBall()
 
 void ABowlerPawn::ReleaseBall()
 {
-	if (CurrentBall == nullptr || !BallGripped)
+	if(CurrentBall == nullptr || !BallGripped)
 	{
 		return;
 	}
