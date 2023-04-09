@@ -3,25 +3,67 @@
 
 #include "PinSetter.h"
 
+#include "Pin.h"
+
 // Sets default values
 APinSetter::APinSetter()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+}
 
+void APinSetter::SpawnPins()
+{
+	for (auto spawnPoint : PinSpawnPoints)
+	{
+		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType,spawnPoint->GetActorLocation(), spawnPoint->GetActorRotation());
+		SpawnedPin->OriginalSpawn = spawnPoint;
+	}
+}
+
+void APinSetter::SweepPins()
+{
+	for (auto SpawnedPin : SpawnedPins)
+	{
+		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		{
+			
+		}
+	}
+}
+
+void APinSetter::RaiseStandingPins()
+{
+	for (auto SpawnedPin : SpawnedPins)
+	{
+		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		{
+			SpawnedPin->RaisePin(GetActorLocation().Y);
+		}
+	}
+}
+
+void APinSetter::LowerStandingPins()
+{
+	for (auto SpawnedPin : SpawnedPins)
+	{
+		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		{
+			SpawnedPin->LowerPin();
+		}
+	}
 }
 
 // Called when the game starts or when spawned
 void APinSetter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SpawnPins();
 }
 
 // Called every frame
 void APinSetter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

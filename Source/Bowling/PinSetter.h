@@ -3,27 +3,47 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PinSpawnPoint.h"
 #include "GameFramework/Actor.h"
 #include "PinSetter.generated.h"
+
+class APin;
 
 UCLASS()
 class BOWLING_API APinSetter : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	APinSetter();
 
 protected:
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<APinSpawnPoint*> PinSpawnPoints;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<APin> PinType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<APin*> SpawnedPins;
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void SpawnPins();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void SweepPins();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void RaiseStandingPins();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void LowerStandingPins();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 };

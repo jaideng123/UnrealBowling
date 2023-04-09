@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PinSpawnPoint.h"
 #include "GameFramework/Actor.h"
 #include "Pin.generated.h"
 
@@ -14,6 +15,9 @@ class BOWLING_API APin : public AActor
 public:
 	UPROPERTY(VisibleInstanceOnly)
 	UPrimitiveComponent* PrimitiveComponent;
+
+	UPROPERTY(VisibleInstanceOnly)
+	APinSpawnPoint* OriginalSpawn;
 	
 	// Sets default values for this actor's properties
 	APin();
@@ -25,4 +29,10 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void RaisePin(double X);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LowerPin();
 };
