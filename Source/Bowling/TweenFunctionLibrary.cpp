@@ -9,7 +9,9 @@ void UTweenFunctionLibrary::DueMove(UObject*          Target,
                                     FLatentActionInfo LatentInfo,
                                     float             Duration,
                                     FVector           TargetLocation,
-                                    EEasingFunc::Type EasingType, float BlendExp, int32 Steps)
+                                    EEasingFunc::Type EasingType,
+                                    float BlendExp,
+                                    int32 Steps)
 {
 	// Prepare latent action
 	if(UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
