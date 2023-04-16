@@ -24,35 +24,35 @@ void APinSetter::SpawnPins()
 
 void APinSetter::SweepPins()
 {
-	for (auto SpawnedPin : SpawnedPins)
+	for (const auto spawnedPin : SpawnedPins)
 	{
-		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
+		if(FVector::DotProduct(spawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
 		{
-			
+			// TODO: sweep
 		}
 	}
 }
 
 void APinSetter::RaiseStandingPins()
 {
-	for (auto SpawnedPin : SpawnedPins)
+	for (const auto spawnedPin : SpawnedPins)
 	{
 		// TODO: check dist to spawn / not in drop zone
-		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
+		if(FVector::DotProduct(spawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
 		{
-			SpawnedPin->RaisePin(GetActorLocation().Y);
+			spawnedPin->RaisePin(GetActorLocation().Y);
 		}
 	}
 }
 
 void APinSetter::LowerStandingPins()
 {
-	for (auto SpawnedPin : SpawnedPins)
+	for (const auto spawnedPin : SpawnedPins)
 	{
 		// TODO: this is a bad check, should keep list of raised pins
-		if(FVector::DotProduct(SpawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
+		if(FVector::DotProduct(spawnedPin->GetActorUpVector(),FVector::UpVector) >= .95)
 		{
-			SpawnedPin->LowerPin();
+			spawnedPin->LowerPin();
 		}
 	}
 }
