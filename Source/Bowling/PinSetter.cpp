@@ -22,15 +22,8 @@ void APinSetter::SpawnPins()
 	}
 }
 
-void APinSetter::SweepPins()
+void APinSetter::SweepPins_Implementation()
 {
-	for (const auto spawnedPin : SpawnedPins)
-	{
-		if(FVector::DotProduct(spawnedPin->GetActorUpVector(),FVector::UpVector) < .95)
-		{
-			// TODO: sweep
-		}
-	}
 }
 
 void APinSetter::RaiseStandingPins()

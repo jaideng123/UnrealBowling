@@ -51,6 +51,10 @@ public:
 		{
 			StartingLocation = targetAsActor->GetActorLocation();
 		}
+		if(const USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target))
+		{
+			StartingLocation = targetAsSceneComponent->GetRelativeLocation();
+		}
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;

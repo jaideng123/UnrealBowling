@@ -28,10 +28,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<APin*> SpawnedPins;
 
-	UFUNCTION(BlueprintCallable, Exec)
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void SpawnPins();
 
-	UFUNCTION(BlueprintCallable, Exec)
+	UFUNCTION(BlueprintNativeEvent, CallInEditor)
 	void SweepPins();
 
 	UFUNCTION(BlueprintCallable, CallInEditor)

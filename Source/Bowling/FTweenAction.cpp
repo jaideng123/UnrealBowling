@@ -9,5 +9,9 @@ void FTweenAction::UpdateOperation(FLatentResponse& Response)
 	{
 		targetAsActor->SetActorLocation(newLocation);
 	}
+	if(USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target))
+	{
+		targetAsSceneComponent->SetRelativeLocation(newLocation);
+	}
 	Response.FinishAndTriggerIf(TweenData.Duration - TimeElapsed <= 0.0f, ExecutionFunction, OutputLink, CallbackTarget);
 }
