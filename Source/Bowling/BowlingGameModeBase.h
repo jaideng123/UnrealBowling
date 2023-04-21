@@ -15,4 +15,6 @@ UCLASS()
 class BOWLING_API ABowlingGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	virtual void StartPlay() override;
 };

@@ -128,6 +128,9 @@ public:
 	void MoveBallX(float value);
 	void GripBall();
 	void ReleaseBall();
+	
+	UFUNCTION(BlueprintCallable)
+	void SpawnNewBall();
 private:
 	float CalculateReleaseForce() const;
 };

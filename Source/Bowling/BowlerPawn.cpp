@@ -48,10 +48,6 @@ void ABowlerPawn::BeginPlay()
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
-	CurrentBall = GetWorld()->SpawnActor<
-		ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
-	CurrentBall->PhysicsComponent->SetEnableGravity(false);
-
 	// TODO: Figure out why I need to hack the location to align it with the ball
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + GetActorRightVector() * 3);
@@ -168,6 +164,16 @@ void ABowlerPawn::ReleaseBall()
 		GetActorForwardVector() * -BallSpin, NAME_None, true);
 
 	CurrentBall = nullptr;
+}
+
+void ABowlerPawn::SpawnNewBall()
+{
+	if(CurrentBall != nullptr)
+	{
+		CurrentBall->Destroy();
+	}
+	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 }
 
 float ABowlerPawn::CalculateReleaseForce() const

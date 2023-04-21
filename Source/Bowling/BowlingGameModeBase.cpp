@@ -3,3 +3,7 @@
 
 #include "BowlingGameModeBase.h"
 
+void ABowlingGameModeBase::StartPlay()
+{
+	Super::StartPlay();
+}

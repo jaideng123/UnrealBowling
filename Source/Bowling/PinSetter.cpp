@@ -62,8 +62,6 @@ void APinSetter::LowerStandingPins()
 void APinSetter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SpawnPins();
 }
 
 // Called every frame
