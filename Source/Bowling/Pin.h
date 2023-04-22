@@ -8,8 +8,7 @@
 #include "Pin.generated.h"
 
 UCLASS()
-class BOWLING_API APin : public AActor
-{
+class BOWLING_API APin : public AActor {
 	GENERATED_BODY()
 
 public:
@@ -18,7 +17,7 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	APinSpawnPoint* OriginalSpawn;
-	
+
 	// Sets default values for this actor's properties
 	APin();
 
@@ -35,4 +34,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LowerPin();
+	UFUNCTION(BlueprintCallable)
+	void ResetToSpawn();
 };

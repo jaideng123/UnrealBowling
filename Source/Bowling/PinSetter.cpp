@@ -30,7 +30,7 @@ void APinSetter::ResetPins()
 {
 	for(const auto spawnedPin : SpawnedPins)
 	{
-		spawnedPin->SetActorLocationAndRotation(spawnedPin->OriginalSpawn->GetActorLocation(), PinType.GetDefaultObject()->GetActorRotation());
+		spawnedPin->ResetToSpawn();
 	}
 }
 
