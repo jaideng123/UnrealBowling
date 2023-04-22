@@ -68,7 +68,8 @@ void ABowlerPawn::Tick(float DeltaTime)
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
-			                          CurrentBall->GetActorLocation() + CurrentBall->GetActorForwardVector() *
+			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * FMath::Clamp(
+				                          BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin)) + CurrentBall->GetActorForwardVector() *
 			                          (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
 			                          100,
 			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
