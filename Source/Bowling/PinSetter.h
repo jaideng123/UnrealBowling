@@ -31,7 +31,7 @@ protected:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void SpawnPins();
 
-	UFUNCTION(BlueprintNativeEvent, CallInEditor)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, CallInEditor)
 	void SweepPins();
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
