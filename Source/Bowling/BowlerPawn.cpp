@@ -68,8 +68,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
-			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * FMath::Clamp(
-				                          BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin)) + CurrentBall->GetActorForwardVector() *
+			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->GetActorForwardVector() *
 			                          (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
 			                          100,
 			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
@@ -143,6 +142,11 @@ void ABowlerPawn::GripBall()
 	BallGripped = true;
 }
 
+float ABowlerPawn::CalculateBallSpin()
+{
+	return FMath::Clamp(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
+}
+
 void ABowlerPawn::ReleaseBall()
 {
 	if(CurrentBall == nullptr || !BallGripped)
@@ -154,12 +158,12 @@ void ABowlerPawn::ReleaseBall()
 	BallGripped = false;
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
-
-	CurrentBall->PhysicsComponent->AddImpulse(
-		CurrentBall->GetActorForwardVector() * CalculateReleaseForce(), NAME_None,
+	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
+	forceVector.Z = FMath::Clamp(forceVector.Z,-MaxZVelocity,MaxZVelocity);
+	CurrentBall->PhysicsComponent->AddImpulse(forceVector, NAME_None,
 		true);
 
-	const float BallSpin = FMath::Clamp(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
+	const float BallSpin = CalculateBallSpin();
 	BallSpinAmount = BallSpin;
 	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
 		GetActorForwardVector() * -BallSpin, NAME_None, true);

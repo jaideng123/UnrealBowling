@@ -43,27 +43,27 @@ public:
 	FVector BallSpawnOffset = FVector(0);
 
 	// Force multiplier for velocity of ball
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float BallReleaseMultiplier = 10.0f;
 
 	// Force multiplier for spin of ball
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float BallSpinMultiplier = 10.0f;
 
 	// Max velocity for ball on release
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MaxBallForce = 1000.0f;
 
 	// Max angle of ball spin on release
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MaxBallSpin = 45.0f;
 
 	// Max angle of bowler's arm while holding ball
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MaxArmAngle = 110.0f;
 
 	// Min angle of bowler's arm while holding ball
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MinArmAngle = -110.0f;
 
 	// Length between pivot of arm and the ball
@@ -71,12 +71,16 @@ public:
 	float ArmLength = 60.0f;
 
 	// Increases decay of throw force over time
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float ThrowForceDecay = 2.0f;
 
 	// Limits the lateral movement of the bowler
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MovementLimit = 100.0f;
+
+	// Limits the lateral movement of the bowler
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	double MaxZVelocity = 100.0f;
 
 	// State Variables
 
@@ -123,11 +127,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void MoveX(float value);
-	void MoveBallY(float value);
-	void MoveBallX(float value);
-	void GripBall();
-	void ReleaseBall();
+	void  MoveX(float value);
+	void  MoveBallY(float value);
+	void  MoveBallX(float value);
+	void  GripBall();
+	float CalculateBallSpin();
+	void  ReleaseBall();
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
