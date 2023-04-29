@@ -22,4 +22,13 @@ class BOWLING_API UTweenFunctionLibrary : public UBlueprintFunctionLibrary {
 	                    EEasingFunc::Type EasingType,
 	                    float             BlendExp = 2,
 	                    int32             Steps = 2);
+
+	UFUNCTION(BlueprintCallable, Category = "DueTween", meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
+	static void DueRotate(UObject*          Target,
+						FLatentActionInfo LatentInfo,
+						float             Duration,
+						FRotator           TargetRotation,
+						EEasingFunc::Type EasingType,
+						float             BlendExp = 2,
+						int32             Steps = 2);
 };

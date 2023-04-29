@@ -3,7 +3,8 @@
 
 #include "TweenFunctionLibrary.h"
 
-#include "FTweenAction.h"
+#include "FMoveTweenAction.h"
+#include "FRotateTweenAction.h"
 
 void UTweenFunctionLibrary::DueMove(UObject*          Target,
                                     FLatentActionInfo LatentInfo,
@@ -17,9 +18,9 @@ void UTweenFunctionLibrary::DueMove(UObject*          Target,
 	if(UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if(LatentActionManager.FindExistingAction<FTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
+		if(LatentActionManager.FindExistingAction<FMoveTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
 		{
-			FTweenData tweenData;
+			FMoveTweenData tweenData;
 			tweenData.Target = Target;
 			tweenData.Duration = Duration;
 			tweenData.TargetLocation = TargetLocation;
@@ -28,7 +29,30 @@ void UTweenFunctionLibrary::DueMove(UObject*          Target,
 			tweenData.BlendExp = BlendExp;
 			
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
-			                                 new FTweenAction(LatentInfo, tweenData));
+			                                 new FMoveTweenAction(LatentInfo, tweenData));
+		}
+	}
+}
+
+void UTweenFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentInfo, float Duration, FRotator TargetRotation,
+	EEasingFunc::Type EasingType, float BlendExp, int32 Steps)
+{
+	// Prepare latent action
+	if(UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if(LatentActionManager.FindExistingAction<FRotateTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
+		{
+			FRotateTweenData tweenData;
+			tweenData.Target = Target;
+			tweenData.Duration = Duration;
+			tweenData.TargetRotation = TargetRotation;
+			tweenData.EasingType = EasingType;
+			tweenData.Steps = Steps;
+			tweenData.BlendExp = BlendExp;
+			
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
+											 new FRotateTweenAction(LatentInfo, tweenData));
 		}
 	}
 }

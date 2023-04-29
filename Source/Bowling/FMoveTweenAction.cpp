@@ -1,10 +1,10 @@
-﻿#include "FTweenAction.h"
+﻿#include "FMoveTweenAction.h"
 
-void FTweenAction::UpdateOperation(FLatentResponse& Response)
+void FMoveTweenAction::UpdateOperation(FLatentResponse& Response)
 {
 	TimeElapsed += Response.ElapsedTime();
 	const float   percentageComplete = FMath::Clamp(TimeElapsed / TweenData.Duration, 0, 1);
-	const FVector newLocation = UKismetMathLibrary::VEase(StartingLocation, TweenData.TargetLocation, percentageComplete, TweenData.EasingType);
+	const FVector newLocation = UKismetMathLibrary::VEase(StartingLocation, TweenData.TargetLocation, percentageComplete, TweenData.EasingType, TweenData.BlendExp, TweenData.Steps);
 	if(AActor* targetAsActor = Cast<AActor>(TweenData.Target))
 	{
 		targetAsActor->SetActorLocation(newLocation);

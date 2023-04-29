@@ -1,14 +1,12 @@
-﻿// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
-
+﻿
 #pragma once
 #include "LatentActions.h"
-#include "Engine/Internal/Kismet/BlueprintTypeConversions.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "FTweenAction.generated.h"
+#include "FRotateTweenAction.generated.h"
 
 
 USTRUCT()
-struct FTweenData {
+struct FRotateTweenData {
 	GENERATED_BODY()
 public:
 	UPROPERTY()
@@ -16,7 +14,7 @@ public:
 	UPROPERTY()
 	float Duration;
 	UPROPERTY()
-	FVector TargetLocation;
+	FRotator TargetRotation;
 	UPROPERTY()
 	TEnumAsByte<EEasingFunc::Type> EasingType;
 	UPROPERTY()
@@ -28,19 +26,19 @@ public:
 
 // FTweenAction
 // Tweens from one location to another over a duration
-class FTweenAction : public FPendingLatentAction {
+class FRotateTweenAction : public FPendingLatentAction {
 public:
 	FName          ExecutionFunction;
 	int32          OutputLink;
 	FWeakObjectPtr CallbackTarget;
-	FTweenData     TweenData;
+	FRotateTweenData     TweenData;
 
 private:
 	float   TimeElapsed;
-	FVector StartingLocation;
+	FRotator StartingRotation;
 
 public:
-	FTweenAction(const FLatentActionInfo& LatentInfo, FTweenData TweenData)
+	FRotateTweenAction(const FLatentActionInfo& LatentInfo, FRotateTweenData TweenData)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)
@@ -49,11 +47,11 @@ public:
 	{
 		if(const AActor* targetAsActor = Cast<AActor>(TweenData.Target))
 		{
-			StartingLocation = targetAsActor->GetActorLocation();
+			StartingRotation = targetAsActor->GetActorRotation();
 		}
 		if(const USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target))
 		{
-			StartingLocation = targetAsSceneComponent->GetRelativeLocation();
+			StartingRotation = targetAsSceneComponent->GetRelativeRotation();
 		}
 	}
 
@@ -67,7 +65,7 @@ public:
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
 		return FText::Format(
-			NSLOCTEXT("TweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
+			NSLOCTEXT("RotateTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
 			FText::AsNumber(TweenData.Duration - TimeElapsed, &DelayTimeFormatOptions)).ToString();
 	}
 #endif
