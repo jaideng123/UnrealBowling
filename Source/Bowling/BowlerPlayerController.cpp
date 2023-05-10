@@ -13,13 +13,16 @@ void ABowlerPlayerController::BeginPlay()
 	ABowlerPawn* ControlledBowler = Cast<ABowlerPawn>(GetPawn());
 	SetViewTarget(ControlledBowler);
 	check(ControlledBowler != nullptr);
-		
+
 	InputComponent->BindAxis("XMovement", ControlledBowler, &ABowlerPawn::MoveX);
-	
+
 	InputComponent->BindAction("GripBall", IE_Pressed, ControlledBowler, &ABowlerPawn::GripBall);
 	InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
 
 	InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
 	InputComponent->BindAxis("XBallMovement", ControlledBowler, &ABowlerPawn::MoveBallX);
-	
+
+	InputComponent->BindTouch(IE_Pressed, ControlledBowler, &ABowlerPawn::HandleTouchPress);
+	InputComponent->BindTouch(IE_Released, ControlledBowler, &ABowlerPawn::HandleTouchRelease);
+	InputComponent->BindTouch(IE_Repeat, ControlledBowler, &ABowlerPawn::HandleTouchHeld);
 }

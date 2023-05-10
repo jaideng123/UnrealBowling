@@ -68,7 +68,8 @@ void ABowlerPawn::Tick(float DeltaTime)
 			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
-			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->GetActorForwardVector() *
+			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
+			                          GetActorForwardVector() *
 			                          (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
 			                          100,
 			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
@@ -159,9 +160,9 @@ void ABowlerPawn::ReleaseBall()
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
 	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
-	forceVector.Z = FMath::Clamp(forceVector.Z,-MaxZVelocity,MaxZVelocity);
+	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
 	CurrentBall->PhysicsComponent->AddImpulse(forceVector, NAME_None,
-		true);
+	                                          true);
 
 	const float BallSpin = CalculateBallSpin();
 	BallSpinAmount = BallSpin;
@@ -181,6 +182,27 @@ void ABowlerPawn::SpawnNewBall()
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 }
 
+void ABowlerPawn::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
+	GripBall();
+}
+
+void ABowlerPawn::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
+	ReleaseBall();
+}
+
+void ABowlerPawn::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	static UE::Math::TVector<double> lastPosition = location;
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
+	static float scaleFactor = .5;
+	MoveBallX((lastPosition - location).X * scaleFactor);
+	MoveBallY((lastPosition - location).Y * scaleFactor);
+	lastPosition = location;
+}
 float ABowlerPawn::CalculateReleaseForce() const
 {
 	return FMath::Clamp((ThrowDistance / (ThrowTime * ThrowForceDecay)) * BallReleaseMultiplier, -MaxBallForce,
