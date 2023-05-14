@@ -15,4 +15,8 @@ class BOWLING_API ABowlerPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	virtual void BeginPlay() override;
+	void         HandleTouchPress(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
+	void         HandleTouchRelease(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
+	void         HandleTouchHeld(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
+	ABowlerPawn* ControlledBowler;
 };

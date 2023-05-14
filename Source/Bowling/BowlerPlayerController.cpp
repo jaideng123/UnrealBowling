@@ -10,7 +10,7 @@ void ABowlerPlayerController::BeginPlay()
 	Super::BeginPlay();
 	APlayerController::SetupInputComponent();
 	check(InputComponent);
-	ABowlerPawn* ControlledBowler = Cast<ABowlerPawn>(GetPawn());
+	ControlledBowler = Cast<ABowlerPawn>(GetPawn());
 	SetViewTarget(ControlledBowler);
 	check(ControlledBowler != nullptr);
 
@@ -22,7 +22,30 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
 	InputComponent->BindAxis("XBallMovement", ControlledBowler, &ABowlerPawn::MoveBallX);
 
-	InputComponent->BindTouch(IE_Pressed, ControlledBowler, &ABowlerPawn::HandleTouchPress);
-	InputComponent->BindTouch(IE_Released, ControlledBowler, &ABowlerPawn::HandleTouchRelease);
-	InputComponent->BindTouch(IE_Repeat, ControlledBowler, &ABowlerPawn::HandleTouchHeld);
+	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
+	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
+	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
+}
+
+void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
+	ControlledBowler->GripBall();
+}
+
+void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
+	ControlledBowler->ReleaseBall();
+}
+
+void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
+{
+	static UE::Math::TVector<double> lastPosition = location;
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
+	static float scaleFactorX = .1;
+	static float scaleFactorY = .4;
+	ControlledBowler->MoveBallX((lastPosition - location).X * scaleFactorX * -1);
+	ControlledBowler->MoveBallY((lastPosition - location).Y * scaleFactorY);
+	lastPosition = location;
 }

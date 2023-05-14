@@ -182,27 +182,6 @@ void ABowlerPawn::SpawnNewBall()
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 }
 
-void ABowlerPawn::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
-	GripBall();
-}
-
-void ABowlerPawn::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
-	ReleaseBall();
-}
-
-void ABowlerPawn::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
-{
-	static UE::Math::TVector<double> lastPosition = location;
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
-	static float scaleFactor = .5;
-	MoveBallX((lastPosition - location).X * scaleFactor);
-	MoveBallY((lastPosition - location).Y * scaleFactor);
-	lastPosition = location;
-}
 float ABowlerPawn::CalculateReleaseForce() const
 {
 	return FMath::Clamp((ThrowDistance / (ThrowTime * ThrowForceDecay)) * BallReleaseMultiplier, -MaxBallForce,

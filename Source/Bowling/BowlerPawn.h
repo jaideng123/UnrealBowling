@@ -136,9 +136,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
-	void HandleTouchPress(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
-	void HandleTouchRelease(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
-	void HandleTouchHeld(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
 
 private:
 	float CalculateReleaseForce() const;
