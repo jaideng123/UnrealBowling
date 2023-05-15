@@ -43,9 +43,15 @@ void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::
 {
 	static UE::Math::TVector<double> lastPosition = location;
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
-	static float scaleFactorX = .1;
-	static float scaleFactorY = .4;
-	ControlledBowler->MoveBallX((lastPosition - location).X * scaleFactorX * -1);
-	ControlledBowler->MoveBallY((lastPosition - location).Y * scaleFactorY);
+	int screenSizeX;
+	int screenSizeY;
+	GetViewportSize(screenSizeX,screenSizeY);
+	float xPercentageMoved = (lastPosition - location).X / screenSizeX;
+	float yPercentageMoved = (lastPosition - location).Y / screenSizeY;
+	float totalY = ControlledBowler->MaxArmAngle - ControlledBowler->MinArmAngle;
+	float totalX = ControlledBowler->MaxBallSpin;
+	
+	ControlledBowler->MoveBallX(xPercentageMoved * 1 * totalX * -1);
+	ControlledBowler->MoveBallY(yPercentageMoved * 3 * totalY);
 	lastPosition = location;
 }
