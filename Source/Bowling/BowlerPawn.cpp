@@ -197,6 +197,8 @@ void ABowlerPawn::ResetBall()
 	}
 	CurrentBall = ThrownBall;
 	ThrownBall = nullptr;
+	CurrentBall->PhysicsComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
+	CurrentBall->PhysicsComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 	CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
 }
