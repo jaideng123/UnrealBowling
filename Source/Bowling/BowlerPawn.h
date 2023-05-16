@@ -88,6 +88,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	ABallBase* CurrentBall;
 
+	// Ball currently held
+	UPROPERTY(VisibleAnywhere)
+	ABallBase* ThrownBall;
+
 	// Is ball being gripped? (being wound up)
 	UPROPERTY(VisibleInstanceOnly)
 	bool BallGripped = false;
@@ -136,6 +140,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetBall();
 
 private:
 	float CalculateReleaseForce() const;

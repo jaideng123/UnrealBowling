@@ -158,6 +158,7 @@ void ABowlerPawn::ReleaseBall()
 
 	BallGripped = false;
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
+	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
 	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
@@ -169,7 +170,13 @@ void ABowlerPawn::ReleaseBall()
 	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
 		GetActorForwardVector() * -BallSpin, NAME_None, true);
 
+	ThrownBall = CurrentBall;
 	CurrentBall = nullptr;
+
+	ThrowDistance = 0;
+	ThrowTime = 0;
+	BallSpinAmount = 0;
+	BallRotationOffset = 0;
 }
 
 void ABowlerPawn::SpawnNewBall()
@@ -180,6 +187,18 @@ void ABowlerPawn::SpawnNewBall()
 	}
 	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
+}
+
+void ABowlerPawn::ResetBall()
+{
+	if(ThrownBall == nullptr)
+	{
+		return;
+	}
+	CurrentBall = ThrownBall;
+	ThrownBall = nullptr;
+	CurrentBall->PhysicsComponent->SetEnableGravity(false);
+	CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
 }
 
 float ABowlerPawn::CalculateReleaseForce() const

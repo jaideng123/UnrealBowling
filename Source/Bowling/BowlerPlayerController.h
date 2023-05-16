@@ -19,4 +19,6 @@ class BOWLING_API ABowlerPlayerController : public APlayerController
 	void         HandleTouchRelease(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
 	void         HandleTouchHeld(ETouchIndex::Type arg, UE::Math::TVector<double> vector);
 	ABowlerPawn* ControlledBowler;
+	UE::Math::TVector<double> LastHoldPosition = UE::Math::TVector<double>(-1,-1,-1);
+	inline static const UE::Math::TVector<double> NullPos = UE::Math::TVector<double>(-1,-1,-1);
 };

@@ -37,21 +37,25 @@ void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, U
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
 	ControlledBowler->ReleaseBall();
+	LastHoldPosition = NullPos;
 }
 
 void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	static UE::Math::TVector<double> lastPosition = location;
+	if(LastHoldPosition == NullPos)
+	{
+		LastHoldPosition = location;
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
 	int screenSizeX;
 	int screenSizeY;
 	GetViewportSize(screenSizeX,screenSizeY);
-	float xPercentageMoved = (lastPosition - location).X / screenSizeX;
-	float yPercentageMoved = (lastPosition - location).Y / screenSizeY;
+	float xPercentageMoved = (LastHoldPosition - location).X / screenSizeX;
+	float yPercentageMoved = (LastHoldPosition - location).Y / screenSizeY;
 	float totalY = ControlledBowler->MaxArmAngle - ControlledBowler->MinArmAngle;
-	float totalX = ControlledBowler->MaxBallSpin;
+	float totalX = ControlledBowler->MaxBallSpin / 2;
 	
 	ControlledBowler->MoveBallX(xPercentageMoved * 1 * totalX * -1);
 	ControlledBowler->MoveBallY(yPercentageMoved * 3 * totalY);
-	lastPosition = location;
+	LastHoldPosition = location;
 }
