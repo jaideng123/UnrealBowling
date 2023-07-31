@@ -27,6 +27,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<APin*> SpawnedPins;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<APin*> RaisedPins;
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void SpawnPins();
@@ -49,4 +52,5 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 };

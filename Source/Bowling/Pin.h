@@ -36,4 +36,7 @@ public:
 	void LowerPin();
 	UFUNCTION(BlueprintCallable)
 	void ResetToSpawn();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsToppled() const;
 };

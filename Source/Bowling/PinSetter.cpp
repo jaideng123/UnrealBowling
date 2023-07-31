@@ -14,9 +14,10 @@ APinSetter::APinSetter()
 
 void APinSetter::SpawnPins()
 {
-	for(auto spawnPoint : PinSpawnPoints)
+	for (auto spawnPoint : PinSpawnPoints)
 	{
-		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType, spawnPoint->GetActorLocation(), spawnPoint->GetActorRotation());
+		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType, spawnPoint->GetActorLocation(),
+		                                                spawnPoint->GetActorRotation());
 		SpawnedPin->OriginalSpawn = spawnPoint;
 		SpawnedPins.Add(SpawnedPin);
 	}
@@ -28,7 +29,7 @@ void APinSetter::SweepPins_Implementation()
 
 void APinSetter::ResetPins()
 {
-	for(const auto spawnedPin : SpawnedPins)
+	for (const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
 	}
@@ -36,26 +37,23 @@ void APinSetter::ResetPins()
 
 void APinSetter::RaiseStandingPins()
 {
-	for(const auto spawnedPin : SpawnedPins)
+	for (const auto spawnedPin : SpawnedPins)
 	{
-		// TODO: check dist to spawn / not in drop zone
-		if(FVector::DotProduct(spawnedPin->GetActorUpVector(), FVector::UpVector) >= .95)
+		if (!spawnedPin->IsToppled())
 		{
 			spawnedPin->RaisePin(GetActorLocation().Y);
+			RaisedPins.Add(spawnedPin);
 		}
 	}
 }
 
 void APinSetter::LowerStandingPins()
 {
-	for(const auto spawnedPin : SpawnedPins)
+	for (const auto spawnedPin : RaisedPins)
 	{
-		// TODO: this is a bad check, should keep list of raised pins
-		if(FVector::DotProduct(spawnedPin->GetActorUpVector(), FVector::UpVector) >= .95)
-		{
-			spawnedPin->LowerPin();
-		}
+		spawnedPin->LowerPin();
 	}
+	RaisedPins.Empty();
 }
 
 // Called when the game starts or when spawned

@@ -32,6 +32,14 @@ void APin::ResetToSpawn()
 	SetActorLocationAndRotation(OriginalSpawn->GetActorLocation(), Cast<AActor>(StaticClass()->GetDefaultObject())->GetActorRotation());
 }
 
+bool APin::IsToppled() const
+{
+	auto DistanceFromSpawn = (GetActorLocation() - OriginalSpawn->GetActorLocation());
+	DistanceFromSpawn.Z = 0;
+	return FVector::DotProduct(GetActorUpVector(), FVector::UpVector) < .95 ||
+		DistanceFromSpawn.Length() > 100;
+}
+
 void APin::RaisePin_Implementation(double X)
 {
 }
