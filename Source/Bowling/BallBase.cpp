@@ -3,6 +3,7 @@
 
 #include "BallBase.h"
 
+#include "Pin.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -43,4 +44,23 @@ void ABallBase::BeginPlay()
 void ABallBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
+{
+	if(pin == nullptr)
+	{
+		return;
+	}
+	if(PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold)
+	{
+		return;
+	}
+
+	FVector hitForce = hitResult.Normal * FVector::One() * -1;
+	hitForce *= PinHitForceMultiplier;
+
+	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
+
+	OnSuccessfulPinHit(pin, hitResult);
 }

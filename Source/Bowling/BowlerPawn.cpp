@@ -157,7 +157,7 @@ void ABowlerPawn::ReleaseBall()
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 
 	BallGripped = false;
-	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 1.0, VTBlend_EaseInOut, 2.0);
+	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
 	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();

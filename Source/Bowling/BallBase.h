@@ -24,6 +24,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UCameraComponent* CameraComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PinHitThreshold;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PinHitForceMultiplier;
+
 	// Sets default values for this actor's properties
 	ABallBase();
 
@@ -34,4 +40,10 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	void OnPinContact(APin* pin, FHitResult hitResult);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSuccessfulPinHit(APin* pin, FHitResult hitResult);
 };
