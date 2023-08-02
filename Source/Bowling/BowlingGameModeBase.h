@@ -17,4 +17,11 @@ class BOWLING_API ABowlingGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 	virtual void StartPlay() override;
+public:
+	// TODO: hook this up
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int FinalFrame = 10;
+	// TODO: hook this up
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int NumPins = 10;
 };
