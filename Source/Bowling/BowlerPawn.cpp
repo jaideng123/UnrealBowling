@@ -64,8 +64,8 @@ void ABowlerPawn::Tick(float DeltaTime)
 		if(BallGripped)
 		{
 			ThrowTime += DeltaTime;
-			FRotator Rotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
-			CurrentBall->SetActorLocationAndRotation(BallPivot + Rotation.RotateVector(BallDown), Rotation);
+			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			CurrentBall->SetActorLocationAndRotation(BallPivot + CurrentBallRotation.RotateVector(BallDown), CurrentBallRotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
 			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
@@ -82,7 +82,8 @@ void ABowlerPawn::Tick(float DeltaTime)
 		}
 		else
 		{
-			CurrentBall->SetActorLocation(BallPivot + BallDown);
+			FRotator DefaultRotation = FRotator::MakeFromEuler(FVector(0, MaxArmAngle, 0));
+			CurrentBall->SetActorLocationAndRotation(BallPivot + DefaultRotation.RotateVector(BallDown), DefaultRotation);
 		}
 	}
 }
@@ -112,7 +113,6 @@ void ABowlerPawn::MoveBallY(float input)
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), input);
-	// TODO: add decay factor
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
 	// If input has changed direction or is 0
 	if((input >= 0) != (ThrowDistance >= 0))
@@ -121,7 +121,10 @@ void ABowlerPawn::MoveBallY(float input)
 		ThrowTime = 0;
 		BallSpinAmount = 0;
 	}
-	ThrowDistance += input;
+	if(BallRotationOffset != MinArmAngle && BallRotationOffset != MaxArmAngle)
+	{
+		ThrowDistance += input;
+	}
 }
 
 void ABowlerPawn::MoveBallX(float input)
@@ -141,6 +144,7 @@ void ABowlerPawn::GripBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
 	BallGripped = true;
+	BallRotationOffset = MaxArmAngle;
 }
 
 float ABowlerPawn::CalculateBallSpin()
@@ -176,7 +180,7 @@ void ABowlerPawn::ReleaseBall()
 	ThrowDistance = 0;
 	ThrowTime = 0;
 	BallSpinAmount = 0;
-	BallRotationOffset = 0;
+	BallRotationOffset = MaxArmAngle;
 }
 
 void ABowlerPawn::SpawnNewBall()
@@ -201,6 +205,7 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->PhysicsComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 	CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	BallRotationOffset = MaxArmAngle;
 }
 
 float ABowlerPawn::CalculateReleaseForce() const
