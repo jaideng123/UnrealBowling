@@ -164,6 +164,7 @@ void ABowlerPawn::ReleaseBall()
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
+	const auto releaseForce = CalculateReleaseForce();
 	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
 	CurrentBall->PhysicsComponent->AddImpulse(forceVector, NAME_None,
@@ -173,6 +174,14 @@ void ABowlerPawn::ReleaseBall()
 	BallSpinAmount = BallSpin;
 	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
 		GetActorForwardVector() * -BallSpin, NAME_None, true);
+
+	UE_LOG(LogTemp, Display, TEXT("Release force: %f"), releaseForce);
+
+	if(releaseForce >= 0 && releaseForce <= 20.0f)
+	{
+		UE_LOG(LogTemp, Display, TEXT("No Release Force!"));
+		OnNoReleaseForce();
+	}
 
 	ThrownBall = CurrentBall;
 	CurrentBall = nullptr;

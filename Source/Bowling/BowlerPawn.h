@@ -144,6 +144,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetBall();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnNoReleaseForce();
+
 private:
 	float CalculateReleaseForce() const;
 };
