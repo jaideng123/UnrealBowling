@@ -39,4 +39,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsToppled() const;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	bool TouchedByBall;
 };

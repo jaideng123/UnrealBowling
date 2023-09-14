@@ -32,6 +32,7 @@ void APinSetter::ResetPins()
 	for (const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
+		spawnedPin->TouchedByBall = false;
 	}
 }
 
@@ -42,6 +43,7 @@ void APinSetter::RaiseStandingPins()
 		if (!spawnedPin->IsToppled())
 		{
 			spawnedPin->RaisePin(GetActorLocation().Y);
+			spawnedPin->TouchedByBall = false;
 			RaisedPins.Add(spawnedPin);
 		}
 	}
