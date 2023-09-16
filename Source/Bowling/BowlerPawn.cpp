@@ -168,6 +168,7 @@ void ABowlerPawn::ReleaseBall()
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
 	CurrentBall->PhysicsComponent->SetEnableGravity(true);
+	CurrentBall->IsActive = true;
 	const auto releaseForce = CalculateReleaseForce();
 	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
@@ -204,6 +205,7 @@ void ABowlerPawn::SpawnNewBall()
 	}
 	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
+	CurrentBall->IsActive = false;
 }
 
 void ABowlerPawn::ResetBall()
@@ -218,6 +220,7 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->PhysicsComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetEnableGravity(false);
 	CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	CurrentBall->IsActive = false;
 	BallRotationOffset = MaxArmAngle;
 }
 

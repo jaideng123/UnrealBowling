@@ -29,7 +29,7 @@ ABallBase::ABallBase()
 	//Assign SpringArm class variables.
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0), FRotator(-60.0f, 0.0f, 0.0f));
 	SpringArmComp->TargetArmLength = 400.f;
-	SpringArmComp->bEnableCameraLag = true;
+	SpringArmComp->bEnableCameraLag = false;
 	SpringArmComp->CameraLagSpeed = 3.0f;
 	SpringArmComp->SetAbsolute(false, true, false);
 }

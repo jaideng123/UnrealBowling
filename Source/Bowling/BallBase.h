@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PinHitForceMultiplier;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	bool IsActive;
+
 	// Sets default values for this actor's properties
 	ABallBase();
 
