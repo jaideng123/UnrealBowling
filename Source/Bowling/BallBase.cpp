@@ -63,10 +63,13 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 
 	pin->TouchedByBall = true;
 
-	FVector hitForce = hitResult.Normal * FVector::One() * -1;
+	FVector hitForce = hitResult.Normal * -1;
+	
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
+	auto angularImpulse = PhysicsComponent->GetPhysicsAngularVelocityInDegrees() * .1;
+	// pin->PrimitiveComponent->AddAngularImpulseInDegrees(angularImpulse);
 
 	OnSuccessfulPinHit(pin, hitResult);
 }
