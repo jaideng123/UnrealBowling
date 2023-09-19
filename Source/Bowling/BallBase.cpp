@@ -68,8 +68,6 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
-	auto angularImpulse = PhysicsComponent->GetPhysicsAngularVelocityInDegrees() * .1;
-	// pin->PrimitiveComponent->AddAngularImpulseInDegrees(angularImpulse);
 
 	OnSuccessfulPinHit(pin, hitResult);
 }
