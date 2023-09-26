@@ -21,6 +21,11 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	GuideDecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("GuideDecal"));
+	BallPivotComp = CreateDefaultSubobject<USceneComponent>(TEXT("BallPivot"));
+	BallAnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("BallAnchor"));
+	BallHandComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallHand"));
+	BallHandComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 
 	//Attach our components
 	StaticMeshRoot->SetupAttachment(RootComponent);
@@ -30,6 +35,10 @@ ABowlerPawn::ABowlerPawn()
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName);
 
 	GuideDecalComp->SetupAttachment(RootComponent);
+
+	BallPivotComp->SetupAttachment(RootComponent);
+	BallAnchorComp->SetupAttachment(BallPivotComp);
+	BallHandComp->SetupAttachment(BallAnchorComp);
 
 	//Assign SpringArm class variables.
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 50.0f), FRotator(-60.0f, 0.0f, 0.0f));
@@ -59,13 +68,15 @@ void ABowlerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(CurrentBall != nullptr)
 	{
-		FVector BallPivot = GetActorLocation() + BallSpawnOffset;
-		FVector BallDown = GetActorUpVector() * -1 * ArmLength;
+		// FVector BallPivot = GetActorLocation() + BallSpawnOffset;
+		// FVector BallDown = GetActorUpVector() * -1 * ArmLength;
 		if(BallGripped)
 		{
 			ThrowTime += DeltaTime;
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
-			CurrentBall->SetActorLocationAndRotation(BallPivot + CurrentBallRotation.RotateVector(BallDown), CurrentBallRotation);
+			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
+			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
+			// CurrentBall->SetActorLocationAndRotation(BallPivot + CurrentBallRotation.RotateVector(BallDown), CurrentBallRotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
 			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
@@ -83,7 +94,9 @@ void ABowlerPawn::Tick(float DeltaTime)
 		else
 		{
 			FRotator DefaultRotation = FRotator::MakeFromEuler(FVector(0, MaxArmAngle, 0));
-			CurrentBall->SetActorLocationAndRotation(BallPivot + DefaultRotation.RotateVector(BallDown), DefaultRotation);
+			// CurrentBall->SetActorLocationAndRotation(BallPivot + DefaultRotation.RotateVector(BallDown), DefaultRotation);
+			BallPivotComp->SetRelativeRotation(DefaultRotation);
+			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 		}
 	}
 }
@@ -167,10 +180,10 @@ void ABowlerPawn::ReleaseBall()
 	}
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
-	CurrentBall->PhysicsComponent->SetEnableGravity(true);
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
 	CurrentBall->IsActive = true;
 	const auto releaseForce = CalculateReleaseForce();
-	auto forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
+	auto       forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
 	CurrentBall->PhysicsComponent->AddImpulse(forceVector, NAME_None,
 	                                          true);
@@ -203,9 +216,21 @@ void ABowlerPawn::SpawnNewBall()
 	{
 		CurrentBall->Destroy();
 	}
-	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, GetActorLocation() + BallSpawnOffset, GetActorRotation());
-	CurrentBall->PhysicsComponent->SetEnableGravity(false);
+	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, FVector::Zero(), FRotator::ZeroRotator);
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
 	CurrentBall->IsActive = false;
+	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld,
+	                                                    false);
+	bool succeeded = CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules);
+	if(succeeded)
+	{
+		UE_LOG(LogTemp, Log,TEXT("SUCESS!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log,TEXT("FAILURE!"));
+	}
+	
 }
 
 void ABowlerPawn::ResetBall()

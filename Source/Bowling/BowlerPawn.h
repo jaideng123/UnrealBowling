@@ -18,10 +18,10 @@ public:
 	// Components
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class USpringArmComponent* SpringArmComp;
+	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UCameraComponent* CameraComp;
+	UCameraComponent* CameraComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* StaticMeshComp;
@@ -31,6 +31,15 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDecalComponent* GuideDecalComp;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* BallPivotComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UStaticMeshComponent* BallHandComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* BallAnchorComp;
 
 	// Tuning Variables
 
