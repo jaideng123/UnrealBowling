@@ -68,15 +68,12 @@ void ABowlerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(CurrentBall != nullptr)
 	{
-		// FVector BallPivot = GetActorLocation() + BallSpawnOffset;
-		// FVector BallDown = GetActorUpVector() * -1 * ArmLength;
 		if(BallGripped)
 		{
 			ThrowTime += DeltaTime;
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
-			// CurrentBall->SetActorLocationAndRotation(BallPivot + CurrentBallRotation.RotateVector(BallDown), CurrentBallRotation);
 			DrawDebugDirectionalArrow(GetWorld(),
 			                          CurrentBall->GetActorLocation(),
 			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
@@ -93,11 +90,21 @@ void ABowlerPawn::Tick(float DeltaTime)
 		}
 		else
 		{
-			FRotator DefaultRotation = FRotator::MakeFromEuler(FVector(0, MaxArmAngle, 0));
-			// CurrentBall->SetActorLocationAndRotation(BallPivot + DefaultRotation.RotateVector(BallDown), DefaultRotation);
-			BallPivotComp->SetRelativeRotation(DefaultRotation);
+			// TODO: convert to tunable var
+			BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 100.0f), MinArmAngle, MaxArmAngle);
+			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 		}
+	}
+	else
+	{
+		// Follow Through
+		// TODO: convert to tunable var
+		BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 250.0f), MinArmAngle, MaxArmAngle);
+		FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+		BallPivotComp->SetRelativeRotation(CurrentBallRotation);
+		BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 	}
 }
 
@@ -179,19 +186,19 @@ void ABowlerPawn::ReleaseBall()
 		return;
 	}
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
-	// TODO: figure out why this is so wierd w/ SetEnablePhysics()
+	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
+	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
 	CurrentBall->IsActive = true;
 	const auto releaseForce = CalculateReleaseForce();
 	auto       forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
-	CurrentBall->PhysicsComponent->AddImpulse(forceVector, NAME_None,
-	                                          true);
+	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(forceVector);
 
 	const float BallSpin = CalculateBallSpin();
 	BallSpinAmount = BallSpin;
-	CurrentBall->PhysicsComponent->AddAngularImpulseInDegrees(
-		GetActorForwardVector() * -BallSpin, NAME_None, true);
+	CurrentBall->PhysicsComponent->SetPhysicsAngularVelocityInDegrees(
+		GetActorForwardVector() * -BallSpin);
 
 	UE_LOG(LogTemp, Display, TEXT("Release force: %f"), releaseForce);
 
@@ -207,18 +214,11 @@ void ABowlerPawn::ReleaseBall()
 	ThrowDistance = 0;
 	ThrowTime = 0;
 	BallSpinAmount = 0;
-	BallRotationOffset = MaxArmAngle;
+	// BallRotationOffset = MaxArmAngle;
 }
 
-void ABowlerPawn::SpawnNewBall()
+void ABowlerPawn::AttachBallToHand()
 {
-	if(CurrentBall != nullptr)
-	{
-		CurrentBall->Destroy();
-	}
-	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, FVector::Zero(), FRotator::ZeroRotator);
-	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
-	CurrentBall->IsActive = false;
 	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld,
 	                                                    false);
 	bool succeeded = CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules);
@@ -230,7 +230,18 @@ void ABowlerPawn::SpawnNewBall()
 	{
 		UE_LOG(LogTemp, Log,TEXT("FAILURE!"));
 	}
-	
+}
+
+void ABowlerPawn::SpawnNewBall()
+{
+	if(CurrentBall != nullptr)
+	{
+		CurrentBall->Destroy();
+	}
+	CurrentBall = GetWorld()->SpawnActor<ABallBase>(BallClass, FVector::Zero(), FRotator::ZeroRotator);
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
+	CurrentBall->IsActive = false;
+	AttachBallToHand();
 }
 
 void ABowlerPawn::ResetBall()
@@ -243,9 +254,10 @@ void ABowlerPawn::ResetBall()
 	ThrownBall = nullptr;
 	CurrentBall->PhysicsComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
-	CurrentBall->PhysicsComponent->SetEnableGravity(false);
-	CurrentBall->SetActorLocationAndRotation(GetActorLocation() + BallSpawnOffset, GetActorRotation());
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
+	CurrentBall->SetActorLocationAndRotation(FVector::Zero(), FRotator::ZeroRotator);
 	CurrentBall->IsActive = false;
+	AttachBallToHand();
 	BallRotationOffset = MaxArmAngle;
 }
 

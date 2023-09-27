@@ -146,7 +146,8 @@ public:
 	void  GripBall();
 	float CalculateBallSpin();
 	void  ReleaseBall();
-	
+	void  AttachBallToHand();
+
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
 
