@@ -90,6 +90,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 		}
 		else
 		{
+			// Reset to resting position
 			// TODO: convert to tunable var
 			BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 100.0f), MinArmAngle, MaxArmAngle);
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
