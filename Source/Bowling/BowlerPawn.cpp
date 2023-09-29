@@ -57,7 +57,6 @@ void ABowlerPawn::BeginPlay()
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
-	// TODO: Figure out why I need to hack the location to align it with the ball
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + GetActorRightVector() * 3);
 }
@@ -165,7 +164,9 @@ void ABowlerPawn::GripBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
 	BallGripped = true;
+	GuideDecalComp->SetVisibility(false);
 	BallRotationOffset = MaxArmAngle;
+	OnGrip();
 }
 
 float ABowlerPawn::CalculateBallSpin()
@@ -184,8 +185,10 @@ void ABowlerPawn::ReleaseBall()
 	BallGripped = false;
 	if(CalculateReleaseForce() == 0)
 	{
+		GuideDecalComp->SetVisibility(true);
 		return;
 	}
+	OnRelease();
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
@@ -222,15 +225,7 @@ void ABowlerPawn::AttachBallToHand()
 {
 	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld,
 	                                                    false);
-	bool succeeded = CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules);
-	if(succeeded)
-	{
-		UE_LOG(LogTemp, Log,TEXT("SUCESS!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log,TEXT("FAILURE!"));
-	}
+	check(CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules));
 }
 
 void ABowlerPawn::SpawnNewBall()
@@ -258,6 +253,7 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
 	CurrentBall->SetActorLocationAndRotation(FVector::Zero(), FRotator::ZeroRotator);
 	CurrentBall->IsActive = false;
+	GuideDecalComp->SetVisibility(true);
 	AttachBallToHand();
 	BallRotationOffset = MaxArmAngle;
 }

@@ -156,6 +156,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnNoReleaseForce();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnRelease();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnGrip();
 
 private:
 	float CalculateReleaseForce() const;
