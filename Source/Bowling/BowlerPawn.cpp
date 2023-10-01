@@ -75,7 +75,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 		{
 			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
 			FVector CurrentLocation = GetActorLocation();
-			CurrentLocation.X = (StartingPosition.X - StartDistance) + (StartDistance * RunUpCurve.GetRichCurveConst()->Eval(GrippedTime/RunUpTimeMS));
+			CurrentLocation.X = (StartingPosition.X - StartDistance) + (StartDistance * RunUpCurve.GetRichCurveConst()->Eval(GrippedTime / RunUpTimeMS));
 			SetActorLocation(CurrentLocation);
 
 			ThrowTime += DeltaTime;
@@ -224,7 +224,7 @@ void ABowlerPawn::ReleaseBall()
 	{
 		releaseForce = MinBallForce;
 	}
-	auto       forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
+	auto forceVector = CurrentBall->GetActorForwardVector() * releaseForce;
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
 	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(forceVector);
 
