@@ -52,8 +52,12 @@ void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StartingPosition = GetActorLocation();
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
+
+	// Set up for run
+	SetActorLocation(GetActorLocation() - GetActorForwardVector() * StartDistance);
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
@@ -69,23 +73,29 @@ void ABowlerPawn::Tick(float DeltaTime)
 	{
 		if(BallGripped)
 		{
+			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
+			FVector CurrentLocation = GetActorLocation();
+			CurrentLocation.X = (StartingPosition.X - StartDistance) + (StartDistance * RunUpCurve.GetRichCurveConst()->Eval(GrippedTime/RunUpTimeMS));
+			SetActorLocation(CurrentLocation);
+
 			ThrowTime += DeltaTime;
+			GrippedTime += DeltaTime;
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
-			DrawDebugDirectionalArrow(GetWorld(),
-			                          CurrentBall->GetActorLocation(),
-			                          (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
-			                          GetActorForwardVector() *
-			                          (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
-			                          100,
-			                          FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
-			                                                    FMath::Abs(CalculateReleaseForce()) / MaxBallForce)
-			                          .QuantizeFloor(),
-			                          false,
-			                          -1,
-			                          1,
-			                          5);
+			// DrawDebugDirectionalArrow(GetWorld(),
+			//                           CurrentBall->GetActorLocation(),
+			//                           (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->
+			//                           GetActorForwardVector() *
+			//                           (10 + 100 * (CalculateReleaseForce() / MaxBallForce)),
+			//                           100,
+			//                           FMath::Lerp<FLinearColor>(FLinearColor::Green, FLinearColor::Red,
+			//                                                     FMath::Abs(CalculateReleaseForce()) / MaxBallForce)
+			//                           .QuantizeFloor(),
+			//                           false,
+			//                           -1,
+			//                           1,
+			//                           5);
 		}
 		else
 		{
@@ -95,6 +105,12 @@ void ABowlerPawn::Tick(float DeltaTime)
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
+
+
+			FVector NewLocation = GetActorLocation() + (-GetActorForwardVector() * ResetSpeed * DeltaTime);
+			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
+			NewLocation.X = FMath::Clamp(NewLocation.X, StartingPosition.X - StartDistance, StartingPosition.X);
+			SetActorLocation(NewLocation);
 		}
 	}
 	else
@@ -174,6 +190,14 @@ float ABowlerPawn::CalculateBallSpin()
 	return FMath::Clamp(BallSpinMultiplier * BallSpinAmount, -MaxBallSpin, MaxBallSpin);
 }
 
+void ABowlerPawn::ResetBallGripState()
+{
+	ThrowDistance = 0;
+	ThrowTime = 0;
+	BallSpinAmount = 0;
+	GrippedTime = 0;
+}
+
 void ABowlerPawn::ReleaseBall()
 {
 	if(CurrentBall == nullptr || !BallGripped)
@@ -186,6 +210,7 @@ void ABowlerPawn::ReleaseBall()
 	if(CalculateReleaseForce() == 0)
 	{
 		GuideDecalComp->SetVisibility(true);
+		ResetBallGripState();
 		return;
 	}
 	OnRelease();
@@ -194,7 +219,11 @@ void ABowlerPawn::ReleaseBall()
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
 	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
 	CurrentBall->IsActive = true;
-	const auto releaseForce = CalculateReleaseForce();
+	float releaseForce = CalculateReleaseForce();
+	if(releaseForce >= 0 && releaseForce < MinBallForce)
+	{
+		releaseForce = MinBallForce;
+	}
 	auto       forceVector = CurrentBall->GetActorForwardVector() * CalculateReleaseForce();
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);
 	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(forceVector);
@@ -215,9 +244,7 @@ void ABowlerPawn::ReleaseBall()
 	ThrownBall = CurrentBall;
 	CurrentBall = nullptr;
 
-	ThrowDistance = 0;
-	ThrowTime = 0;
-	BallSpinAmount = 0;
+	ResetBallGripState();
 	// BallRotationOffset = MaxArmAngle;
 }
 

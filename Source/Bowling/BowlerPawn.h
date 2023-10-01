@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MaxBallForce = 1000.0f;
 
+	// Max velocity for ball on release
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	float MinBallForce = 100.0f;
+
 	// Max angle of ball spin on release
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MaxBallSpin = 45.0f;
@@ -84,12 +88,20 @@ public:
 	float ThrowForceDecay = 2.0f;
 
 	// Limits the lateral movement of the bowler
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MovementLimit = 100.0f;
-
-	// Limits the lateral movement of the bowler
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	double MaxZVelocity = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
+	float StartDistance  = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
+	float RunUpTimeMS  = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
+	FRuntimeFloatCurve RunUpCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
+	float ResetSpeed  = 1.0f;
 
 	// State Variables
 
@@ -121,6 +133,10 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowTime = 0.0f;
 
+	// Current time of throw
+	UPROPERTY(VisibleInstanceOnly)
+	float GrippedTime = 0.0f;
+
 	// Starting position when the player spawns
 	UPROPERTY(VisibleInstanceOnly)
 	FVector StartingPosition = FVector(0);
@@ -145,6 +161,7 @@ public:
 	void  MoveBallX(float value);
 	void  GripBall();
 	float CalculateBallSpin();
+	void  ResetBallGripState();
 	void  ReleaseBall();
 	void  AttachBallToHand();
 
