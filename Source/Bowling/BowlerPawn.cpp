@@ -80,9 +80,13 @@ void ABowlerPawn::Tick(float DeltaTime)
 
 			ThrowTime += DeltaTime;
 			GrippedTime += DeltaTime;
-			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
-			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
+			FRotator CurrentPivotRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			BallPivotComp->SetRelativeRotation(CurrentPivotRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
+			FVector newLocation = BallHandComp->GetRelativeLocation();
+			newLocation.Y = -1 * (CalculateBallSpin() / MaxBallSpin) * MaxHandShift;
+			BallHandComp->SetRelativeLocation(newLocation);
+
 			// DrawDebugDirectionalArrow(GetWorld(),
 			//                           CurrentBall->GetActorLocation(),
 			//                           (CurrentBall->GetActorLocation() + .1 * CurrentBall->GetActorRightVector() * CalculateBallSpin()) + CurrentBall->

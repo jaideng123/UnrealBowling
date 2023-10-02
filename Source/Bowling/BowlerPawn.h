@@ -79,6 +79,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float MinArmAngle = -110.0f;
 
+	// Max Angle to move bowlers hand to signal spin
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	float MaxHandShift = 30.0f;
+
 	// Length between pivot of arm and the ball
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ArmLength = 60.0f;
