@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABowlerPawn::ABowlerPawn()
@@ -52,17 +53,19 @@ void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitialForward = GetActorForwardVector();
+	InitialRight = GetActorRightVector();
 	StartingPosition = GetActorLocation();
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
 	// Set up for run
-	SetActorLocation(GetActorLocation() - GetActorForwardVector() * StartDistance);
+	SetActorLocation(GetActorLocation() - InitialForward * StartDistance);
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
 	GuideDecalComp->SetRelativeLocation(
-		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + GetActorRightVector() * 3);
+		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 }
 
 // Called every frame
@@ -111,10 +114,10 @@ void ABowlerPawn::Tick(float DeltaTime)
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 
 
-			FVector NewLocation = GetActorLocation() + (-GetActorForwardVector() * ResetSpeed * DeltaTime);
+			FVector NewLocation = GetActorLocation() + (-InitialForward * ResetSpeed * DeltaTime);
 			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
 			NewLocation.X = FMath::Clamp(NewLocation.X, StartingPosition.X - StartDistance, StartingPosition.X);
-			SetActorLocation(NewLocation);
+			// SetActorLocation(NewLocation);
 		}
 	}
 	else
@@ -140,10 +143,26 @@ void ABowlerPawn::MoveX(float input)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
-	const FVector CurrentLocation = GetActorLocation();
-	const FVector DesiredLocation = CurrentLocation + GetActorRightVector() * input;
-	SetActorLocation(DesiredLocation);
+	if(CurrentMovementMode == MOVE)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
+		const FVector CurrentLocation = GetActorLocation();
+		const FVector Offset = InitialRight * input * StrafingSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
+		const FVector DesiredLocation = CurrentLocation + Offset;
+		SetActorLocation(DesiredLocation);
+	}
+	else if(CurrentMovementMode == ROTATE)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Rotating in direction: %f"), input);
+		FRotator CurrentRotation = GetActorRotation();
+		float    Offset = input * RotationSpeedDegrees * UGameplayStatics::GetWorldDeltaSeconds(this);
+		CurrentRotation.Yaw = FMath::Clamp(CurrentRotation.Yaw + Offset, -MaxRotation, MaxRotation);
+		SetActorRotation(CurrentRotation);
+	}
+	else
+	{
+		unimplemented();
+	}
 }
 
 void ABowlerPawn::MoveBallY(float input)

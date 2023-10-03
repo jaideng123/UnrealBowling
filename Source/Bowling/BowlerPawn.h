@@ -7,16 +7,16 @@
 #include "GameFramework/Pawn.h"
 #include "BowlerPawn.generated.h"
 
+UENUM()
+enum EBowlerMovementMode { MOVE, ROTATE };
+
 UCLASS()
-class BOWLING_API ABowlerPawn : public APawn
-{
+class BOWLING_API ABowlerPawn : public APawn {
 	GENERATED_BODY()
 
-
 public:
-
 	// Components
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USpringArmComponent* SpringArmComp;
 
@@ -28,10 +28,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* StaticMeshRoot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDecalComponent* GuideDecalComp;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* BallPivotComp;
 
@@ -96,16 +96,16 @@ public:
 	double MaxZVelocity = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
-	float StartDistance  = 100.0f;
+	float StartDistance = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
-	float RunUpTimeMS  = 1.0f;
+	float RunUpTimeMS = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	FRuntimeFloatCurve RunUpCurve;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
-	float ResetSpeed  = 1.0f;
+	float ResetSpeed = 1.0f;
 
 	// State Variables
 
@@ -144,8 +144,18 @@ public:
 	// Starting position when the player spawns
 	UPROPERTY(VisibleInstanceOnly)
 	FVector StartingPosition = FVector(0);
-	
-	
+
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EBowlerMovementMode> CurrentMovementMode = MOVE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+	float StrafingSpeed = 1.0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+	float RotationSpeedDegrees = 1.0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+	float MaxRotation = 30.0;
+
 	// Sets default values for this pawn's properties
 	ABowlerPawn();
 
@@ -177,7 +187,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnNoReleaseForce();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnRelease();
 
@@ -185,5 +195,7 @@ public:
 	void OnGrip();
 
 private:
-	float CalculateReleaseForce() const;
+	float   CalculateReleaseForce() const;
+	FVector InitialForward;
+	FVector InitialRight;
 };
