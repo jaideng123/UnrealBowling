@@ -41,6 +41,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* BallAnchorComp;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* MoveModeDisplayComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* RotateModeDisplayComp;
+
 	// Tuning Variables
 
 	// Which ball to spawn and throw
@@ -170,13 +176,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void  MoveX(float value);
-	void  MoveBallY(float value);
-	void  MoveBallX(float value);
-	void  GripBall();
+	void MoveX(float value);
+	void MoveBallY(float value);
+	void MoveBallX(float value);
+	void GripBall();
+	void ReleaseBall();
+	void UpdateMovementModeDisplay();
+	void ToggleMovementMode();
+
 	float CalculateBallSpin();
 	void  ResetBallGripState();
-	void  ReleaseBall();
 	void  AttachBallToHand();
 
 	UFUNCTION(BlueprintCallable)

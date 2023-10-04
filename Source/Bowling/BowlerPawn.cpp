@@ -26,6 +26,8 @@ ABowlerPawn::ABowlerPawn()
 	BallAnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("BallAnchor"));
 	BallHandComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallHand"));
 	BallHandComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MoveModeDisplayComp = CreateDefaultSubobject<USceneComponent>("MoveModeDisplay");
+	RotateModeDisplayComp = CreateDefaultSubobject<USceneComponent>("RotateModeDisplay");
 
 
 	//Attach our components
@@ -40,6 +42,9 @@ ABowlerPawn::ABowlerPawn()
 	BallPivotComp->SetupAttachment(RootComponent);
 	BallAnchorComp->SetupAttachment(BallPivotComp);
 	BallHandComp->SetupAttachment(BallAnchorComp);
+
+	MoveModeDisplayComp->SetupAttachment(RootComponent);
+	RotateModeDisplayComp->SetupAttachment(RootComponent);
 
 	//Assign SpringArm class variables.
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 50.0f), FRotator(-60.0f, 0.0f, 0.0f));
@@ -66,6 +71,8 @@ void ABowlerPawn::BeginPlay()
 
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
+
+	UpdateMovementModeDisplay();
 }
 
 // Called every frame
@@ -269,6 +276,33 @@ void ABowlerPawn::ReleaseBall()
 
 	ResetBallGripState();
 	// BallRotationOffset = MaxArmAngle;
+}
+
+void ABowlerPawn::UpdateMovementModeDisplay()
+{
+	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
+	{
+		RotateModeDisplayComp->SetVisibility(false, true);
+		MoveModeDisplayComp->SetVisibility(true, true);
+	}
+	else
+	{
+		RotateModeDisplayComp->SetVisibility(true, true);
+		MoveModeDisplayComp->SetVisibility(false, true);
+	}
+}
+
+void ABowlerPawn::ToggleMovementMode()
+{
+	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
+	{
+		CurrentMovementMode = EBowlerMovementMode::ROTATE;
+	}
+	else
+	{
+		CurrentMovementMode = EBowlerMovementMode::MOVE;
+	}
+	UpdateMovementModeDisplay();
 }
 
 void ABowlerPawn::AttachBallToHand()

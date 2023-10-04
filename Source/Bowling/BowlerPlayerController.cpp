@@ -19,6 +19,8 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindAction("GripBall", IE_Pressed, ControlledBowler, &ABowlerPawn::GripBall);
 	InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
 
+	InputComponent->BindAction("ToggleMovement", IE_Released, ControlledBowler, &ABowlerPawn::ToggleMovementMode);
+
 	InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
 	InputComponent->BindAxis("XBallMovement", ControlledBowler, &ABowlerPawn::MoveBallX);
 
