@@ -7,7 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "BowlerPawn.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum EBowlerMovementMode { MOVE, ROTATE };
 
 UCLASS()
@@ -152,7 +152,7 @@ public:
 	FVector StartingPosition = FVector(0);
 
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TEnumAsByte<EBowlerMovementMode> CurrentMovementMode = MOVE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
@@ -176,17 +176,19 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
 	void MoveX(float value);
 	void MoveBallY(float value);
 	void MoveBallX(float value);
 	void GripBall();
 	void ReleaseBall();
-	void UpdateMovementModeDisplay();
+	UFUNCTION(BlueprintCallable)
 	void ToggleMovementMode();
 
 	float CalculateBallSpin();
 	void  ResetBallGripState();
 	void  AttachBallToHand();
+	void  UpdateMovementModeDisplay();
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
