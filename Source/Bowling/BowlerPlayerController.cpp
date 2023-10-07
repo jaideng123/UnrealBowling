@@ -29,6 +29,15 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
 }
 
+void ABowlerPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if(CurrentContinuousMove != 0.0f)
+	{
+		ControlledBowler->MoveX(CurrentContinuousMove);
+	}
+}
+
 void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
@@ -37,7 +46,8 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange,
+	                                 FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
 	ControlledBowler->ReleaseBall();
 	LastHoldPosition = NullPos;
 }
@@ -51,13 +61,23 @@ void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
 	int screenSizeX;
 	int screenSizeY;
-	GetViewportSize(screenSizeX,screenSizeY);
+	GetViewportSize(screenSizeX, screenSizeY);
 	float xPercentageMoved = (LastHoldPosition - location).X / screenSizeX;
 	float yPercentageMoved = (LastHoldPosition - location).Y / screenSizeY;
 	float totalY = ControlledBowler->MaxArmAngle - ControlledBowler->MinArmAngle;
 	float totalX = ControlledBowler->MaxBallSpin / 2;
-	
+
 	ControlledBowler->MoveBallX(xPercentageMoved * 1 * totalX * -1);
 	ControlledBowler->MoveBallY(yPercentageMoved * 3 * totalY);
 	LastHoldPosition = location;
+}
+
+void ABowlerPlayerController::StartContinuousMove(float Direction)
+{
+	CurrentContinuousMove = Direction;
+}
+
+void ABowlerPlayerController::StopContinuousMove()
+{
+	CurrentContinuousMove = 0.0f;
 }

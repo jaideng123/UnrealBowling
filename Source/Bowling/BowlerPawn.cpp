@@ -60,12 +60,14 @@ void ABowlerPawn::BeginPlay()
 
 	InitialForward = GetActorForwardVector();
 	InitialRight = GetActorRightVector();
-	StartingPosition = GetActorLocation();
+	StartingOrientation = GetActorRotation();
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
 	// Set up for run
 	SetActorLocation(GetActorLocation() - InitialForward * StartDistance);
+	
+	StartingPosition = GetActorLocation();
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
 
@@ -83,9 +85,10 @@ void ABowlerPawn::Tick(float DeltaTime)
 	{
 		if(BallGripped)
 		{
-			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
-			FVector CurrentLocation = GetActorLocation();
-			CurrentLocation.X = (StartingPosition.X - StartDistance) + (StartDistance * RunUpCurve.GetRichCurveConst()->Eval(GrippedTime / RunUpTimeMS));
+			check(BallGripStartPosition.IsSet());
+			const FVector TargetLocation = BallGripStartPosition.GetValue() + GetActorForwardVector() * StartDistance;
+			const FVector CurrentLocation = FMath::Lerp(BallGripStartPosition.GetValue(), TargetLocation,
+			                                            RunUpCurve.GetRichCurveConst()->Eval(GrippedTime / RunUpTimeMS));
 			SetActorLocation(CurrentLocation);
 
 			ThrowTime += DeltaTime;
@@ -120,11 +123,10 @@ void ABowlerPawn::Tick(float DeltaTime)
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 
-
-			FVector NewLocation = GetActorLocation() + (-InitialForward * ResetSpeed * DeltaTime);
-			// TODO: this relies on a certain orientation of bowler, need to fix this for other orientations if necessary
-			NewLocation.X = FMath::Clamp(NewLocation.X, StartingPosition.X - StartDistance, StartingPosition.X);
-			// SetActorLocation(NewLocation);
+			if(BallGripStartPosition.IsSet())
+			{
+				SetActorLocation(BallGripStartPosition.GetValue());
+			}
 		}
 	}
 	else
@@ -210,6 +212,7 @@ void ABowlerPawn::GripBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
 	BallGripped = true;
+	BallGripStartPosition = GetActorLocation();
 	GuideDecalComp->SetVisibility(false);
 	BallRotationOffset = MaxArmAngle;
 	OnGrip();
@@ -235,7 +238,6 @@ void ABowlerPawn::ReleaseBall()
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
-
 	BallGripped = false;
 	if(CalculateReleaseForce() == 0)
 	{
@@ -243,6 +245,7 @@ void ABowlerPawn::ReleaseBall()
 		ResetBallGripState();
 		return;
 	}
+	BallGripStartPosition.Reset();
 	OnRelease();
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
@@ -339,7 +342,9 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->IsActive = false;
 	GuideDecalComp->SetVisibility(true);
 	AttachBallToHand();
-	BallRotationOffset = MaxArmAngle;
+	// BallRotationOffset = MaxArmAngle;
+	SetActorLocation(StartingPosition);
+	SetActorRotation(StartingOrientation);
 }
 
 float ABowlerPawn::CalculateReleaseForce() const

@@ -149,10 +149,20 @@ public:
 
 	// Starting position when the player spawns
 	UPROPERTY(VisibleInstanceOnly)
-	FVector StartingPosition = FVector(0);
+	FVector
+	StartingPosition = FVector(0);
+
+	// Starting rotation when the player spawns
+	UPROPERTY(VisibleInstanceOnly)
+	FRotator StartingOrientation = FRotator::ZeroRotator;
+	UPROPERTY(VisibleInstanceOnly)
+	FVector InitialForward;
+	UPROPERTY(VisibleInstanceOnly)
+	FVector            InitialRight;
+	TOptional<FVector> BallGripStartPosition;
 
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EBowlerMovementMode> CurrentMovementMode = MOVE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
@@ -206,7 +216,5 @@ public:
 	void OnGrip();
 
 private:
-	float   CalculateReleaseForce() const;
-	FVector InitialForward;
-	FVector InitialRight;
+	float CalculateReleaseForce() const;
 };
