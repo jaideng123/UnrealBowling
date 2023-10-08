@@ -1,26 +1,16 @@
 ﻿
 #pragma once
+#include "FTweenData.h"
 #include "LatentActions.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "FRotateTweenAction.generated.h"
 
 
 USTRUCT()
-struct FRotateTweenData {
+struct FRotateTweenData : public FTweenData{
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-	UObject* Target;
-	UPROPERTY()
-	float Duration;
-	UPROPERTY()
 	FRotator TargetRotation;
-	UPROPERTY()
-	TEnumAsByte<EEasingFunc::Type> EasingType;
-	UPROPERTY()
-	float BlendExp;
-	UPROPERTY()
-	int32 Steps;
 };
 
 

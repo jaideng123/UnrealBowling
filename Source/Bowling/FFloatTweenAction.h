@@ -1,49 +1,55 @@
-﻿
-#pragma once
+﻿#pragma once
 #include "FTweenData.h"
 #include "LatentActions.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "FMoveTweenAction.generated.h"
+#include "FFloatTweenAction.generated.h"
 
 
 USTRUCT()
-struct FMoveTweenData: public FTweenData{
+struct FFloatTweenData : public FTweenData {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY()
-	FVector TargetLocation;
+	float TargetValue;
+	UPROPERTY()
+	FName FieldName;
 };
 
 
 // FTweenAction
 // Tweens from one location to another over a duration
-class FMoveTweenAction : public FPendingLatentAction {
+class FFloatTweenAction : public FPendingLatentAction {
 public:
-	FName          ExecutionFunction;
-	int32          OutputLink;
-	FWeakObjectPtr CallbackTarget;
-	FMoveTweenData     TweenData;
+	FName           ExecutionFunction;
+	int32           OutputLink;
+	FWeakObjectPtr  CallbackTarget;
+	FFloatTweenData TweenData;
 
 private:
-	float   TimeElapsed;
-	FVector StartingLocation;
+	float                 TimeElapsed;
+	float                 StartingValue;
+	const FFloatProperty* FloatProperty;
 
 public:
-	FMoveTweenAction(const FLatentActionInfo& LatentInfo, FMoveTweenData TweenData)
+	FFloatTweenAction(const FLatentActionInfo& LatentInfo, FFloatTweenData TweenData)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)
 		  , TweenData(TweenData)
 		  , TimeElapsed(0)
 	{
-		if(const AActor* targetAsActor = Cast<AActor>(TweenData.Target))
+		FProperty* propertyRef = TweenData.Target->GetClass()->FindPropertyByName(TweenData.FieldName);
+		if(propertyRef)
 		{
-			StartingLocation = targetAsActor->GetActorLocation();
+			FloatProperty = CastField<FFloatProperty>(propertyRef);
+			if(FloatProperty)
+			{
+				FloatProperty->GetValue_InContainer(TweenData.Target, &StartingValue);
+				return;
+			}
 		}
-		if(const USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target))
-		{
-			StartingLocation = targetAsSceneComponent->GetRelativeLocation();
-		}
+
+		UE_LOG(LogTemp, Error, TEXT("No Float Property Found For:%s"), *TweenData.FieldName.ToString());
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;
@@ -56,7 +62,7 @@ public:
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
 		return FText::Format(
-			NSLOCTEXT("MoveTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
+			NSLOCTEXT("FloatTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
 			FText::AsNumber(TweenData.Duration - TimeElapsed, &DelayTimeFormatOptions)).ToString();
 	}
 #endif

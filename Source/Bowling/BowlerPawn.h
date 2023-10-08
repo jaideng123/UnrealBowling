@@ -124,7 +124,7 @@ public:
 	ABallBase* ThrownBall;
 
 	// Is ball being gripped? (being wound up)
-	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	bool BallGripped = false;
 
 	// Current rotation of the ball
@@ -218,6 +218,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnGrip();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ZoomIn();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ZoomOut();
 
 private:
 	float CalculateReleaseForce() const;

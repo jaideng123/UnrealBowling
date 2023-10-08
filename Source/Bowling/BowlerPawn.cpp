@@ -66,7 +66,7 @@ void ABowlerPawn::BeginPlay()
 
 	// Set up for run
 	SetActorLocation(GetActorLocation() - InitialForward * StartDistance);
-	
+
 	StartingPosition = GetActorLocation();
 
 	SpringArmComp->TargetOffset = BallSpawnOffset;
@@ -206,7 +206,7 @@ void ABowlerPawn::MoveBallX(float input)
 
 void ABowlerPawn::GripBall()
 {
-	if(CurrentBall == nullptr)
+	if(CurrentBall == nullptr || BowlingLocked)
 	{
 		return;
 	}
