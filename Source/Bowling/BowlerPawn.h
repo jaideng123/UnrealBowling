@@ -124,7 +124,7 @@ public:
 	ABallBase* ThrownBall;
 
 	// Is ball being gripped? (being wound up)
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly)
 	bool BallGripped = false;
 
 	// Current rotation of the ball
@@ -146,6 +146,10 @@ public:
 	// Current time of throw
 	UPROPERTY(VisibleInstanceOnly)
 	float GrippedTime = 0.0f;
+
+	// Current time of throw
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	bool BowlingLocked = false;
 
 	// Starting position when the player spawns
 	UPROPERTY(VisibleInstanceOnly)
