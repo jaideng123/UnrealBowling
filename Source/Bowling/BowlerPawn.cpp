@@ -148,6 +148,7 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABowlerPawn::MoveX(float input)
 {
+	OnMove(input);
 	if(input == 0 || BallGripped)
 	{
 		return;
@@ -345,6 +346,10 @@ void ABowlerPawn::ResetBall()
 	// BallRotationOffset = MaxArmAngle;
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
+}
+
+void ABowlerPawn::OnMove_Implementation(float moveDist)
+{
 }
 
 float ABowlerPawn::CalculateReleaseForce() const

@@ -224,6 +224,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ZoomOut();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnMove(float moveDist);
+
 private:
 	float CalculateReleaseForce() const;
 };

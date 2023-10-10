@@ -14,7 +14,7 @@ void ABowlerPlayerController::BeginPlay()
 	SetViewTarget(ControlledBowler);
 	check(ControlledBowler != nullptr);
 
-	InputComponent->BindAxis("XMovement", ControlledBowler, &ABowlerPawn::MoveX);
+	InputComponent->BindAxis("XMovement", this, &ABowlerPlayerController::AttemptMoveX);
 
 	InputComponent->BindAction("GripBall", IE_Pressed, ControlledBowler, &ABowlerPawn::GripBall);
 	InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
@@ -27,6 +27,14 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
+}
+
+void ABowlerPlayerController::AttemptMoveX(float value)
+{
+	if(CurrentContinuousMove == 0.0f)
+	{
+		ControlledBowler->MoveX(value);
+	}
 }
 
 void ABowlerPlayerController::Tick(float DeltaSeconds)
