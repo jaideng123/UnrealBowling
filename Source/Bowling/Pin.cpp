@@ -37,7 +37,7 @@ bool APin::IsToppled() const
 	auto DistanceFromSpawn = (GetActorLocation() - OriginalSpawn->GetActorLocation());
 	DistanceFromSpawn.Z = 0;
 	return FVector::DotProduct(GetActorUpVector(), FVector::UpVector) < .95 ||
-		DistanceFromSpawn.Length() > 100;
+		DistanceFromSpawn.Length() > 10;
 }
 
 void APin::RaisePin_Implementation(double X)

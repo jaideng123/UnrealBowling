@@ -64,6 +64,8 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 	pin->TouchedByBall = true;
 
 	FVector hitForce = hitResult.Normal * -1;
+	hitForce.Z = 0;
+	hitForce.X = 0;
 	
 	hitForce *= PinHitForceMultiplier;
 
