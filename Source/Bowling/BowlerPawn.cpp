@@ -268,6 +268,7 @@ void ABowlerPawn::ReleaseBall()
 		GetActorForwardVector() * -BallSpin);
 
 	UE_LOG(LogTemp, Display, TEXT("Release force: %f"), releaseForce);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Release force: %f / %f"), releaseForce, MaxBallForce));
 
 	if(releaseForce >= 0 && releaseForce <= 20.0f)
 	{
