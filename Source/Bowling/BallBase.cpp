@@ -65,11 +65,12 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 
 	FVector hitForce = hitResult.Normal * -1;
 	hitForce.Z = 0;
-	hitForce.X = 0;
+	// hitForce.X = 0;
 	
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
+	DrawDebugLine(GetWorld(),hitResult.Location,hitResult.Location + hitForce,FColor::Green,true,10.0f,0,1.0f);
 
 	OnSuccessfulPinHit(pin, hitResult);
 }
