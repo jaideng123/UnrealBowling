@@ -3,6 +3,7 @@
 
 #include "BowlerPawn.h"
 
+#include "BowlerPlayerController.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -75,6 +76,22 @@ void ABowlerPawn::BeginPlay()
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
 	UpdateMovementModeDisplay();
+}
+
+void ABowlerPawn::HideUI()
+{
+	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(GetLocalViewingPlayerController()))
+	{
+		bowlingPlayerController->HideControlUI();
+	}
+}
+
+void ABowlerPawn::ShowUI()
+{
+	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(GetLocalViewingPlayerController()))
+	{
+		bowlingPlayerController->ShowControlUI();
+	}
 }
 
 // Called every frame
@@ -218,6 +235,8 @@ void ABowlerPawn::GripBall()
 	BallGripped = true;
 	BallGripStartPosition = GetActorLocation();
 	GuideDecalComp->SetVisibility(false);
+	HideMovementModeDisplay();
+	HideUI();
 	BallRotationOffset = MaxArmAngle;
 	OnGrip();
 }
@@ -243,15 +262,18 @@ void ABowlerPawn::ReleaseBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
-	if(CalculateReleaseForce() == 0)
+	if(FMath::Abs(CalculateReleaseForce()) < 10)
 	{
 		GuideDecalComp->SetVisibility(true);
+		UpdateMovementModeDisplay();
+		ShowUI();
 		ResetBallGripState();
 		return;
 	}
 	BallGripStartPosition.Reset();
 	OnRelease();
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
+
 	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
 	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
@@ -304,6 +326,12 @@ void ABowlerPawn::UpdateMovementModeDisplay()
 	}
 }
 
+void ABowlerPawn::HideMovementModeDisplay()
+{
+	RotateModeDisplayComp->SetVisibility(false, true);
+	MoveModeDisplayComp->SetVisibility(false, true);
+}
+
 void ABowlerPawn::ToggleMovementMode()
 {
 	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
@@ -350,10 +378,12 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->SetActorLocationAndRotation(FVector::Zero(), FRotator::ZeroRotator);
 	CurrentBall->IsActive = false;
 	GuideDecalComp->SetVisibility(true);
+	UpdateMovementModeDisplay();
 	AttachBallToHand();
 	// BallRotationOffset = MaxArmAngle;
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
+	ShowUI();
 }
 
 void ABowlerPawn::OnMove_Implementation(float moveDist)

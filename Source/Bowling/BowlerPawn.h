@@ -183,6 +183,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void HideUI();
+	void ShowUI();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -203,6 +205,7 @@ public:
 	void  ResetBallGripState();
 	void  AttachBallToHand();
 	void  UpdateMovementModeDisplay();
+	void  HideMovementModeDisplay();
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();

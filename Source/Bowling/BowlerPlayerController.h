@@ -28,7 +28,11 @@ public:
 	void StartContinuousMove(float Direction);
 	UFUNCTION(BlueprintCallable)
 	void StopContinuousMove();
-	
+	UFUNCTION(BlueprintImplementableEvent)
+	void HideControlUI();
+	UFUNCTION(BlueprintImplementableEvent)
+	void  ShowControlUI();
+
 	UPROPERTY(BlueprintReadOnly)
 	ABowlerPawn* ControlledBowler;
 	

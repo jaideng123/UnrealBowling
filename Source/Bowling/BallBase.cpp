@@ -70,7 +70,7 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
-	DrawDebugLine(GetWorld(),hitResult.Location,hitResult.Location + hitForce,FColor::Green,false,5.0f,0,1.0f);
+	// DrawDebugLine(GetWorld(),hitResult.Location,hitResult.Location + hitForce,FColor::Green,false,5.0f,0,1.0f);
 
 	OnSuccessfulPinHit(pin, hitResult);
 }
