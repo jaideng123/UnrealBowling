@@ -178,15 +178,17 @@ void ABowlerPawn::MoveX(float input)
 
 void ABowlerPawn::MoveBallY(float input)
 {
-	if(!BallGripped)
+	if(!BallGripped || FMath::Abs(input) < .001)
 	{
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), input);
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
-	// If input has changed direction or is 0
-	if((input >= 0) != (ThrowDistance >= 0))
+	// If input has changed direction 
+	if(FMath::Sign(input) != FMath::Sign(ThrowDistance))
 	{
+		UE_LOG(LogTemp, Display, TEXT("Resetting Ball Force"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Resetting Ball Force")));
 		ThrowDistance = 0;
 		ThrowTime = 0;
 		BallSpinAmount = 0;
@@ -258,6 +260,10 @@ void ABowlerPawn::ReleaseBall()
 	if(releaseForce >= 0 && releaseForce < MinBallForce)
 	{
 		releaseForce = MinBallForce;
+	}
+	else if(releaseForce < 0 && releaseForce > -MinBallForce)
+	{
+		releaseForce = -MinBallForce;
 	}
 	auto forceVector = CurrentBall->GetActorForwardVector() * releaseForce;
 	forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity);

@@ -61,6 +61,10 @@
 		{
 			"Name": "SkeletalMeshModelingTools",
 			"Enabled": true
+		},
+		{
+			"Name": "MobileFSR",
+			"Enabled": true
 		}
 	]
 }
