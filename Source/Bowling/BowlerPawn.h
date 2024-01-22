@@ -230,6 +230,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnMove(float moveDist);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMoveReset();
+
 private:
 	float CalculateReleaseForce() const;
 };

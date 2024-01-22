@@ -144,6 +144,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			{
 				SetActorLocation(BallGripStartPosition.GetValue());
 				BallGripStartPosition.Reset();
+				OnMoveReset();
 			}
 		}
 	}
