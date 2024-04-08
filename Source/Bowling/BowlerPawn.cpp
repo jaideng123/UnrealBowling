@@ -80,7 +80,9 @@ void ABowlerPawn::BeginPlay()
 
 void ABowlerPawn::HideUI()
 {
-	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(GetLocalViewingPlayerController()))
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
+	if(bowlingPlayerController)
 	{
 		bowlingPlayerController->HideControlUI();
 	}
@@ -88,7 +90,9 @@ void ABowlerPawn::HideUI()
 
 void ABowlerPawn::ShowUI()
 {
-	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(GetLocalViewingPlayerController()))
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
+	if(bowlingPlayerController)
 	{
 		bowlingPlayerController->ShowControlUI();
 	}
@@ -384,7 +388,6 @@ void ABowlerPawn::ResetBall()
 	// BallRotationOffset = MaxArmAngle;
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
-	ShowUI();
 }
 
 void ABowlerPawn::OnMove_Implementation(float moveDist)

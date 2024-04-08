@@ -183,7 +183,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
 	void HideUI();
+	UFUNCTION(BlueprintCallable)
 	void ShowUI();
 public:
 	// Called every frame
