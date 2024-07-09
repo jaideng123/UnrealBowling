@@ -44,6 +44,12 @@ void ABallBase::BeginPlay()
 void ABallBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Fov Ramping
+	float currentSpeed = PhysicsComponent->GetPhysicsLinearVelocity().Size();
+	float normalizedSpeed = FMath::Clamp(currentSpeed / SpeedFovMaxSpeed,0.0f,1.1f);
+	float fovProgress = SpeedFovCurve->GetFloatValue(normalizedSpeed);
+	CameraComp->FieldOfView = FMath::Lerp(SpeedFovRange[0],SpeedFovRange[1],fovProgress);
 }
 
 void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)

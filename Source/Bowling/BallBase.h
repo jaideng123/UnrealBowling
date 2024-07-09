@@ -30,6 +30,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PinHitForceMultiplier;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Speed Effects")
+	FVector2D SpeedFovRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Speed Effects")
+	UCurveFloat* SpeedFovCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Speed Effects")
+	float SpeedFovMaxSpeed;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	bool IsActive;
 
