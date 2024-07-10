@@ -314,10 +314,9 @@ void ABowlerPawn::ReleaseBall()
 	CurrentBall = nullptr;
 
 	ResetBallGripState();
-	// BallRotationOffset = MaxArmAngle;
 }
 
-void ABowlerPawn::UpdateMovementModeDisplay()
+void ABowlerPawn::UpdateMovementModeDisplay() const
 {
 	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
@@ -331,7 +330,7 @@ void ABowlerPawn::UpdateMovementModeDisplay()
 	}
 }
 
-void ABowlerPawn::HideMovementModeDisplay()
+void ABowlerPawn::HideMovementModeDisplay() const
 {
 	RotateModeDisplayComp->SetVisibility(false, true);
 	MoveModeDisplayComp->SetVisibility(false, true);

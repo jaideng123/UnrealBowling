@@ -47,22 +47,14 @@ void ABallBase::Tick(float DeltaTime)
 
 	// Fov Ramping
 	float currentSpeed = PhysicsComponent->GetPhysicsLinearVelocity().Size();
-	float normalizedSpeed = FMath::Clamp(currentSpeed / SpeedFovMaxSpeed,0.0f,1.1f);
+	float normalizedSpeed = FMath::Clamp(currentSpeed / SpeedFovMaxSpeed, 0.0f, 1.1f);
 	float fovProgress = SpeedFovCurve->GetFloatValue(normalizedSpeed);
-	CameraComp->FieldOfView = FMath::Lerp(SpeedFovRange[0],SpeedFovRange[1],fovProgress);
+	CameraComp->FieldOfView = FMath::Lerp(SpeedFovRange[0], SpeedFovRange[1], fovProgress);
 }
 
 void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 {
-	if(pin == nullptr)
-	{
-		return;
-	}
-	if(PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold)
-	{
-		return;
-	}
-	if(pin->TouchedByBall)
+	if (pin == nullptr || PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold || pin->TouchedByBall)
 	{
 		return;
 	}
@@ -71,12 +63,10 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 
 	FVector hitForce = hitResult.Normal * -1;
 	hitForce.Z = 0;
-	// hitForce.X = 0;
-	
+
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
-	// DrawDebugLine(GetWorld(),hitResult.Location,hitResult.Location + hitForce,FColor::Green,false,5.0f,0,1.0f);
 
 	OnSuccessfulPinHit(pin, hitResult);
 }

@@ -206,8 +206,8 @@ public:
 	float CalculateBallSpin();
 	void  ResetBallGripState();
 	void  AttachBallToHand();
-	void  UpdateMovementModeDisplay();
-	void  HideMovementModeDisplay();
+	void  UpdateMovementModeDisplay() const;
+	void  HideMovementModeDisplay() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnNewBall();
