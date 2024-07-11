@@ -21,7 +21,7 @@ public:
 	// TODO: hook this up
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int FinalFrame = 10;
-	// TODO: hook this up
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int NumPins = 10;
 };

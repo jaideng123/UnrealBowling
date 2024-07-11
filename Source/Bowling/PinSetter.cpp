@@ -3,7 +3,11 @@
 
 #include "PinSetter.h"
 
+#include "BowlingGameModeBase.h"
+#include "BowlingGameStateBase.h"
+#include "BowlingPlayerState.h"
 #include "Pin.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APinSetter::APinSetter()
@@ -27,8 +31,12 @@ void APinSetter::SweepPins_Implementation()
 {
 }
 
-void APinSetter::ResetPins()
+void APinSetter::ResetPins(bool reportScore)
 {
+	if(reportScore)
+	{
+		ReportPins();
+	}
 	for (const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
@@ -38,6 +46,7 @@ void APinSetter::ResetPins()
 
 void APinSetter::RaiseStandingPins()
 {
+	ReportPins();
 	for (const auto spawnedPin : SpawnedPins)
 	{
 		if (!spawnedPin->IsToppled())
@@ -58,10 +67,29 @@ void APinSetter::LowerStandingPins()
 	RaisedPins.Empty();
 }
 
+void APinSetter::ReportPins()
+{
+	int pinKnockedCount = 0;
+	for (auto pin : SpawnedPins)
+	{
+		if(pin->IsToppled())
+		{
+			pinKnockedCount++;
+		}
+	}
+
+	TObjectPtr<ABowlingGameStateBase> gameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+	check(gameState);
+	gameState->GetActivePlayerState()->ReportPins(pinKnockedCount);
+}
+
 // Called when the game starts or when spawned
 void APinSetter::BeginPlay()
 {
 	Super::BeginPlay();
+	TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+	gameMode->NumPins = PinSpawnPoints.Num();
 }
 
 // Called every frame

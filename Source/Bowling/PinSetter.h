@@ -38,7 +38,7 @@ protected:
 	void SweepPins();
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
-	void ResetPins();
+	void ResetPins(bool reportScore = true);
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void RaiseStandingPins();
@@ -46,6 +46,9 @@ protected:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void LowerStandingPins();
 
+	UFUNCTION(BlueprintCallable)
+	void ReportPins();
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

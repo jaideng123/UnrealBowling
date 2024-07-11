@@ -35,11 +35,11 @@ public:
 	void ReportPins(int numPins);
 	UFUNCTION(CallInEditor)
 	void TestPins();
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FBowlingFrame> Frames;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int CurrentFrame = 0;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int CurrentBall = 0;
 };

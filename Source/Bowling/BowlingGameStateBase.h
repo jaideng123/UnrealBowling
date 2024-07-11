@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "BowlingGameStateBase.generated.h"
 
+class ABowlingPlayerState;
 /**
  * 
  */
@@ -13,5 +14,13 @@ UCLASS()
 class BOWLING_API ABowlingGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int ActivePlayerIndex;
+
+	UFUNCTION(BlueprintCallable)
+	void CyclePlayer();
+
+	UFUNCTION(BlueprintCallable)
+	ABowlingPlayerState* GetActivePlayerState();
 };
