@@ -3,6 +3,8 @@
 
 #include "BowlingPlayerState.h"
 
+#include "BowlingGameModeBase.h"
+
 void ABowlingPlayerState::ReportPins(int numPins)
 {
 	if(Frames.Num() < (CurrentFrame + 1))
@@ -10,26 +12,38 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		Frames.Add(FBowlingFrame());
 	}
 
+	FBowlingFrame& currentFrameData = Frames[CurrentFrame];
+
 	if(CurrentBall == 0)
 	{
-		Frames[CurrentFrame].ball1Pins = numPins;
-		if(numPins == 10)
-		{
-			Frames[CurrentFrame].wasStrike = true;
-		}
+		currentFrameData.ball1Pins = numPins;
 	}
 	if(CurrentBall == 1)
 	{
-		Frames[CurrentFrame].ball2Pins = numPins;
-		if(numPins + Frames[CurrentFrame].ball1Pins == 10)
-		{
-			Frames[CurrentFrame].wasSpare = true;
-		}
+		currentFrameData.ball2Pins = numPins;
+	}
+
+	if(CurrentBall == 2)
+	{
+		currentFrameData.ball3Pins = numPins;
 	}
 
 	CurrentBall++;
-	
-	if(CurrentBall == 2 || Frames[CurrentFrame].wasStrike)
+
+	if (CurrentFrame == ABowlingGameModeBase::GetFinalFrame(GetWorld()))
+	{
+		if ((currentFrameData.ball1Pins == 10 || currentFrameData.ball2Pins == 10) && CurrentBall == 3)
+		{
+			CurrentBall = 0;
+			CurrentFrame++;
+		}
+		else if(CurrentBall == 2)
+		{
+			CurrentBall = 0;
+			CurrentFrame++;
+		}
+	}
+	else if (CurrentBall == 2 || currentFrameData.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
 	{
 		CurrentBall = 0;
 		CurrentFrame++;

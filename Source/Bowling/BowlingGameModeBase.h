@@ -24,4 +24,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int NumPins = 10;
+
+	UFUNCTION(BlueprintCallable)
+	bool HasRoundEnded();
+
+	UFUNCTION(BlueprintCallable)
+	bool HasGameEnded();
+
+	static float GetFinalFrame(UWorld* worldRef);
+
+	static float GetNumPins(UWorld* worldRef);
 };

@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "BowlingPlayerState.generated.h"
 
-
+// A bowling frame is a record of the scoring that occurred during a bowlers turn
 USTRUCT()
 struct FBowlingFrame {
 	GENERATED_BODY()
@@ -17,10 +17,10 @@ public:
 	int ball2Pins = -1;
 	UPROPERTY(VisibleInstanceOnly)
 	int ball3Pins = -1;
-	UPROPERTY(VisibleInstanceOnly)
-	bool wasStrike = false;
-	UPROPERTY(VisibleInstanceOnly)
-	bool wasSpare = false;
+	// TODO: Score
+	// Scoring is based on the number of pins knocked down.
+	// Except, when you get a spare, you get 10 plus the number of pins you knock down during your next throw.
+	// If you get a strike, you get 10 plus the number of pins you knock down with your next two throws. 
 };
 
 /**
@@ -35,7 +35,7 @@ public:
 	void ReportPins(int numPins);
 	UFUNCTION(CallInEditor)
 	void TestPins();
-protected:
+	
 	UPROPERTY(VisibleAnywhere)
 	TArray<FBowlingFrame> Frames;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
