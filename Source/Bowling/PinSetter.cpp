@@ -31,12 +31,8 @@ void APinSetter::SweepPins_Implementation()
 {
 }
 
-void APinSetter::ResetPins(bool reportScore)
+void APinSetter::ResetPins()
 {
-	if(reportScore)
-	{
-		ReportPins();
-	}
 	for (const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
@@ -46,7 +42,6 @@ void APinSetter::ResetPins(bool reportScore)
 
 void APinSetter::RaiseStandingPins()
 {
-	ReportPins();
 	for (const auto spawnedPin : SpawnedPins)
 	{
 		if (!spawnedPin->IsToppled())
@@ -69,6 +64,7 @@ void APinSetter::LowerStandingPins()
 
 void APinSetter::ReportPins()
 {
+	
 	int pinKnockedCount = 0;
 	for (auto pin : SpawnedPins)
 	{

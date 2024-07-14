@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool HasGameEnded();
 
+	UFUNCTION(BlueprintCallable)
+	bool ShouldResetPinsEarly();
+
 	static float GetFinalFrame(UWorld* worldRef);
 
 	static float GetNumPins(UWorld* worldRef);

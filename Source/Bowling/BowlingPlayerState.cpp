@@ -7,51 +7,53 @@
 
 void ABowlingPlayerState::ReportPins(int numPins)
 {
-	if(Frames.Num() < (CurrentFrame + 1))
+	if (Frames.Num() < (CurrentFrame + 1))
 	{
 		Frames.Add(FBowlingFrame());
 	}
 
 	FBowlingFrame& currentFrameData = Frames[CurrentFrame];
 
-	if(CurrentBall == 0)
+	if (CurrentBall == 0)
 	{
 		currentFrameData.ball1Pins = numPins;
 	}
-	if(CurrentBall == 1)
+	if (CurrentBall == 1)
 	{
 		currentFrameData.ball2Pins = numPins;
 	}
-
-	if(CurrentBall == 2)
+	if (CurrentBall == 2)
 	{
 		currentFrameData.ball3Pins = numPins;
 	}
 
 	CurrentBall++;
 
-	if (CurrentFrame == ABowlingGameModeBase::GetFinalFrame(GetWorld()))
+	int maxNumPins = ABowlingGameModeBase::GetNumPins(GetWorld());
+	if ((CurrentFrame + 1) == ABowlingGameModeBase::GetFinalFrame(GetWorld()))
 	{
-		if ((currentFrameData.ball1Pins == 10 || currentFrameData.ball2Pins == 10) && CurrentBall == 3)
+		if ((currentFrameData.ball1Pins == maxNumPins || currentFrameData.ball2Pins == maxNumPins))
 		{
-			CurrentBall = 0;
-			CurrentFrame++;
+			if(CurrentBall == 3)
+			{
+				CurrentBall = 0;
+				CurrentFrame++;
+			}
 		}
-		else if(CurrentBall == 2)
+		else if (CurrentBall == 2)
 		{
 			CurrentBall = 0;
 			CurrentFrame++;
 		}
 	}
-	else if (CurrentBall == 2 || currentFrameData.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if (CurrentBall == 2 || currentFrameData.ball1Pins == maxNumPins)
 	{
 		CurrentBall = 0;
 		CurrentFrame++;
 	}
-	
 }
 
 void ABowlingPlayerState::TestPins()
 {
-	ReportPins(FMath::RandRange(0,10));
+	ReportPins(FMath::RandRange(0, 10));
 }

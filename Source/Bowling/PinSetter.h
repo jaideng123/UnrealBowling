@@ -38,7 +38,7 @@ protected:
 	void SweepPins();
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
-	void ResetPins(bool reportScore = true);
+	void ResetPins();
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void RaiseStandingPins();
