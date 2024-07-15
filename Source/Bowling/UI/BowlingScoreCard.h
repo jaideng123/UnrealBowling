@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingScoreCard.generated.h"
 
+class UVerticalBox;
 class UBowlingScoreCardRow;
 /**
  * 
@@ -15,6 +16,9 @@ class BOWLING_API UBowlingScoreCard : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UVerticalBox* RowContainer;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBowlingScoreCardRow> RowTemplate;
 	// Rows mapped from player id
