@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "BowlerPlayerController.generated.h"
 
+class UBowlingScoreCard;
 /**
  * 
  */
@@ -35,5 +36,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	ABowlerPawn* ControlledBowler;
+
+	UPROPERTY(BlueprintReadWrite)
+	UBowlingScoreCard* ScoreCardInstance;
 	
 };

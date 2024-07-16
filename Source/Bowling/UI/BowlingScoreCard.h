@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingScoreCard.generated.h"
 
+class ABowlingGameStateBase;
 class UVerticalBox;
 class UBowlingScoreCardRow;
 /**
@@ -24,4 +25,6 @@ protected:
 	// Rows mapped from player id
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TMap<int32, UBowlingScoreCardRow*> Rows;
+public:
+	void SyncWithGameState();
 };

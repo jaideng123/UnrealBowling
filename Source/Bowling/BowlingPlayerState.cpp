@@ -4,6 +4,7 @@
 #include "BowlingPlayerState.h"
 
 #include "BowlingGameModeBase.h"
+#include "UI/BowlingScoreCard.h"
 
 void ABowlingPlayerState::ReportPins(int numPins)
 {
@@ -51,6 +52,8 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		CurrentBall = 0;
 		CurrentFrame++;
 	}
+
+	Cast<ABowlerPlayerController>(GetPlayerController())->ScoreCardInstance->SyncWithGameState();
 }
 
 void ABowlingPlayerState::TestPins()

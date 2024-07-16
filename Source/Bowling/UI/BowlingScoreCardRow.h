@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingScoreCardRow.generated.h"
 
+class ABowlingPlayerState;
 class UBowlingScoreCardEntry;
 class UWrapBox;
 /**
@@ -25,4 +26,7 @@ protected:
 	// Entries in a row
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TArray<UBowlingScoreCardEntry*> Entries;
+	
+public:
+	void SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState);
 };

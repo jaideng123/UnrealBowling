@@ -27,6 +27,8 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
+
+	
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)

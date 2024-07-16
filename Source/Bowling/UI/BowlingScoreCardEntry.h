@@ -21,5 +21,7 @@ protected:
 	UTextBlock* Ball1Text;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Ball2Text;
-	
+	void NativeConstruct() override;
+public:
+	void SetScore(int I);
 };
