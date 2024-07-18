@@ -24,4 +24,6 @@ protected:
 	void NativeConstruct() override;
 public:
 	void SetScore(int I);
+	void SetBall1(int ball1);
+	void SetBall2(int ball2);
 };

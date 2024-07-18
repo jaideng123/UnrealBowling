@@ -17,5 +17,45 @@ void UBowlingScoreCardEntry::NativeConstruct()
 
 void UBowlingScoreCardEntry::SetScore(int score)
 {
-	ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), score)));
+	if(score < 0)
+	{
+		ScoreText->SetText(FText::FromString(TEXT("")));
+	}
+	else
+	{
+		ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), score)));
+	}
 }
+
+void UBowlingScoreCardEntry::SetBall1(int ball1)
+{
+	if(ball1 < 0)
+	{
+		Ball1Text->SetText(FText::FromString(TEXT("")));
+	}
+	else if(ball1 == 10)
+	{
+		Ball1Text->SetText(FText::FromString(TEXT("X")));
+	}
+	else
+	{
+		Ball1Text->SetText(FText::FromString(FString::Printf(TEXT("%d"), ball1)));
+	}
+}
+
+void UBowlingScoreCardEntry::SetBall2(int ball2)
+{
+	if(ball2 < 0)
+	{
+		Ball2Text->SetText(FText::FromString(TEXT("")));
+	}
+	else if(ball2 == 10)
+	{
+		Ball1Text->SetText(FText::FromString(TEXT("/")));
+	}
+	else
+	{
+		Ball2Text->SetText(FText::FromString(FString::Printf(TEXT("%d"), ball2)));
+	}
+}
+

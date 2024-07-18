@@ -19,16 +19,7 @@ bool ABowlingGameModeBase::HasRoundEnded()
 	ABowlingPlayerState* activePlayerState = gameState->GetActivePlayerState();
 	check(activePlayerState)
 
-	// TODO: Make this work for multiple players by copying game end logic here?
-	if ((activePlayerState->CurrentFrame + 1) == FinalFrame)
-	{
-		return activePlayerState->CurrentBall >= 3;
-	}
-	else
-	{
-		return activePlayerState->CurrentBall >= 1 ||
-			(activePlayerState->Frames.Num() > 0 && activePlayerState->Frames.Last().ball1Pins == NumPins);
-	}
+	return activePlayerState->CurrentBall == 0;
 }
 
 bool ABowlingGameModeBase::HasGameEnded()
