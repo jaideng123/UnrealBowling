@@ -4,6 +4,7 @@
 #include "BowlerPlayerController.h"
 
 #include "Camera/CameraComponent.h"
+#include "UI/BowlingScoreCard.h"
 
 void ABowlerPlayerController::BeginPlay()
 {
@@ -28,7 +29,7 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
 
-	
+	ScoreCardInstance->SyncWithGameState();
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
