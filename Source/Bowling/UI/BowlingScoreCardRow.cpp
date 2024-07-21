@@ -36,6 +36,39 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 			score += currentFrame.ball2Pins == -1 ? 0 : (currentFrame.ball2Pins - currentFrame.ball1Pins);
 		}
 
+		// check for strikes + spares
+		if(currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		{
+			if(playerState->Frames.Num() > i + 1)
+			{
+				const auto& nextFrame = playerState->Frames[i+1];
+				if(nextFrame.ball1Pins != ABowlingGameModeBase::GetNumPins(GetWorld()))
+				{
+					score += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+					score += nextFrame.ball2Pins == -1 ? 0 : (nextFrame.ball2Pins - nextFrame.ball1Pins);
+				}
+				else
+				{
+					score += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+					if(playerState->Frames.Num() > i + 2)
+					{
+						const auto& nextNextFrame = playerState->Frames[i+2];
+						score += nextNextFrame.ball1Pins == -1 ? 0 : nextNextFrame.ball1Pins;
+					}
+
+				}
+			}
+		}
+		else if(currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		{
+			if(playerState->Frames.Num() < i + 1)
+			{
+				const auto& nextFrame = playerState->Frames[i+1];
+				score += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+			}
+		}
+
+
 		auto& entry = Entries[i];
 		if(score != -1)
 		{
@@ -50,4 +83,18 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		entry->SetBall2(currentFrame.ball2Pins - currentFrame.ball1Pins);
 
 	}
+}
+
+int UBowlingScoreCardRow::CalculateRawFrameScore(const FBowlingFrame& frame)
+{
+	if(frame.ball2Pins != -1)
+	{
+		return frame.ball2Pins;
+	}
+	else if(frame.ball1Pins != -1)
+	{
+		return frame.ball2Pins;
+	}
+	return 0;
+	
 }

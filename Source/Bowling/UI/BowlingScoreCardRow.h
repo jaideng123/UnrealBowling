@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingScoreCardRow.generated.h"
 
+struct FBowlingFrame;
 class ABowlingPlayerState;
 class UBowlingScoreCardEntry;
 class UWrapBox;
@@ -29,4 +30,5 @@ protected:
 	
 public:
 	void SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState);
+	static int CalculateRawFrameScore(const FBowlingFrame& frame);
 };
