@@ -23,7 +23,7 @@ protected:
 	UTextBlock* Ball2Text;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Ball3Text;
-	void NativeConstruct() override;
+	virtual void NativeConstruct() override;
 public:
 	void SetScore(int I);
 	void SetBall1(int ball1);

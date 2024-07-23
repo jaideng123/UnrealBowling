@@ -9,6 +9,7 @@
 struct FBowlingFrame;
 class ABowlingPlayerState;
 class UBowlingScoreCardEntry;
+class UBowlingScoreCardFinalEntry;
 class UWrapBox;
 /**
  * 
@@ -23,10 +24,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBowlingScoreCardEntry> EntryTemplate;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UBowlingScoreCardFinalEntry> FinalEntryTemplate;
 
 	// Entries in a row
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TArray<UBowlingScoreCardEntry*> Entries;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	UBowlingScoreCardFinalEntry* FinalEntry;
 	
 public:
 	void SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState);

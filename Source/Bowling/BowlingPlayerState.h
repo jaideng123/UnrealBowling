@@ -17,10 +17,6 @@ public:
 	int ball2Pins = -1;
 	UPROPERTY(VisibleInstanceOnly)
 	int ball3Pins = -1;
-	// TODO: Score
-	// Scoring is based on the number of pins knocked down.
-	// Except, when you get a spare, you get 10 plus the number of pins you knock down during your next throw.
-	// If you get a strike, you get 10 plus the number of pins you knock down with your next two throws. 
 };
 
 /**

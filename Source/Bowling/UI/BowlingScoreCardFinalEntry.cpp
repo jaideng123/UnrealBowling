@@ -15,7 +15,6 @@ void UBowlingScoreCardFinalEntry::NativeConstruct()
 	Ball1Text->SetText(FText::FromString(TEXT("")));
 	Ball2Text->SetText(FText::FromString(TEXT("")));
 	Ball3Text->SetText(FText::FromString(TEXT("")));
-
 }
 
 void UBowlingScoreCardFinalEntry::SetScore(int score)
