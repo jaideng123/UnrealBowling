@@ -82,7 +82,6 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		{
 			if (playerState->Frames.Num() > i + 1)
 			{
-				// TODO: handle final frame
 				const auto& nextFrame = playerState->Frames[i + 1];
 				if (i + 1 == (ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1))
 				{
