@@ -10,7 +10,7 @@ class ABowlingGameStateBase;
 class UVerticalBox;
 class UBowlingScoreCardRow;
 /**
- * 
+ * Score card the shows all player's scores
  */
 UCLASS()
 class BOWLING_API UBowlingScoreCard : public UUserWidget

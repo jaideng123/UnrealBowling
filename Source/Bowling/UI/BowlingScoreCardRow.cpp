@@ -136,16 +136,3 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		entry->SetBall2(currentFrame.ball2Pins - currentFrame.ball1Pins);
 	}
 }
-
-int UBowlingScoreCardRow::CalculateRawFrameScore(const FBowlingFrame& frame)
-{
-	if (frame.ball2Pins != -1)
-	{
-		return frame.ball2Pins;
-	}
-	else if (frame.ball1Pins != -1)
-	{
-		return frame.ball2Pins;
-	}
-	return 0;
-}

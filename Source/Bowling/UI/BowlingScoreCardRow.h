@@ -12,7 +12,7 @@ class UBowlingScoreCardEntry;
 class UBowlingScoreCardFinalEntry;
 class UWrapBox;
 /**
- * 
+ * Class representing a single player's portion of the score card
  */
 UCLASS()
 class BOWLING_API UBowlingScoreCardRow : public UUserWidget
@@ -37,5 +37,4 @@ protected:
 	
 public:
 	void SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState);
-	static int CalculateRawFrameScore(const FBowlingFrame& frame);
 };

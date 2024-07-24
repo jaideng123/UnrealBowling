@@ -8,7 +8,7 @@
 
 class UTextBlock;
 /**
- * 
+ * An entry of a score card showing a single frame of bowling
  */
 UCLASS()
 class BOWLING_API UBowlingScoreCardEntry : public UUserWidget

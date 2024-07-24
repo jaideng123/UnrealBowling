@@ -8,7 +8,7 @@
 
 class UTextBlock;
 /**
- * 
+ * The Final Entry of a player's score card, supports up to 3 balls instead of the usual 2
  */
 UCLASS()
 class BOWLING_API UBowlingScoreCardFinalEntry : public UUserWidget
