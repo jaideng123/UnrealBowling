@@ -79,13 +79,18 @@ void APinSetter::ReportPins()
 	gameState->GetActivePlayerState()->ReportPins(pinKnockedCount);
 }
 
+void APinSetter::UpdateNumPins()
+{
+	TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	check(gameMode);
+	gameMode->NumPins = PinSpawnPoints.Num();
+}
+
 // Called when the game starts or when spawned
 void APinSetter::BeginPlay()
 {
 	Super::BeginPlay();
-	TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	check(gameMode);
-	gameMode->NumPins = PinSpawnPoints.Num();
+	UpdateNumPins();
 }
 
 // Called every frame

@@ -19,7 +19,7 @@ public:
 	APinSetter();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<APinSpawnPoint*> PinSpawnPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -49,6 +49,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ReportPins();
 	
+	UFUNCTION(BlueprintCallable)
+	void UpdateNumPins();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
