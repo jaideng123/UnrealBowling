@@ -7,7 +7,7 @@ struct FTweenData {
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-	UObject* Target;
+	TWeakObjectPtr<UObject> Target;
 	UPROPERTY()
 	float Duration;
 	UPROPERTY()

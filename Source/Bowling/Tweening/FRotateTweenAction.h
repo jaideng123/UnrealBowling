@@ -13,7 +13,6 @@ public:
 	FRotator TargetRotation;
 };
 
-
 // FTweenAction
 // Tweens from one location to another over a duration
 class FRotateTweenAction : public FPendingLatentAction {

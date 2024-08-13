@@ -42,9 +42,9 @@ public:
 		if(propertyRef)
 		{
 			FloatProperty = CastField<FFloatProperty>(propertyRef);
-			if(FloatProperty)
+			if(FloatProperty && TweenData.Target.IsValid())
 			{
-				FloatProperty->GetValue_InContainer(TweenData.Target, &StartingValue);
+				FloatProperty->GetValue_InContainer(TweenData.Target.Get(), &StartingValue);
 				return;
 			}
 		}
