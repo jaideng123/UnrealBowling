@@ -2,9 +2,11 @@
 
 #define LOCTEXT_NAMESPACE "FDUETweenModule"
 
+DEFINE_LOG_CATEGORY(LogDUETween);
+
 void FDUETweenModule::StartupModule()
 {
-	UE_LOG(LogTemp, Display, TEXT("Loaded DUETween"));
+	UE_LOG(LogDUETween, Display, TEXT("Loaded DUETween"));
 
 	TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
 	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate);
@@ -12,7 +14,7 @@ void FDUETweenModule::StartupModule()
 
 void FDUETweenModule::ShutdownModule()
 {
-	UE_LOG(LogTemp, Display, TEXT("UnLoaded DUETween"));
+	UE_LOG(LogDUETween, Display, TEXT("UnLoaded DUETween"));
 
 	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
@@ -25,8 +27,12 @@ bool FDUETweenModule::Tick(float deltaTime)
 		return true;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("Ticking DUETween"));
+	// UE_LOG(LogDUETween, Display, TEXT("Ticking DUETween"));
 
+	for (auto Tween : ActiveTweens)
+	{
+		// TODO: Need to figure out updating this
+	}
 	return true;
 }
 
