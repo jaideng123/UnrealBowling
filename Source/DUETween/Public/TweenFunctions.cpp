@@ -2,7 +2,7 @@
 
 #include "DUETween.h"
 
-double TweenFunctions::Ease(double A, double B, double Alpha, TEnumAsByte<EasingType> Easing, double BlendExp,
+double TweenFunctions::Ease(double A, double B, double Alpha, EasingType Easing, double BlendExp,
                             int32 Steps)
 {
 	// Clamp Alpha In-case it exceeds 1 or is negative

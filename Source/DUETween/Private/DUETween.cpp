@@ -10,6 +10,7 @@ void FDUETweenModule::StartupModule()
 
 	TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
 	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate);
+	ActiveTweens.SetNum(100);
 }
 
 void FDUETweenModule::ShutdownModule()
@@ -17,6 +18,21 @@ void FDUETweenModule::ShutdownModule()
 	UE_LOG(LogDUETween, Display, TEXT("UnLoaded DUETween"));
 
 	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+}
+
+FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
+{
+	for (auto& tween : ActiveTweens)
+	{
+		if(!tween.IsActive)
+		{
+			tween.TweenData = TweenData;
+			tween.IsActive = true;
+			tween.TimeElapsed = 0;
+			return &tween;
+		}
+	}
+	return nullptr;
 }
 
 bool FDUETweenModule::Tick(float deltaTime)
@@ -29,9 +45,22 @@ bool FDUETweenModule::Tick(float deltaTime)
 
 	// UE_LOG(LogDUETween, Display, TEXT("Ticking DUETween"));
 
-	for (auto Tween : ActiveTweens)
+	for (auto tween : ActiveTweens)
 	{
-		// TODO: Need to figure out updating this
+		if(tween.IsActive)
+		{
+			
+			switch (tween.TweenData.ValueType) {
+			case EValueType::Float:
+				break;
+			case EValueType::Double:
+				break;
+			case EValueType::Vector:
+				break;
+			case EValueType::Rotator:
+				break;
+			}
+		}
 	}
 	return true;
 }

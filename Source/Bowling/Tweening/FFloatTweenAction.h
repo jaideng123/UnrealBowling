@@ -1,6 +1,8 @@
 ﻿#pragma once
+#include "DUETween.h"
 #include "FTweenData.h"
 #include "LatentActions.h"
+#include "TweenFunctions.h"
 #include "FFloatTweenAction.generated.h"
 
 
@@ -39,12 +41,27 @@ public:
 		  , TimeElapsed(0)
 	{
 		FProperty* propertyRef = TweenData.Target->GetClass()->FindPropertyByName(TweenData.FieldName);
+		FDUETweenData DUETweenData;
+		DUETweenData.Duration = TweenData.Duration;
+		DUETweenData.Steps = TweenData.Steps;
+		DUETweenData.Target = TweenData.Target;
+		DUETweenData.BlendExp = TweenData.BlendExp;
+		// TODO: Correct this
+		DUETweenData.EasingType = EasingType::Linear;
+		DUETweenData.EndingValue = FValueContainer(TweenData.TargetValue);
+		DUETweenData.TargetProperty = propertyRef;
+		DUETweenData.ValueType = EValueType::Float;
+		
+
+		// TODO: move this into due tween
 		if(propertyRef)
 		{
 			FloatProperty = CastField<FFloatProperty>(propertyRef);
 			if(FloatProperty && TweenData.Target.IsValid())
 			{
 				FloatProperty->GetValue_InContainer(TweenData.Target.Get(), &StartingValue);
+				DUETweenData.StartingValue = FValueContainer(StartingValue);
+				FDUETweenModule::Get().AddTween(DUETweenData);
 				return;
 			}
 		}
