@@ -31,6 +31,7 @@ private:
 	float                 TimeElapsed;
 	float                 StartingValue;
 	const FFloatProperty* FloatProperty;
+	FActiveDueTween* ActiveDueTween;
 
 public:
 	FFloatTweenAction(const FLatentActionInfo& LatentInfo, FFloatTweenData TweenData)
@@ -60,8 +61,9 @@ public:
 			if(FloatProperty && TweenData.Target.IsValid())
 			{
 				FloatProperty->GetValue_InContainer(TweenData.Target.Get(), &StartingValue);
+				
 				DUETweenData.StartingValue = FValueContainer(StartingValue);
-				FDUETweenModule::Get().AddTween(DUETweenData);
+				ActiveDueTween = FDUETweenModule::Get().AddTween(DUETweenData);
 				return;
 			}
 		}

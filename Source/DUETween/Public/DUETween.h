@@ -43,8 +43,8 @@ struct FActiveDueTween
 public:
     FDUETweenData TweenData;
     // State
-    float TimeElapsed;
-    bool IsActive;
+    float TimeElapsed = 0;
+    bool IsActive = false;
 };
 
 class FDUETweenModule : public IModuleInterface
@@ -52,8 +52,9 @@ class FDUETweenModule : public IModuleInterface
 public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
-    FActiveDueTween* AddTween(const FDUETweenData& TweenData);
-    static inline FDUETweenModule& Get()
+    // DUETWEEN_API is necessary to expose this method
+    DUETWEEN_API FActiveDueTween* AddTween(const FDUETweenData& TweenData);
+    static FDUETweenModule& Get()
     {
         return FModuleManager::LoadModuleChecked< FDUETweenModule >( "DUETween" );
     }

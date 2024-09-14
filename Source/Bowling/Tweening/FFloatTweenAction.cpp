@@ -8,14 +8,15 @@ void FFloatTweenAction::UpdateOperation(FLatentResponse& Response)
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
+
+	// Leaving this for now to validate
+	// TimeElapsed += Response.ElapsedTime();
+	// const float percentageComplete = FMath::Clamp(TimeElapsed / TweenData.Duration, 0, 1);
+	// UE_LOG(LogTemp, Display, TEXT("Ideal Percentage Complete: %f"), percentageComplete);
+	// const float newValue = UKismetMathLibrary::Ease(StartingValue, TweenData.TargetValue, percentageComplete, EEasingFunc::Linear,
+	//                                                 TweenData.BlendExp, TweenData.Steps);
+	// UE_LOG(LogTemp, Display, TEXT("Ideal Value: %f"), newValue);
+	// UE_LOG(LogTemp, Display, TEXT("Latent DeltaTime: %f"), Response.ElapsedTime());
 	
-	TimeElapsed += Response.ElapsedTime();
-	const float percentageComplete = FMath::Clamp(TimeElapsed / TweenData.Duration, 0, 1);
-	const float newValue = UKismetMathLibrary::Ease(StartingValue, TweenData.TargetValue, percentageComplete, TweenData.EasingType,
-	                                                TweenData.BlendExp, TweenData.Steps);
-	if(FloatProperty)
-	{
-		FloatProperty->SetValue_InContainer(TweenData.Target.Get(), newValue);
-	}
-	Response.FinishAndTriggerIf(TweenData.Duration - TimeElapsed <= 0.0f, ExecutionFunction, OutputLink, CallbackTarget);
+	Response.FinishAndTriggerIf(!ActiveDueTween->IsActive, ExecutionFunction, OutputLink, CallbackTarget);
 }

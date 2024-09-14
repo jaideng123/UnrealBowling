@@ -1,5 +1,7 @@
 ﻿#include "DUETween.h"
 
+#include "TweenFunctions.h"
+
 #define LOCTEXT_NAMESPACE "FDUETweenModule"
 
 DEFINE_LOG_CATEGORY(LogDUETween);
@@ -9,8 +11,12 @@ void FDUETweenModule::StartupModule()
 	UE_LOG(LogDUETween, Display, TEXT("Loaded DUETween"));
 
 	TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
-	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate);
+	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate, 0.0f);
 	ActiveTweens.SetNum(100);
+	for (auto& Element : ActiveTweens)
+	{
+		Element.IsActive = false;
+	}
 }
 
 void FDUETweenModule::ShutdownModule()
@@ -24,7 +30,7 @@ FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 {
 	for (auto& tween : ActiveTweens)
 	{
-		if(!tween.IsActive)
+		if (!tween.IsActive)
 		{
 			tween.TweenData = TweenData;
 			tween.IsActive = true;
@@ -45,20 +51,46 @@ bool FDUETweenModule::Tick(float deltaTime)
 
 	// UE_LOG(LogDUETween, Display, TEXT("Ticking DUETween"));
 
-	for (auto tween : ActiveTweens)
+	for (auto& tween : ActiveTweens)
 	{
-		if(tween.IsActive)
+		if (tween.IsActive)
 		{
+			tween.TimeElapsed += deltaTime;
 			
-			switch (tween.TweenData.ValueType) {
+			float progress = tween.TimeElapsed / tween.TweenData.Duration;
+			// UE_LOG(LogTemp, Display, TEXT("Actual Percentage Complete: %f"), progress);
+
+			
+			switch (tween.TweenData.ValueType)
+			{
 			case EValueType::Float:
+				{
+					float newValue = TweenFunctions::Ease(tween.TweenData.StartingValue.GetSubtype<float>(),
+														  tween.TweenData.EndingValue.GetSubtype<float>(), progress,
+														  tween.TweenData.EasingType, tween.TweenData.BlendExp,
+														  tween.TweenData.Steps);
+					UE_LOG(LogTemp, Display, TEXT("Actual New Value: %f"), newValue);
+
+					FFloatProperty* FloatProperty = CastField<FFloatProperty>(tween.TweenData.TargetProperty);
+					if (FloatProperty && tween.TweenData.Target.IsValid())
+					{
+						FloatProperty->SetValue_InContainer(tween.TweenData.Target.Get(), newValue);
+					}
+					break;
+				}
+			// case EValueType::Double:
+			// 	break;
+			// case EValueType::Vector:
+			// 	break;
+			// case EValueType::Rotator:
+			// 	break;
+			default:
+				UE_LOG(LogDUETween, Error, TEXT("Unhandled Data type"));
 				break;
-			case EValueType::Double:
-				break;
-			case EValueType::Vector:
-				break;
-			case EValueType::Rotator:
-				break;
+			}
+			if (progress >= 1.0)
+			{
+				tween.IsActive = false;
 			}
 		}
 	}
