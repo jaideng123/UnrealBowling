@@ -1,6 +1,6 @@
 ﻿#include "DUETween.h"
 
-#include "TweenFunctions.h"
+#include "DUEEasingFunctionLibrary.h"
 
 #define LOCTEXT_NAMESPACE "FDUETweenModule"
 
@@ -35,6 +35,15 @@ FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 			tween.TweenData = TweenData;
 			tween.IsActive = true;
 			tween.TimeElapsed = 0;
+			// TODO Break Up By Type
+			auto FloatProperty = CastField<FFloatProperty>(TweenData.TargetProperty);
+			if(FloatProperty && TweenData.Target.IsValid())
+			{
+				float StartingValue;
+				FloatProperty->GetValue_InContainer(TweenData.Target.Get(), &StartingValue);
+				
+				tween.StartingValue = FValueContainer(StartingValue);
+			}
 			return &tween;
 		}
 	}
@@ -63,10 +72,10 @@ bool FDUETweenModule::Tick(float deltaTime)
 			
 			switch (tween.TweenData.ValueType)
 			{
-			case EValueType::Float:
+			case EDUEValueType::Float:
 				{
-					float newValue = TweenFunctions::Ease(tween.TweenData.StartingValue.GetSubtype<float>(),
-														  tween.TweenData.EndingValue.GetSubtype<float>(), progress,
+					float newValue = DUEEasingFunctionLibrary::Ease(tween.StartingValue.GetSubtype<float>(),
+														  tween.TweenData.TargetValue.GetSubtype<float>(), progress,
 														  tween.TweenData.EasingType, tween.TweenData.BlendExp,
 														  tween.TweenData.Steps);
 					UE_LOG(LogTemp, Display, TEXT("Actual New Value: %f"), newValue);

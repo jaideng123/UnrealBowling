@@ -6,7 +6,7 @@
 
 
 USTRUCT()
-struct FRotateTweenData : public FTweenData{
+struct DUETWEEN_API FRotateTweenData : public FTweenData{
 	GENERATED_BODY()
 public:
 	UPROPERTY()
@@ -15,7 +15,7 @@ public:
 
 // FTweenAction
 // Tweens from one location to another over a duration
-class FRotateTweenAction : public FPendingLatentAction {
+class DUETWEEN_API FRotateTweenAction : public FPendingLatentAction {
 public:
 	FName          ExecutionFunction;
 	int32          OutputLink;

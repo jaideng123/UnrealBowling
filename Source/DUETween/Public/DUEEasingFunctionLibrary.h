@@ -1,8 +1,9 @@
 #pragma once
+#include "Kismet/KismetMathLibrary.h"
 
 
 UENUM()
-enum class EasingType : uint8 {
+enum class DUEEasingType : int {
 	/** Simple linear interpolation. */
 	Linear,
 
@@ -46,13 +47,14 @@ enum class EasingType : uint8 {
 	CircularInOut
 };
 
-class TweenFunctions
+class DUEEasingFunctionLibrary
 {
 public:
 	// TODO: Handle Vectors, Rotators, Etc.
-	static double Ease(double A, double B, double Alpha, EasingType EasingType, double BlendExp = 2, int32 Steps = 2);
+	static double Ease(double A, double B, double Alpha, DUEEasingType EasingType, double BlendExp = 2, int32 Steps = 2);
 	static double LinearEase(double X, double B, double Alpha);
 	static double LinearStepEase(double X, double B, double Alpha, int32 INT32);
 	static double EaseInSin(double X, double B, double Alpha);
+	static DUEEasingType ConvertFromUnrealEasingType(EEasingFunc::Type unrealEasing);
 
 };

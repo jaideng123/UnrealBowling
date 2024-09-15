@@ -9,7 +9,7 @@ public class DUETween : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
+                "Core", "Engine",
             }
         );
 

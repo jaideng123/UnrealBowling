@@ -6,11 +6,11 @@
 
 #include "DUETween.generated.h"
 
-enum class EasingType : uint8;
+enum class DUEEasingType : int;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
 
-enum class EValueType
+enum class EDUEValueType
 {
     Float,
     Double,
@@ -28,10 +28,9 @@ public:
     TWeakObjectPtr<> Target;
     FProperty* TargetProperty;
     float Duration;
-    EasingType EasingType;
-    EValueType ValueType;
-    FValueContainer StartingValue;
-    FValueContainer EndingValue;
+    DUEEasingType EasingType;
+    EDUEValueType ValueType;
+    FValueContainer TargetValue;
     float BlendExp;
     int32 Steps;
 };
@@ -43,6 +42,7 @@ struct FActiveDueTween
 public:
     FDUETweenData TweenData;
     // State
+    FValueContainer StartingValue;
     float TimeElapsed = 0;
     bool IsActive = false;
 };

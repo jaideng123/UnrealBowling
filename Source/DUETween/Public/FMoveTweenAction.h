@@ -7,7 +7,7 @@
 
 
 USTRUCT()
-struct FMoveTweenData: public FTweenData{
+struct DUETWEEN_API FMoveTweenData: public FTweenData{
 	GENERATED_BODY()
 public:
 	UPROPERTY()
@@ -17,7 +17,7 @@ public:
 
 // FTweenAction
 // Tweens from one location to another over a duration
-class FMoveTweenAction : public FPendingLatentAction {
+class DUETWEEN_API FMoveTweenAction : public FPendingLatentAction {
 public:
 	FName          ExecutionFunction;
 	int32          OutputLink;

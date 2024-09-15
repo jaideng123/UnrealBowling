@@ -3,7 +3,7 @@
 #include "FTweenData.generated.h"
 
 USTRUCT()
-struct FTweenData {
+struct DUETWEEN_API FTweenData {
 	GENERATED_BODY()
 public:
 	UPROPERTY()
