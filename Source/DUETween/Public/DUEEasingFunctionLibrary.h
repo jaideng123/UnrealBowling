@@ -1,112 +1,90 @@
 #pragma once
 #include "Kismet/KismetMathLibrary.h"
 
-
-
-// DoTweenEasings for Ref:
-// public enum Ease
-//   {
-//     Unset,
-//     Linear,
-//     InSine,
-//     OutSine,
-//     InOutSine,
-//     InQuad,
-//     OutQuad,
-//     InOutQuad,
-//     InCubic,
-//     OutCubic,
-//     InOutCubic,
-//     InQuart,
-//     OutQuart,
-//     InOutQuart,
-//     InQuint,
-//     OutQuint,
-//     InOutQuint,
-//     InExpo,
-//     OutExpo,
-//     InOutExpo,
-//     InCirc,
-//     OutCirc,
-//     InOutCirc,
-//     InElastic,
-//     OutElastic,
-//     InOutElastic,
-//     InBack,
-//     OutBack,
-//     InOutBack,
-//     InBounce,
-//     OutBounce,
-//     InOutBounce,
-//     Flash,
-//     InFlash,
-//     OutFlash,
-//     InOutFlash,
-//     /// <summary>
-//     /// Don't assign this! It's assigned automatically when creating 0 duration tweens
-//     /// </summary>
-//     INTERNAL_Zero,
-//     /// <summary>
-//     /// Don't assign this! It's assigned automatically when setting the ease to an AnimationCurve or to a custom ease function
-//     /// </summary>
-//     INTERNAL_Custom,
-//   }
-
 // Easing Types mapping to various functions
 // Taken from https://easings.net/
 UENUM()
-enum class DUEEasingType : int {
-	/** Simple linear interpolation. */
+enum EDueEasingType : int
+{
+	// Linear Interp
 	Linear,
-
-	/** Simple step interpolation. */
-	Step,
-
-	/** Sinusoidal in interpolation. */
+	// Sinusoidal Interps
 	InSin,
-
-	/** Sinusoidal out interpolation. */
 	OutSin,
-
-	/** Sinusoidal in/out interpolation. */
 	InOutSin,
-
-	/** Smoothly accelerates, but does not decelerate into the target.  Ease amount controlled by BlendExp. */
-	EaseIn,
-
-	/** Immediately accelerates, but smoothly decelerates into the target.  Ease amount controlled by BlendExp. */
-	EaseOut,
-
-	/** Smoothly accelerates and decelerates.  Ease amount controlled by BlendExp. */
-	EaseInOut,
-
-	/** Easing in using an exponential */
-	ExpoIn,
-
-	/** Easing out using an exponential */
-	ExpoOut,
-
-	/** Easing in/out using an exponential method */
-	ExpoInOut,
-
-	/** Easing is based on a half circle. */
-	CircularIn,
-
-	/** Easing is based on an inverted half circle. */
-	CircularOut,
-
-	/** Easing is based on two half circles. */
-	CircularInOut
+	// Quad (x^2) Interps
+	InQuad,
+	OutQuad,
+	InOutQuad,
+	// Cubic (x^3) Interps
+	InCubic,
+	OutCubic,
+	InOutCubic,
+	// Quart (x^4) Interps
+	InQuart,
+	OutQuart,
+	InOutQuart,
+	// Quint (x^5) Interps
+	InQuint,
+	OutQuint,
+	InOutQuint,
+	// Exponential (2^x) Interps
+	InExpo,
+	OutExpo,
+	InOutExpo,
+	// Circular (sqrt) Interps
+	InCircular,
+	OutCircular,
+	InOutCircular,
+	// Elastic Interps
+	InElastic,
+	OutElastic,
+	InOutElastic,
+	// In Back Interps
+	InBack,
+	OutBack,
+	InOutBack,
+	// Bounce Interps
+	InBounce,
+	OutBounce,
+	InOutBounce
 };
 
 class DUEEasingFunctionLibrary
 {
 public:
 	// TODO: Handle Vectors, Rotators, Etc.
-	static double Ease(double A, double B, double Alpha, DUEEasingType EasingType, double BlendExp = 2, int32 Steps = 2);
-	static double LinearEase(double X, double B, double Alpha);
-	static double LinearStepEase(double X, double B, double Alpha, int32 INT32);
-	static double EaseInSin(double X, double B, double Alpha);
-	static DUEEasingType ConvertFromUnrealEasingType(EEasingFunc::Type unrealEasing);
+	static double Ease(double A, double B, double Alpha, EDueEasingType EasingType, int32 Steps = 0);
 
+	// Easing Functions
+	static double EaseInSin(double Alpha);
+	static double EaseOutSin(double Alpha);
+	static double EaseInOutSin(double Alpha);
+	static double EaseInQuad(double Alpha);
+	static double EaseOutQuad(double Alpha);
+	static double EaseInOutQuad(double Alpha);
+	static double EaseInCubic(double Alpha);
+	static double EaseOutCubic(double Alpha);
+	static double EaseInOutCubic(double Alpha);
+	static double EaseInQuart(double Alpha);
+	static double EaseOutQuart(double Alpha);
+	static double EaseInOutQuart(double Alpha);
+	static double EaseInQuint(double Alpha);
+	static double EaseOutQuint(double Alpha);
+	static double EaseInOutQuint(double Alpha);
+	static double EaseInExpo(double Alpha);
+	static double EaseOutExpo(double Alpha);
+	static double EaseInOutExpo(double Alpha);
+	static double EaseInCirc(double Alpha);
+	static double EaseOutCirc(double Alpha);
+	static double EaseInOutCirc(double Alpha);
+	static double EaseInElastic(double Alpha);
+	static double EaseOutElastic(double Alpha);
+	static double EaseInOutElastic(double Alpha);
+	static double EaseInBack(double Alpha);
+	static double EaseOutBack(double Alpha);
+	static double EaseInOutBack(double Alpha);
+	static double EaseInBounce(double Alpha);
+	static double EaseOutBounce(double Alpha);
+	static double EaseInOutBounce(double Alpha);
 };

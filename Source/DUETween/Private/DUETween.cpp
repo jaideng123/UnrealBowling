@@ -76,8 +76,7 @@ bool FDUETweenModule::Tick(float deltaTime)
 				{
 					float newValue = DUEEasingFunctionLibrary::Ease(tween.StartingValue.GetSubtype<float>(),
 														  tween.TweenData.TargetValue.GetSubtype<float>(), progress,
-														  tween.TweenData.EasingType, tween.TweenData.BlendExp,
-														  tween.TweenData.Steps);
+														  tween.TweenData.EasingType,tween.TweenData.Steps);
 					UE_LOG(LogTemp, Display, TEXT("Actual New Value: %f"), newValue);
 
 					FFloatProperty* FloatProperty = CastField<FFloatProperty>(tween.TweenData.TargetProperty);

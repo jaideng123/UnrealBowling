@@ -1,19 +1,18 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TweenFunctionLibrary.h"
+#include "DueTweenBlueprintFunctionLibrary.h"
 
 #include "FFloatTweenAction.h"
 #include "FMoveTweenAction.h"
 #include "FRotateTweenAction.h"
 #include "UObject/UnrealTypePrivate.h"
 
-void UTweenFunctionLibrary::DueMove(UObject* Target,
+void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
                                     FLatentActionInfo LatentInfo,
                                     float Duration,
                                     FVector TargetLocation,
-                                    EEasingFunc::Type EasingType,
-                                    float BlendExp,
+                                    EDueEasingType DueEasingType,
                                     int32 Steps)
 {
 	// Prepare latent action
@@ -27,9 +26,7 @@ void UTweenFunctionLibrary::DueMove(UObject* Target,
 			tweenData.Target = Target;
 			tweenData.Duration = Duration;
 			tweenData.TargetLocation = TargetLocation;
-			tweenData.EasingType = EasingType;
 			tweenData.Steps = Steps;
-			tweenData.BlendExp = BlendExp;
 
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
 			                                 new FMoveTweenAction(LatentInfo, tweenData));
@@ -37,9 +34,10 @@ void UTweenFunctionLibrary::DueMove(UObject* Target,
 	}
 }
 
-void UTweenFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentInfo, float Duration,
+void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentInfo, float Duration,
                                       FRotator TargetRotation,
-                                      EEasingFunc::Type EasingType, float BlendExp, int32 Steps)
+                                      EDueEasingType DueEasingType,
+                                      int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -51,9 +49,7 @@ void UTweenFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentI
 			FRotateTweenData tweenData;
 			tweenData.Target = Target;
 			tweenData.Duration = Duration;
-			tweenData.EasingType = EasingType;
 			tweenData.Steps = Steps;
-			tweenData.BlendExp = BlendExp;
 			tweenData.TargetRotation = TargetRotation;
 
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
@@ -62,9 +58,9 @@ void UTweenFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentI
 	}
 }
 
-void UTweenFunctionLibrary::DueFloatField(UObject* Target, FLatentActionInfo LatentInfo,
-                                          FName FieldName, float Duration, float TargetValue,
-                                          EEasingFunc::Type EasingType, float BlendExp, int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentActionInfo LatentInfo,
+                                          FName FieldName, float Duration, float TargetValue, EDueEasingType DueEasingType,
+                                          int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -82,9 +78,8 @@ void UTweenFunctionLibrary::DueFloatField(UObject* Target, FLatentActionInfo Lat
 			}
 			tweenData.Target = Target;
 			tweenData.Duration = Duration;
-			tweenData.EasingType = DUEEasingFunctionLibrary::ConvertFromUnrealEasingType(EasingType);
+			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
-			tweenData.BlendExp = BlendExp;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<float>(TargetValue);
 			tweenData.ValueType = EDUEValueType::Float;

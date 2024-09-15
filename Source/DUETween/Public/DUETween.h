@@ -1,12 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DUEEasingFunctionLibrary.h"
 #include "Containers/Union.h"
 #include "Modules/ModuleManager.h"
 
 #include "DUETween.generated.h"
-
-enum class DUEEasingType : int;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
 
@@ -28,10 +27,9 @@ public:
     TWeakObjectPtr<> Target;
     FProperty* TargetProperty;
     float Duration;
-    DUEEasingType EasingType;
+    EDueEasingType EasingType;
     EDUEValueType ValueType;
     FValueContainer TargetValue;
-    float BlendExp;
     int32 Steps;
 };
 
