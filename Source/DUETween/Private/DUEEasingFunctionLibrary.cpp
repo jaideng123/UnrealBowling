@@ -17,13 +17,13 @@ double DUEEasingFunctionLibrary::Ease(double A, double B, double Alpha, DUEEasin
 	case DUEEasingType::Step:
 		return LinearStepEase(A, B, Alpha, Steps);
 		break;
-	case DUEEasingType::SinusoidalIn:
+	case DUEEasingType::InSin:
 		return EaseInSin(A, B, Alpha);
 		break;
-		//TODO fill these int
-	case DUEEasingType::SinusoidalOut:
+		//TODO fill these out
+	case DUEEasingType::OutSin:
 		break;
-	case DUEEasingType::SinusoidalInOut:
+	case DUEEasingType::InOutSin:
 		break;
 	case DUEEasingType::EaseIn:
 		break;
@@ -80,13 +80,13 @@ DUEEasingType DUEEasingFunctionLibrary::ConvertFromUnrealEasingType(EEasingFunc:
 		return DUEEasingType::Step;
 		break;
 	case EEasingFunc::SinusoidalIn:
-		return DUEEasingType::SinusoidalIn;
+		return DUEEasingType::InSin;
 		break;
 	case EEasingFunc::SinusoidalOut:
-		return DUEEasingType::SinusoidalOut;
+		return DUEEasingType::OutSin;
 		break;
 	case EEasingFunc::SinusoidalInOut:
-		return DUEEasingType::SinusoidalInOut;
+		return DUEEasingType::InOutSin;
 		break;
 	case EEasingFunc::EaseIn:
 		return DUEEasingType::EaseIn;

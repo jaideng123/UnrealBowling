@@ -1,7 +1,8 @@
 #pragma once
 #include "Kismet/KismetMathLibrary.h"
 
-
+// Easing Types mapping to various functions
+// Taken from https://easings.net/
 UENUM()
 enum class DUEEasingType : int {
 	/** Simple linear interpolation. */
@@ -11,13 +12,13 @@ enum class DUEEasingType : int {
 	Step,
 
 	/** Sinusoidal in interpolation. */
-	SinusoidalIn,
+	InSin,
 
 	/** Sinusoidal out interpolation. */
-	SinusoidalOut,
+	OutSin,
 
 	/** Sinusoidal in/out interpolation. */
-	SinusoidalInOut,
+	InOutSin,
 
 	/** Smoothly accelerates, but does not decelerate into the target.  Ease amount controlled by BlendExp. */
 	EaseIn,
