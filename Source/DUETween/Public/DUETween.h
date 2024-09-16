@@ -50,6 +50,8 @@ class FDUETweenModule : public IModuleInterface
 public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
+    FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
+    void SetCurrentValueToProperty(const FDUETweenData& TweenData, FValueContainer newValue);
     // DUETWEEN_API is necessary to expose this method
     DUETWEEN_API FActiveDueTween* AddTween(const FDUETweenData& TweenData);
     static FDUETweenModule& Get()

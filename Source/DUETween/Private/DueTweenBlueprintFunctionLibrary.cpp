@@ -9,11 +9,11 @@
 #include "UObject/UnrealTypePrivate.h"
 
 void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
-                                    FLatentActionInfo LatentInfo,
-                                    float Duration,
-                                    FVector TargetLocation,
-                                    EDueEasingType DueEasingType,
-                                    int32 Steps)
+                                                FLatentActionInfo LatentInfo,
+                                                float Duration,
+                                                FVector TargetLocation,
+                                                EDueEasingType DueEasingType,
+                                                int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -22,11 +22,19 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 		if (LatentActionManager.FindExistingAction<FMoveTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FMoveTweenData tweenData;
+			if (const AActor* targetAsActor = Cast<AActor>(Target))
+			{
+				Target = targetAsActor->GetRootComponent();
+			}
+			FProperty* propertyRef = nullptr;
+			FDUETweenData tweenData;
 			tweenData.Target = Target;
 			tweenData.Duration = Duration;
-			tweenData.TargetLocation = TargetLocation;
+			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.TargetProperty = propertyRef;
+			tweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
+			tweenData.ValueType = EDUEValueType::Vector;
 
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
 			                                 new FMoveTweenAction(LatentInfo, tweenData));
@@ -35,9 +43,9 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 }
 
 void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentInfo, float Duration,
-                                      FRotator TargetRotation,
-                                      EDueEasingType DueEasingType,
-                                      int32 Steps)
+                                                  FRotator TargetRotation,
+                                                  EDueEasingType DueEasingType,
+                                                  int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -59,8 +67,9 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentAction
 }
 
 void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentActionInfo LatentInfo,
-                                          FName FieldName, float Duration, float TargetValue, EDueEasingType DueEasingType,
-                                          int32 Steps)
+                                                      FName FieldName, float Duration, float TargetValue,
+                                                      EDueEasingType DueEasingType,
+                                                      int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
