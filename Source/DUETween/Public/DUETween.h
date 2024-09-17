@@ -9,6 +9,17 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
 
+enum class EDUETweenStatus
+{
+    // This tween is unused and ready to be reclaimed
+    Unset,
+    // This tween is running
+    Running,
+    // This tween is completed and will be marked unused next frame
+    Completed,
+    // TODO: Support pausing tweens
+};
+
 enum class EDUEValueType
 {
     Float,
@@ -24,10 +35,10 @@ struct FDUETweenData
 {
     TWeakObjectPtr<> Target;
     FProperty* TargetProperty;
-    float Duration;
-    EDueEasingType EasingType;
-    EDUEValueType ValueType;
-    int32 Steps;
+    float Duration = 0;
+    EDueEasingType EasingType = Linear;
+    EDUEValueType ValueType = EDUEValueType::Float;
+    int32 Steps = 0;
     FValueContainer TargetValue;
 };
 
@@ -37,10 +48,16 @@ struct FActiveDueTween
     GENERATED_BODY()
 public:
     FDUETweenData TweenData;
+
     // State
-    FValueContainer StartingValue;
-    bool IsActive = false;
     float TimeElapsed = 0;
+    EDUETweenStatus Status = EDUETweenStatus::Unset;
+    FValueContainer StartingValue;
+    union
+    {
+        FActiveDueTween* NextFreeTween;
+        FActiveDueTween* NextActiveTween;
+    } TweenPtr;
 };
 
 class FDUETweenModule : public IModuleInterface
@@ -52,13 +69,19 @@ public:
     void SetCurrentValueToProperty(const FDUETweenData& TweenData, FValueContainer newValue);
     // DUETWEEN_API is necessary to expose this method
     DUETWEEN_API FActiveDueTween* AddTween(const FDUETweenData& TweenData);
+
     static FDUETweenModule& Get()
     {
         return FModuleManager::LoadModuleChecked< FDUETweenModule >( "DUETween" );
     }
 private:
+    void ReturnTweenToPool(FActiveDueTween* tween);
+    void InitTweenPool();
     bool Tick(float deltaTime);
     FTickerDelegate TickDelegate;
     FTSTicker::FDelegateHandle TickDelegateHandle;
-    TArray<FActiveDueTween> ActiveTweens;
+    static constexpr int TWEEN_POOL_SIZE = 1000;
+    FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
+    FActiveDueTween* NextAvailableTween = nullptr;
+    FActiveDueTween* ActiveTweenChainStart = nullptr;
 };

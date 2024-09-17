@@ -15,7 +15,9 @@ double DUEEasingFunctionLibrary::Ease(double A, double B, double Alpha, EDueEasi
 
 	switch (Easing)
 	{
-	// Linear case is skipped because it is just alpha
+	case EDueEasingType::Linear:
+		// Linear case is skipped because it is just alpha
+		break;
 	case EDueEasingType::InSin:
 		ResultAlpha = EaseInSin(Alpha);
 		break;

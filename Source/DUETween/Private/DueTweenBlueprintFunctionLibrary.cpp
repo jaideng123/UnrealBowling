@@ -94,6 +94,99 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentAc
 	}
 }
 
+void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
+                                                       float Duration, double TargetValue, EDueEasingType DueEasingType,
+                                                       int32 Steps)
+{
+	// Prepare latent action
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+			nullptr)
+		{
+			FDUETweenData tweenData;
+			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (propertyRef == nullptr)
+			{
+				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
+				return;
+			}
+			tweenData.Target = Target;
+			tweenData.Duration = Duration;
+			tweenData.EasingType = DueEasingType;
+			tweenData.Steps = Steps;
+			tweenData.TargetProperty = propertyRef;
+			tweenData.TargetValue.SetSubtype<double>(TargetValue);
+			tweenData.ValueType = EDUEValueType::Double;
+
+			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		}
+	}
+}
+
+void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
+                                                       float Duration, FVector TargetValue,
+                                                       EDueEasingType DueEasingType, int32 Steps)
+{
+	// Prepare latent action
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+			nullptr)
+		{
+			FDUETweenData tweenData;
+			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (propertyRef == nullptr)
+			{
+				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
+				return;
+			}
+			tweenData.Target = Target;
+			tweenData.Duration = Duration;
+			tweenData.EasingType = DueEasingType;
+			tweenData.Steps = Steps;
+			tweenData.TargetProperty = propertyRef;
+			tweenData.TargetValue.SetSubtype<FVector>(TargetValue);
+			tweenData.ValueType = EDUEValueType::Vector;
+
+			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		}
+	}
+}
+
+void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
+                                                        float Duration, FRotator TargetValue,
+                                                        EDueEasingType DueEasingType, int32 Steps)
+{
+	// Prepare latent action
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+			nullptr)
+		{
+			FDUETweenData tweenData;
+			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (propertyRef == nullptr)
+			{
+				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
+				return;
+			}
+			tweenData.Target = Target;
+			tweenData.Duration = Duration;
+			tweenData.EasingType = DueEasingType;
+			tweenData.Steps = Steps;
+			tweenData.TargetProperty = propertyRef;
+			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
+			tweenData.ValueType = EDUEValueType::Vector;
+
+			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		}
+	}
+}
+
 void UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo,
                                                                    FDUETweenData TweenData)
 {

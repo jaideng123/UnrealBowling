@@ -16,6 +16,7 @@ UCLASS()
 class DUETWEEN_API UDueTweenBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "DUETween",
 		meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
@@ -44,6 +45,37 @@ public:
 	                          float TargetValue,
 	                          EDueEasingType DueEasingType,
 	                          int32 Steps = 0);
+
+	UFUNCTION(BlueprintCallable, Category = "DUETween",
+		meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
+	static void DueDoubleField(UObject* Target,
+	                           FLatentActionInfo LatentInfo,
+	                           FName FieldName,
+	                           float Duration,
+	                           double TargetValue,
+	                           EDueEasingType DueEasingType,
+	                           int32 Steps = 0);
+
+	UFUNCTION(BlueprintCallable, Category = "DUETween",
+		meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
+	static void DueVectorField(UObject* Target,
+	                           FLatentActionInfo LatentInfo,
+	                           FName FieldName,
+	                           float Duration,
+	                           FVector TargetValue,
+	                           EDueEasingType DueEasingType,
+	                           int32 Steps = 0);
+
+	UFUNCTION(BlueprintCallable, Category = "DUETween",
+	meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
+	static void DueRotatorField(UObject* Target,
+							   FLatentActionInfo LatentInfo,
+							   FName FieldName,
+							   float Duration,
+							   FRotator TargetValue,
+							   EDueEasingType DueEasingType,
+							   int32 Steps = 0);
+
 private:
 	static void CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo, FDUETweenData);
 };

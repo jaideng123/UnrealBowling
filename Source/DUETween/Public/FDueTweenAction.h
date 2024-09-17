@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "DUETween.h"
 #include "DUEEasingFunctionLibrary.h"
-#include "FTweenData.h"
 #include "LatentActions.h"
 
 
@@ -38,7 +37,7 @@ public:
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
 		return FText::Format(
-			NSLOCTEXT("FloatTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
+			NSLOCTEXT("DueTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
 			FText::AsNumber(TweenData.Duration - ActiveDueTween->TimeElapsed, &DelayTimeFormatOptions)).ToString();
 	}
 #endif

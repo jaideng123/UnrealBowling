@@ -2,11 +2,12 @@
 
 void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 {
-	if(!TweenData.Target.IsValid())
+	if (!TweenData.Target.IsValid())
 	{
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
-	
-	Response.FinishAndTriggerIf(!ActiveDueTween->IsActive, ExecutionFunction, OutputLink, CallbackTarget);
+
+	Response.FinishAndTriggerIf(ActiveDueTween->Status != EDUETweenStatus::Running, ExecutionFunction, OutputLink,
+	                            CallbackTarget);
 }
