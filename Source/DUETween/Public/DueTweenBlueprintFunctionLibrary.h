@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DueTweenBlueprintFunctionLibrary.generated.h"
 
+struct FDUETweenData;
 /**
  * Old Tween Function Library
  */
@@ -15,7 +16,7 @@ UCLASS()
 class DUETWEEN_API UDueTweenBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-
+public:
 	UFUNCTION(BlueprintCallable, Category = "DUETween",
 		meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
 	static void DueMove(UObject* Target,
@@ -43,4 +44,6 @@ class DUETWEEN_API UDueTweenBlueprintFunctionLibrary : public UBlueprintFunction
 	                          float TargetValue,
 	                          EDueEasingType DueEasingType,
 	                          int32 Steps = 0);
+private:
+	static void CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo, FDUETweenData);
 };

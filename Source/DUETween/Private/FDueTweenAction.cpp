@@ -1,6 +1,6 @@
-﻿#include "FMoveTweenAction.h"
+﻿#include "FDueTweenAction.h"
 
-void FMoveTweenAction::UpdateOperation(FLatentResponse& Response)
+void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 {
 	if(!TweenData.Target.IsValid())
 	{

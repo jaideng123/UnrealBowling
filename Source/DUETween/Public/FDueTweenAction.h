@@ -7,9 +7,8 @@
 
 
 
-// FTweenAction
 // Tweens from one location to another over a duration
-class DUETWEEN_API FFloatTweenAction : public FPendingLatentAction {
+class DUETWEEN_API FDueTweenAction : public FPendingLatentAction {
 public:
 	FName           ExecutionFunction;
 	int32           OutputLink;
@@ -20,7 +19,7 @@ private:
 	FActiveDueTween* ActiveDueTween;
 
 public:
-	FFloatTweenAction(const FLatentActionInfo& LatentInfo, FDUETweenData TweenData)
+	FDueTweenAction(const FLatentActionInfo& LatentInfo, FDUETweenData TweenData)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)

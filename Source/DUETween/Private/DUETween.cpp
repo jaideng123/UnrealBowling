@@ -62,10 +62,21 @@ FValueContainer FDUETweenModule::GetCurrentValueFromProperty(const FDUETweenData
 	case EDUEValueType::Vector:
 		{
 			// We interpret null property as location
-			if(TweenData.TargetProperty == nullptr)
+			if (TweenData.TargetProperty == nullptr)
 			{
-				const USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
-				return FValueContainer(targetAsSceneComponent->GetRelativeLocation());
+				if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
+					TargetAsSceneComponent)
+				{
+					return FValueContainer(TargetAsSceneComponent->GetRelativeLocation());
+				}
+				if (const AActor* TargetAsActor = Cast<AActor>(TweenData.Target.Get()); TargetAsActor)
+				{
+					return FValueContainer(TargetAsActor->GetActorLocation());
+				}
+				UE_LOG(LogDUETween, Error,
+				       TEXT("Unable to support null target property on non component/actor type: %s"),
+				       *TweenData.Target.Get()->GetClass()->GetName());
+				return FValueContainer();
 			}
 			auto VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 			if (VectorProperty && VectorProperty->Struct == TBaseStructure<FVector>::Get())
@@ -79,6 +90,23 @@ FValueContainer FDUETweenModule::GetCurrentValueFromProperty(const FDUETweenData
 		}
 	case EDUEValueType::Rotator:
 		{
+			// We interpret null property as rotation
+			if (TweenData.TargetProperty == nullptr)
+			{
+				if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
+					TargetAsSceneComponent)
+				{
+					return FValueContainer(TargetAsSceneComponent->GetRelativeRotation());
+				}
+				if (const AActor* TargetAsActor = Cast<AActor>(TweenData.Target.Get()); TargetAsActor)
+				{
+					return FValueContainer(TargetAsActor->GetActorRotation());
+				}
+				UE_LOG(LogDUETween, Error,
+				       TEXT("Unable to support null target property on non component/actor type: %s"),
+				       *TweenData.Target.Get()->GetClass()->GetName());
+				return FValueContainer();
+			}
 			auto RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 			if (RotatorProperty && RotatorProperty->Struct == TBaseStructure<FRotator>::Get())
 			{
@@ -90,6 +118,9 @@ FValueContainer FDUETweenModule::GetCurrentValueFromProperty(const FDUETweenData
 			break;
 		}
 	}
+	UE_LOG(LogDUETween, Error,
+	       TEXT("Unsupported Get for Value Type: %d"),
+	       TweenData.ValueType);
 	return FValueContainer();
 }
 
@@ -122,12 +153,24 @@ void FDUETweenModule::SetCurrentValueToProperty(const FDUETweenData& TweenData, 
 	case EDUEValueType::Vector:
 		{
 			// We interpret null property as location
-			if(TweenData.TargetProperty == nullptr)
+			if (TweenData.TargetProperty == nullptr)
 			{
-				USceneComponent* targetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
-				targetAsSceneComponent->SetRelativeLocation(newValue.GetSubtype<FVector>());
-				return;
+				if (USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
+					TargetAsSceneComponent)
+				{
+					TargetAsSceneComponent->SetRelativeLocation(newValue.GetSubtype<FVector>());
+					return;
+				}
+				if (AActor* TargetAsActor = Cast<AActor>(TweenData.Target.Get()); TargetAsActor)
+				{
+					TargetAsActor->SetActorLocation(newValue.GetSubtype<FVector>());
+					return;
+				}
+				UE_LOG(LogDUETween, Error,
+				       TEXT("Unable to support null target property on non component/actor type: %s"),
+				       *TweenData.Target.Get()->GetClass()->GetName());
 			}
+
 			auto VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 			if (VectorProperty && VectorProperty->Struct == TBaseStructure<FVector>::Get())
 			{
@@ -138,6 +181,24 @@ void FDUETweenModule::SetCurrentValueToProperty(const FDUETweenData& TweenData, 
 		}
 	case EDUEValueType::Rotator:
 		{
+			// We interpret null property as rotation
+			if (TweenData.TargetProperty == nullptr)
+			{
+				if (USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
+					TargetAsSceneComponent)
+				{
+					TargetAsSceneComponent->SetRelativeRotation(newValue.GetSubtype<FRotator>());
+					return;
+				}
+				if (AActor* TargetAsActor = Cast<AActor>(TweenData.Target.Get()); TargetAsActor)
+				{
+					TargetAsActor->SetActorRotation(newValue.GetSubtype<FRotator>());
+					return;
+				}
+				UE_LOG(LogDUETween, Error,
+				       TEXT("Unable to support null target property on non component/actor type: %s"),
+				       *TweenData.Target.Get()->GetClass()->GetName());
+			}
 			auto RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 			if (RotatorProperty && RotatorProperty->Struct == TBaseStructure<FRotator>::Get())
 			{
@@ -145,6 +206,12 @@ void FDUETweenModule::SetCurrentValueToProperty(const FDUETweenData& TweenData, 
 				*StructAddress = newValue.GetSubtype<FRotator>();
 			}
 			break;
+		}
+	default:
+		{
+			UE_LOG(LogDUETween, Error,
+			       TEXT("Unsupported Set For Value Type: %d"),
+			       TweenData.ValueType);
 		}
 	}
 }

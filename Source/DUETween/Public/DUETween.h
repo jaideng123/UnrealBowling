@@ -19,18 +19,16 @@ enum class EDUEValueType
 
 typedef TUnion<FVector,FRotator,float,double> FValueContainer;
 
-USTRUCT()
+// Data that defines the tween
 struct FDUETweenData
 {
-    GENERATED_BODY()
-public:
     TWeakObjectPtr<> Target;
     FProperty* TargetProperty;
     float Duration;
     EDueEasingType EasingType;
     EDUEValueType ValueType;
-    FValueContainer TargetValue;
     int32 Steps;
+    FValueContainer TargetValue;
 };
 
 USTRUCT()
@@ -41,8 +39,8 @@ public:
     FDUETweenData TweenData;
     // State
     FValueContainer StartingValue;
-    float TimeElapsed = 0;
     bool IsActive = false;
+    float TimeElapsed = 0;
 };
 
 class FDUETweenModule : public IModuleInterface
