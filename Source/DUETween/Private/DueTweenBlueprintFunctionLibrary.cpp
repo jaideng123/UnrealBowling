@@ -13,13 +13,8 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
                                                 EDueEasingType DueEasingType,
                                                 int32 Steps)
 {
-	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		if (const AActor* targetAsActor = Cast<AActor>(Target))
-		{
-			Target = targetAsActor->GetRootComponent();
-		}
 		// null property ref -> use location
 		FProperty* propertyRef = nullptr;
 		FDUETweenData tweenData;
@@ -40,13 +35,8 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentAction
                                                   EDueEasingType DueEasingType,
                                                   int32 Steps)
 {
-	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		if (const AActor* targetAsActor = Cast<AActor>(Target))
-		{
-			Target = targetAsActor->GetRootComponent();
-		}
 		// null property ref -> use rotation
 		FProperty* propertyRef = nullptr;
 		FDUETweenData tweenData;
@@ -67,7 +57,6 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentAc
                                                       EDueEasingType DueEasingType,
                                                       int32 Steps)
 {
-	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
@@ -98,7 +87,6 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target, FLatentA
                                                        float Duration, double TargetValue, EDueEasingType DueEasingType,
                                                        int32 Steps)
 {
-	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
@@ -129,7 +117,6 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target, FLatentA
                                                        float Duration, FVector TargetValue,
                                                        EDueEasingType DueEasingType, int32 Steps)
 {
-	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
