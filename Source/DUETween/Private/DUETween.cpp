@@ -250,6 +250,21 @@ FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 
 void FDUETweenModule::ReturnTweenToPool(FActiveDueTween* tween)
 {
+	FActiveDueTween* marker = ActiveTweenChainStart;
+	if (tween == ActiveTweenChainStart)
+	{
+		ActiveTweenChainStart = nullptr;
+	}
+	else
+	{
+		// TODO: figure out a faster way to do this (Double LL perhaps)
+		while (marker->TweenPtr.NextActiveTween != tween)
+		{
+			marker = marker->TweenPtr.NextActiveTween;
+		}
+		marker->TweenPtr.NextActiveTween = tween->TweenPtr.NextActiveTween;
+	}
+
 	tween->Status = EDUETweenStatus::Unset;
 	tween->TweenPtr.NextFreeTween = NextAvailableTween;
 	NextAvailableTween = tween;
@@ -258,7 +273,7 @@ void FDUETweenModule::ReturnTweenToPool(FActiveDueTween* tween)
 bool FDUETweenModule::Tick(float deltaTime)
 {
 	// Only Run Tweens During Play
-	if (GEngine->GetCurrentPlayWorld())
+	if (GEngine->GetCurrentPlayWorld() || ActiveTweenChainStart == nullptr)
 	{
 		return true;
 	}
