@@ -7,6 +7,11 @@ void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
+	if (ActiveDueTween == nullptr)
+	{
+		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
+		return;
+	}
 
 	Response.FinishAndTriggerIf(ActiveDueTween->Status != EDUETweenStatus::Running, ExecutionFunction, OutputLink,
 	                            CallbackTarget);

@@ -50,13 +50,19 @@ public:
     FDUETweenData TweenData;
 
     // State
+    unsigned int ID = 0; 
     float TimeElapsed = 0;
     EDUETweenStatus Status = EDUETweenStatus::Unset;
     FValueContainer StartingValue;
     union
     {
         FActiveDueTween* NextFreeTween;
-        FActiveDueTween* NextActiveTween;
+        struct ActiveNode
+        {
+            FActiveDueTween* NextActiveTween;
+            FActiveDueTween* LastActiveTween;
+        };
+        ActiveNode ActiveNode;
     } TweenPtr;
 };
 
@@ -84,4 +90,6 @@ private:
     FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
     FActiveDueTween* NextAvailableTween = nullptr;
     FActiveDueTween* ActiveTweenChainStart = nullptr;
+    unsigned int LastAssignedTweenId = 0;
+    int ActiveTweenCount = 0;
 };

@@ -25,6 +25,7 @@ public:
 		  , TweenData(TweenData)
 	{
 		ActiveDueTween = FDUETweenModule::Get().AddTween(TweenData);
+		
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;

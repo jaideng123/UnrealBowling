@@ -12,9 +12,18 @@ void FDUETweenModule::InitTweenPool()
 	for (int i = 0; i < TWEEN_POOL_SIZE - 1; ++i)
 	{
 		TweenPool[i].TweenPtr.NextFreeTween = &TweenPool[i + 1];
+		TweenPool[i].Status = EDUETweenStatus::Unset;
+		TweenPool[i].ID = 0;
 	}
 	TweenPool[TWEEN_POOL_SIZE - 1].TweenPtr.NextFreeTween = nullptr;
+	TweenPool[TWEEN_POOL_SIZE - 1].Status = EDUETweenStatus::Unset;
+	TweenPool[TWEEN_POOL_SIZE - 1].ID = 0;
 	NextAvailableTween = &TweenPool[0];
+
+	ActiveTweenChainStart = nullptr;
+
+	LastAssignedTweenId = 0;
+	ActiveTweenCount = 0;
 }
 
 void FDUETweenModule::StartupModule()
@@ -234,84 +243,130 @@ FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 		       TEXT("Unable to find available tween in pool"));
 		return nullptr;
 	}
+	UE_LOG(LogTemp, Display, TEXT("Retrieved Tween: %u from pool"), tweenToSet->ID);
 	NextAvailableTween = NextAvailableTween->TweenPtr.NextFreeTween;
 
-
 	// Add to tween chain
-	tweenToSet->TweenPtr.NextActiveTween = ActiveTweenChainStart;
+	tweenToSet->TweenPtr.ActiveNode.NextActiveTween = ActiveTweenChainStart;
+	if (ActiveTweenChainStart != nullptr)
+	{
+		ActiveTweenChainStart->TweenPtr.ActiveNode.LastActiveTween = tweenToSet;
+	}
 	ActiveTweenChainStart = tweenToSet;
-
 
 	tweenToSet->TweenData = TweenData;
 	tweenToSet->Status = EDUETweenStatus::Running;
 	tweenToSet->TimeElapsed = 0;
 	tweenToSet->StartingValue = GetCurrentValueFromProperty(TweenData);
+	tweenToSet->ID = LastAssignedTweenId + 1;
+	UE_LOG(LogTemp, Display, TEXT("Creating Tween: %u"), tweenToSet->ID);
+	LastAssignedTweenId += 1;
+
+	ActiveTweenCount += 1;
+	UE_LOG(LogTemp, Display, TEXT("%i Tweens Active"), ActiveTweenCount);
+
 	return tweenToSet;
 }
 
 void FDUETweenModule::ReturnTweenToPool(FActiveDueTween* tween)
 {
-	FActiveDueTween* marker = ActiveTweenChainStart;
+	UE_LOG(LogTemp, Display, TEXT("Returning Tween: %u to pool"), tween->ID);
+	// First remove from the active tween chain
 	if (tween == ActiveTweenChainStart)
 	{
-		ActiveTweenChainStart = nullptr;
+		ActiveTweenChainStart = ActiveTweenChainStart->TweenPtr.ActiveNode.NextActiveTween;
 	}
 	else
 	{
-		// TODO: figure out a faster way to do this (Double LL perhaps)
-		while (marker->TweenPtr.NextActiveTween != tween)
+		FActiveDueTween* previousNode = tween->TweenPtr.ActiveNode.LastActiveTween;
+		FActiveDueTween* nextNode = tween->TweenPtr.ActiveNode.NextActiveTween;
+		if (previousNode != nullptr)
 		{
-			marker = marker->TweenPtr.NextActiveTween;
+			previousNode->TweenPtr.ActiveNode.NextActiveTween = nextNode;
+			UE_LOG(LogTemp, Display, TEXT("Tween: %u next now points to Tween: %u"), previousNode->ID,
+			       nextNode != nullptr ?nextNode->ID : 0);
 		}
-		marker->TweenPtr.NextActiveTween = tween->TweenPtr.NextActiveTween;
+		if (nextNode != nullptr)
+		{
+			nextNode->TweenPtr.ActiveNode.LastActiveTween = previousNode;
+			UE_LOG(LogTemp, Display, TEXT("Tween: %u previous now points to Tween: %u"), nextNode->ID,
+			       previousNode != nullptr ? previousNode->ID: 0);
+		}
 	}
 
 	tween->Status = EDUETweenStatus::Unset;
 	tween->TweenPtr.NextFreeTween = NextAvailableTween;
 	NextAvailableTween = tween;
+
+	ActiveTweenCount -= 1;
+	UE_LOG(LogTemp, Display, TEXT("%i Tweens Active"), ActiveTweenCount);
 }
 
 bool FDUETweenModule::Tick(float deltaTime)
 {
 	// Only Run Tweens During Play
-	if (GEngine->GetCurrentPlayWorld() || ActiveTweenChainStart == nullptr)
+	bool isInPlayMode = false;
+	for (auto WorldContext : GEngine->GetWorldContexts())
+	{
+		if (WorldContext.World()->IsGameWorld())
+		{
+			isInPlayMode = true;
+			break;
+		}
+	}
+	if (!isInPlayMode)
+	{
+		if (LastAssignedTweenId != 0)
+		{
+			InitTweenPool();
+		}
+		return true;
+	}
+
+	if (ActiveTweenChainStart == nullptr)
 	{
 		return true;
 	}
 
+	int Tickcount = 0;
 
-	for (FActiveDueTween* tween = ActiveTweenChainStart; tween != nullptr; tween = tween->
-	     TweenPtr.NextActiveTween)
+	double start = FPlatformTime::Seconds();
+
+	FActiveDueTween* currentTween = ActiveTweenChainStart;
+	while (currentTween != nullptr)
 	{
-		if (tween->Status == EDUETweenStatus::Running)
+		Tickcount += 1;
+		FActiveDueTween* nextTween = currentTween->TweenPtr.ActiveNode.NextActiveTween;
+		if (currentTween->Status == EDUETweenStatus::Running)
 		{
-			tween->TimeElapsed += deltaTime;
+			currentTween->TimeElapsed += deltaTime;
 
-			float progress = tween->TimeElapsed / tween->TweenData.Duration;
+			float progress = currentTween->TimeElapsed / currentTween->TweenData.Duration;
 
-			switch (tween->TweenData.ValueType)
+			switch (currentTween->TweenData.ValueType)
 			{
 			case EDUEValueType::Float:
 				{
-					float newValue = DUEEasingFunctionLibrary::Ease(tween->StartingValue.GetSubtype<float>(),
-					                                                tween->TweenData.TargetValue.GetSubtype<
+					float newValue = DUEEasingFunctionLibrary::Ease(currentTween->StartingValue.GetSubtype<float>(),
+					                                                currentTween->TweenData.TargetValue.GetSubtype<
 						                                                float>(),
 					                                                progress,
-					                                                tween->TweenData.EasingType,
-					                                                tween->TweenData.Steps);
-					UE_LOG(LogTemp, Display, TEXT("Updating Float Value:: %f"), newValue);
-					SetCurrentValueToProperty(tween->TweenData, FValueContainer(newValue));
+					                                                currentTween->TweenData.EasingType,
+					                                                currentTween->TweenData.Steps);
+					// UE_LOG(LogTemp, Display, TEXT("Updating Float Value:: %f"), newValue);
+					SetCurrentValueToProperty(currentTween->TweenData, FValueContainer(newValue));
 					break;
 				}
 			case EDUEValueType::Double:
 				{
-					double newValue = DUEEasingFunctionLibrary::Ease(tween->StartingValue.GetSubtype<double>(),
-					                                                 tween->TweenData.TargetValue.GetSubtype<double>(),
+					double newValue = DUEEasingFunctionLibrary::Ease(currentTween->StartingValue.GetSubtype<double>(),
+					                                                 currentTween->TweenData.TargetValue.GetSubtype<
+						                                                 double>(),
 					                                                 progress,
-					                                                 tween->TweenData.EasingType,
-					                                                 tween->TweenData.Steps);
-					UE_LOG(LogTemp, Display, TEXT("Updating Double Value:: %f"), newValue);
-					SetCurrentValueToProperty(tween->TweenData, FValueContainer(newValue));
+					                                                 currentTween->TweenData.EasingType,
+					                                                 currentTween->TweenData.Steps);
+					// UE_LOG(LogTemp, Display, TEXT("Updating Double Value:: %f"), newValue);
+					SetCurrentValueToProperty(currentTween->TweenData, FValueContainer(newValue));
 					break;
 				}
 			case EDUEValueType::Vector:
@@ -319,12 +374,12 @@ bool FDUETweenModule::Tick(float deltaTime)
 					double ease = DUEEasingFunctionLibrary::Ease(0,
 					                                             1.0,
 					                                             progress,
-					                                             tween->TweenData.EasingType,
-					                                             tween->TweenData.Steps);
-					FVector newValue = FMath::Lerp(tween->StartingValue.GetSubtype<FVector>(),
-					                               tween->TweenData.TargetValue.GetSubtype<FVector>(), ease);
-					UE_LOG(LogTemp, Display, TEXT("Updating Vector Value: %s"), *newValue.ToString());
-					SetCurrentValueToProperty(tween->TweenData, FValueContainer(newValue));
+					                                             currentTween->TweenData.EasingType,
+					                                             currentTween->TweenData.Steps);
+					FVector newValue = FMath::Lerp(currentTween->StartingValue.GetSubtype<FVector>(),
+					                               currentTween->TweenData.TargetValue.GetSubtype<FVector>(), ease);
+					// UE_LOG(LogTemp, Display, TEXT("Updating Vector Value: %s"), *newValue.ToString());
+					SetCurrentValueToProperty(currentTween->TweenData, FValueContainer(newValue));
 					break;
 				}
 			case EDUEValueType::Rotator:
@@ -332,14 +387,15 @@ bool FDUETweenModule::Tick(float deltaTime)
 					double ease = DUEEasingFunctionLibrary::Ease(0,
 					                                             1.0,
 					                                             progress,
-					                                             tween->TweenData.EasingType,
-					                                             tween->TweenData.Steps);
-					FRotator newValue = FRotator(FQuat::Slerp(tween->StartingValue.GetSubtype<FRotator>().Quaternion(),
-					                                          tween->TweenData.TargetValue.GetSubtype<FRotator>().
-					                                                 Quaternion(), ease));
+					                                             currentTween->TweenData.EasingType,
+					                                             currentTween->TweenData.Steps);
+					FRotator newValue = FRotator(FQuat::Slerp(
+						currentTween->StartingValue.GetSubtype<FRotator>().Quaternion(),
+						currentTween->TweenData.TargetValue.GetSubtype<FRotator>().
+						              Quaternion(), ease));
 
-					UE_LOG(LogTemp, Display, TEXT("Updating Rotator Value: %s"), *newValue.ToString());
-					SetCurrentValueToProperty(tween->TweenData, FValueContainer(newValue));
+					// UE_LOG(LogTemp, Display, TEXT("Updating Rotator Value: %s"), *newValue.ToString());
+					SetCurrentValueToProperty(currentTween->TweenData, FValueContainer(newValue));
 				}
 				break;
 			default:
@@ -348,14 +404,19 @@ bool FDUETweenModule::Tick(float deltaTime)
 			}
 			if (progress >= 1.0)
 			{
-				tween->Status = EDUETweenStatus::Completed;
+				currentTween->Status = EDUETweenStatus::Completed;
 			}
 		}
-		else if (tween->Status == EDUETweenStatus::Completed)
+		else if (currentTween->Status == EDUETweenStatus::Completed)
 		{
-			ReturnTweenToPool(tween);
+			ReturnTweenToPool(currentTween);
 		}
+
+		currentTween = nextTween;
 	}
+	double end = FPlatformTime::Seconds();
+	UE_LOG(LogDUETween, Display, TEXT("Tween Tick executed in %f ms."), (end-start) * 1000.0);
+	UE_LOG(LogDUETween, Display, TEXT("Ticked %i Tweens"), Tickcount);
 	return true;
 }
 
