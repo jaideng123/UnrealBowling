@@ -82,10 +82,12 @@ public:
     }
 private:
     void ReturnTweenToPool(FActiveDueTween* tween);
+    void TickTween(float deltaTime, FActiveDueTween* currentTween);
     void InitTweenPool();
     bool Tick(float deltaTime);
     FTickerDelegate TickDelegate;
     FTSTicker::FDelegateHandle TickDelegateHandle;
+    static const bool USE_ARRAY = true;
     static constexpr int TWEEN_POOL_SIZE = 1000;
     FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
     FActiveDueTween* NextAvailableTween = nullptr;
