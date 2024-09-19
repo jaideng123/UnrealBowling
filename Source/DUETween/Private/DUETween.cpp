@@ -228,13 +228,14 @@ FActiveDueTween* FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 {
 	// Retrieve Tween from pool
 	auto tweenToSet = NextAvailableTween;
-	NextAvailableTween = NextAvailableTween->TweenPtr.NextFreeTween;
 	if (tweenToSet == nullptr)
 	{
 		UE_LOG(LogDUETween, Error,
 		       TEXT("Unable to find available tween in pool"));
 		return nullptr;
 	}
+	NextAvailableTween = NextAvailableTween->TweenPtr.NextFreeTween;
+
 
 	// Add to tween chain
 	tweenToSet->TweenPtr.NextActiveTween = ActiveTweenChainStart;

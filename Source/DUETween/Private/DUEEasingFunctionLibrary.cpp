@@ -323,24 +323,28 @@ double DUEEasingFunctionLibrary::EaseOutBounce(const double Alpha)
 	constexpr double N1 = 7.5625;
 	constexpr double D1 = 2.75;
 
-	if (Alpha < 1 / D1)
+	double NewAlpha = Alpha;
+	if (Alpha < (1.0 / D1))
 	{
 		return N1 * FMath::Square(Alpha);
 	}
-	if (Alpha < 2 / D1)
+	if (Alpha < (2.0 / D1))
 	{
-		return N1 * ((Alpha - 1.5) / D1) * (Alpha - 1.5) + 0.75;
+		NewAlpha -= (1.5 / D1);
+		return N1 * FMath::Square(NewAlpha) + 0.75;
 	}
-	if (Alpha < 2.5 / D1)
+	if (Alpha < (2.5 / D1))
 	{
-		return N1 * ((Alpha - 2.25) / D1) * (Alpha - 2.25) + 0.9375;
+		NewAlpha -= (2.25 / D1);
+		return N1 * FMath::Square(NewAlpha) + 0.9375;
 	}
-	return N1 * ((Alpha - 2.625) / D1) * (Alpha - 2.625) + 0.984375;
+	NewAlpha -= (2.65 / D1);
+	return N1 * FMath::Square(NewAlpha) + 0.984375;
 }
 
 double DUEEasingFunctionLibrary::EaseInOutBounce(const double Alpha)
 {
-	return Alpha > 0.5
-		       ? (1.0 - EaseOutBounce(1.0 - 2.0 * Alpha)) / 2.0
-		       : (1.0 + EaseOutBounce(2.0 * Alpha - 1.0)) / 2.0;
+	return Alpha < 0.5
+		       ? EaseInBounce(2.0 * Alpha) * 0.5
+		       : (EaseOutBounce(2.0 * Alpha - 1.0) * 0.5) + 0.5;
 }
