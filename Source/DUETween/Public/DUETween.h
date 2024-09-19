@@ -66,7 +66,9 @@ public:
     } TweenPtr;
 };
 
-class FDUETweenModule : public IModuleInterface
+// TODO Try:
+// , public FTickableGameObject
+class FDUETweenModule : public IModuleInterface, public FTickableGameObject
 {
 public:
     virtual void StartupModule() override;
@@ -80,11 +82,27 @@ public:
     {
         return FModuleManager::LoadModuleChecked< FDUETweenModule >( "DUETween" );
     }
+    
+    //FTickableGameObject interfaces
+    virtual UWorld* GetTickableGameObjectWorld() const override 
+    { 
+        return nullptr; 
+    }
+    virtual ETickableTickType GetTickableTickType() const override 
+    {
+        return ETickableTickType::Conditional; 
+    }
+    virtual bool IsTickable() const override final 
+    {
+        return true;
+    }
+    virtual void Tick(float deltaTime) override;
+    virtual TStatId GetStatId() const override { return TStatId(); }
+    
 private:
     void ReturnTweenToPool(FActiveDueTween* tween);
     void TickTween(float deltaTime, FActiveDueTween* currentTween);
     void InitTweenPool();
-    bool Tick(float deltaTime);
     FTickerDelegate TickDelegate;
     FTSTicker::FDelegateHandle TickDelegateHandle;
     static const bool USE_ARRAY = true;

@@ -30,8 +30,8 @@ void FDUETweenModule::StartupModule()
 {
 	UE_LOG(LogDUETween, Display, TEXT("Loaded DUETween"));
 
-	TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
-	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate, 0.0f);
+	// TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
+	// TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate, 0.0f);
 	// Initialize Free List
 	InitTweenPool();
 }
@@ -380,7 +380,7 @@ void FDUETweenModule::TickTween(float deltaTime, FActiveDueTween* currentTween)
 	}
 }
 
-bool FDUETweenModule::Tick(float deltaTime)
+void FDUETweenModule::Tick(float deltaTime)
 {
 	// Only Run Tweens During Play
 	bool isInPlayMode = false;
@@ -398,12 +398,12 @@ bool FDUETweenModule::Tick(float deltaTime)
 		{
 			InitTweenPool();
 		}
-		return true;
+		return;
 	}
 
 	if (ActiveTweenChainStart == nullptr)
 	{
-		return true;
+		return;
 	}
 
 	int Tickcount = 0;
@@ -433,7 +433,7 @@ bool FDUETweenModule::Tick(float deltaTime)
 	double end = FPlatformTime::Seconds();
 	UE_LOG(LogDUETween, Display, TEXT("Tween Tick executed in %f ms."), (end-start) * 1000.0);
 	UE_LOG(LogDUETween, Display, TEXT("Ticked %i Tweens"), Tickcount);
-	return true;
+	return;
 }
 
 #undef LOCTEXT_NAMESPACE
