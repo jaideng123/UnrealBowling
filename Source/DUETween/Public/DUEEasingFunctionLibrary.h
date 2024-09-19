@@ -53,7 +53,6 @@ enum EDueEasingType : int
 class DUEEasingFunctionLibrary
 {
 public:
-	// TODO: Handle Vectors, Rotators, Etc.
 	static double Ease(double A, double B, double Alpha, EDueEasingType EasingType, int32 Steps = 0);
 
 	// Easing Functions
