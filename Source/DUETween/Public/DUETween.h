@@ -98,7 +98,7 @@ public:
     }
     virtual bool IsTickable() const override final 
     {
-        return ActiveTweenChainStart != nullptr;;
+        return ActiveTweenChainStart != nullptr;
     }
 
     virtual bool IsTickableInEditor() const override
