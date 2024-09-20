@@ -32,15 +32,19 @@ void FDUETweenModule::StartupModule()
 
 	// TickDelegate = FTickerDelegate::CreateRaw(this, &FDUETweenModule::Tick);
 	// TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate, 0.0f);
-	// Initialize Free List
+	FWorldDelegates::OnWorldBeginTearDown.AddRaw(this,&FDUETweenModule::HandleWorldBeginTearDown);
+	InitTweenPool();
+}
+
+void FDUETweenModule::HandleWorldBeginTearDown(UWorld* World)
+{
+	UE_LOG(LogDUETween, Warning, TEXT("Cleaning Up On World Teardown"));
 	InitTweenPool();
 }
 
 void FDUETweenModule::ShutdownModule()
 {
 	UE_LOG(LogDUETween, Display, TEXT("UnLoaded DUETween"));
-
-	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
 
 FValueContainer FDUETweenModule::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
@@ -382,30 +386,6 @@ void FDUETweenModule::TickTween(float deltaTime, FActiveDueTween* currentTween)
 
 void FDUETweenModule::Tick(float deltaTime)
 {
-	// Only Run Tweens During Play
-	bool isInPlayMode = false;
-	for (auto WorldContext : GEngine->GetWorldContexts())
-	{
-		if (WorldContext.World()->IsGameWorld())
-		{
-			isInPlayMode = true;
-			break;
-		}
-	}
-	if (!isInPlayMode)
-	{
-		if (LastAssignedTweenId != 0)
-		{
-			InitTweenPool();
-		}
-		return;
-	}
-
-	if (ActiveTweenChainStart == nullptr)
-	{
-		return;
-	}
-
 	int Tickcount = 0;
 
 	double start = FPlatformTime::Seconds();

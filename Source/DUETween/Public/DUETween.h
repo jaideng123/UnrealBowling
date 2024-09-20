@@ -67,12 +67,11 @@ public:
 };
 
 // TODO Try:
-// , public FTickableGameObject
+// UGameInstanceSubsystem https://benui.ca/unreal/subsystem-singleton/
 class FDUETweenModule : public IModuleInterface, public FTickableGameObject
 {
 public:
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
+
     FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
     void SetCurrentValueToProperty(const FDUETweenData& TweenData, FValueContainer newValue);
     // DUETWEEN_API is necessary to expose this method
@@ -82,8 +81,12 @@ public:
     {
         return FModuleManager::LoadModuleChecked< FDUETweenModule >( "DUETween" );
     }
+    // IModuleInterface Methods
+    virtual void StartupModule() override;
+    void HandleWorldBeginTearDown(UWorld* World);
+    virtual void ShutdownModule() override;
     
-    //FTickableGameObject interfaces
+    //FTickableGameObject Methods
     virtual UWorld* GetTickableGameObjectWorld() const override 
     { 
         return nullptr; 
@@ -94,17 +97,25 @@ public:
     }
     virtual bool IsTickable() const override final 
     {
-        return true;
+        return ActiveTweenChainStart != nullptr;;
+    }
+
+    virtual bool IsTickableInEditor() const override
+    {
+        return false;
+    }
+
+    virtual bool IsTickableWhenPaused() const override
+    {
+        return false;
     }
     virtual void Tick(float deltaTime) override;
     virtual TStatId GetStatId() const override { return TStatId(); }
-    
+
 private:
     void ReturnTweenToPool(FActiveDueTween* tween);
     void TickTween(float deltaTime, FActiveDueTween* currentTween);
     void InitTweenPool();
-    FTickerDelegate TickDelegate;
-    FTSTicker::FDelegateHandle TickDelegateHandle;
     static const bool USE_ARRAY = true;
     static constexpr int TWEEN_POOL_SIZE = 1000;
     FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
