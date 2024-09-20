@@ -8,6 +8,7 @@
 #include "DUETween.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
+DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced); 
 
 enum class EDUETweenStatus
 {
@@ -73,7 +74,7 @@ class FDUETweenModule : public IModuleInterface, public FTickableGameObject
 public:
 
     FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
-    void SetCurrentValueToProperty(const FDUETweenData& TweenData, FValueContainer newValue);
+    void SetCurrentValueToProperty(const FDUETweenData& TweenData, const FValueContainer& newValue);
     // DUETWEEN_API is necessary to expose this method
     DUETWEEN_API FActiveDueTween* AddTween(const FDUETweenData& TweenData);
 
@@ -116,11 +117,9 @@ private:
     void ReturnTweenToPool(FActiveDueTween* tween);
     void TickTween(float deltaTime, FActiveDueTween* currentTween);
     void InitTweenPool();
-    static const bool USE_ARRAY = true;
-    static constexpr int TWEEN_POOL_SIZE = 1000;
+    static constexpr int TWEEN_POOL_SIZE = 10000;
     FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
     FActiveDueTween* NextAvailableTween = nullptr;
     FActiveDueTween* ActiveTweenChainStart = nullptr;
     unsigned int LastAssignedTweenId = 0;
-    int ActiveTweenCount = 0;
 };
