@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DUEEasingFunctionLibrary.h"
+#include "DUETween.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DueTweenBlueprintFunctionLibrary.generated.h"
@@ -25,6 +26,7 @@ public:
 	                    float Duration,
 	                    FVector TargetLocation,
 	                    EDueEasingType DueEasingType,
+	                    int& OutHandle,
 	                    int32 Steps = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "DUETween",
@@ -67,15 +69,15 @@ public:
 	                           int32 Steps = 0);
 
 	UFUNCTION(BlueprintCallable, Category = "DUETween",
-	meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
+		meta = (Latent, LatentInfo = "LatentInfo", DefaultToSelf="Target", Duration="1.0f"))
 	static void DueRotatorField(UObject* Target,
-							   FLatentActionInfo LatentInfo,
-							   FName FieldName,
-							   float Duration,
-							   FRotator TargetValue,
-							   EDueEasingType DueEasingType,
-							   int32 Steps = 0);
+	                            FLatentActionInfo LatentInfo,
+	                            FName FieldName,
+	                            float Duration,
+	                            FRotator TargetValue,
+	                            EDueEasingType DueEasingType,
+	                            int32 Steps = 0);
 
 private:
-	static void CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo, FDUETweenData);
+	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo, FDUETweenData);
 };

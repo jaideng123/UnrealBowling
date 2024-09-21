@@ -11,6 +11,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
                                                 float Duration,
                                                 FVector TargetLocation,
                                                 EDueEasingType DueEasingType,
+                                                int& OutHandle,
                                                 int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -26,7 +27,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 		tweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
 		tweenData.ValueType = EDUEValueType::Vector;
 
-		CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
 }
 
@@ -174,16 +175,19 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target, FLatent
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo,
-                                                                   FDUETweenData TweenData)
+FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
+	UWorld* World, FLatentActionInfo LatentInfo,
+	FDUETweenData TweenData)
 {
 	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
 	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 		nullptr)
 	{
+		FActiveDueTweenHandle NewHandle = FDUETweenModule::Get().AddTween(TweenData);
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
-		                                 new FDueTweenAction(LatentInfo, TweenData));
-		return;
+		                                 new FDueTweenAction(LatentInfo, NewHandle));
+		return NewHandle;
 	}
 	UE_LOG(LogDUETween, Warning, TEXT("Unable to start latent action with UUID: %d"), LatentInfo.UUID);
+	return NULL_DUETWEEN_HANDLE;
 }

@@ -16,7 +16,10 @@ enum class EDUETweenStatus
     Running,
     // This tween is completed and will be marked unused next frame
     Completed,
-    // TODO: Support pausing tweens
+    // This tween is paused
+    Paused,
+    // This tween is being fast-forwarded to it's end point
+    FastForward,
 };
 
 enum class EDUEValueType
@@ -29,10 +32,10 @@ enum class EDUEValueType
 
 typedef TUnion<FVector,FRotator,float,double> FValueContainer;
 typedef int FActiveDueTweenHandle;
-constexpr FActiveDueTweenHandle INVALID_DUETWEEN_HANDLE = -1;
+constexpr FActiveDueTweenHandle NULL_DUETWEEN_HANDLE = -1;
 
 
-// Data that defines the tween
+// Data that defines the characteristics of the tween
 struct FDUETweenData
 {
     TWeakObjectPtr<> Target;
@@ -101,7 +104,7 @@ public:
     }
     virtual bool IsTickable() const override final 
     {
-        return ActiveTweenChainStart != INVALID_DUETWEEN_HANDLE;
+        return ActiveTweenChainStart != NULL_DUETWEEN_HANDLE;
     }
 
     virtual bool IsTickableInEditor() const override
@@ -122,10 +125,11 @@ private:
     void InitTweenPool();
     void ExpandPool(int Amount);
     // TODO: make this configurable
+    // https://www.tomlooman.com/unreal-engine-developer-settings/
     const int INITIAL_POOL_SIZE = 10;
     int TWEEN_POOL_SIZE = INITIAL_POOL_SIZE;
     FActiveDueTween* TweenPool = nullptr;
-    FActiveDueTweenHandle NextAvailableTween = INVALID_DUETWEEN_HANDLE;
-    FActiveDueTweenHandle ActiveTweenChainStart = INVALID_DUETWEEN_HANDLE;
+    FActiveDueTweenHandle NextAvailableTween = NULL_DUETWEEN_HANDLE;
+    FActiveDueTweenHandle ActiveTweenChainStart = NULL_DUETWEEN_HANDLE;
     unsigned int LastAssignedTweenId = 0;
 };

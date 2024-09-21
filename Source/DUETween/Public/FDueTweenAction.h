@@ -4,27 +4,24 @@
 #include "LatentActions.h"
 
 
-
-
 // Tweens from one location to another over a duration
-class DUETWEEN_API FDueTweenAction : public FPendingLatentAction {
+class DUETWEEN_API FDueTweenAction : public FPendingLatentAction
+{
 public:
-	FName           ExecutionFunction;
-	int32           OutputLink;
-	FWeakObjectPtr  CallbackTarget;
-	FDUETweenData TweenData;
+	FName ExecutionFunction;
+	int32 OutputLink;
+	FWeakObjectPtr CallbackTarget;
 
 private:
 	FActiveDueTweenHandle ActiveDueTween;
 
 public:
-	FDueTweenAction(const FLatentActionInfo& LatentInfo, FDUETweenData TweenData)
+	FDueTweenAction(const FLatentActionInfo& LatentInfo, FActiveDueTweenHandle NewActiveDueTweenHandle)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)
-		  , TweenData(TweenData)
 	{
-		ActiveDueTween = FDUETweenModule::Get().AddTween(TweenData);
+		ActiveDueTween = NewActiveDueTweenHandle;
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;
@@ -36,9 +33,12 @@ public:
 		static const FNumberFormattingOptions DelayTimeFormatOptions = FNumberFormattingOptions()
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
+		FActiveDueTween* tween = FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween);
 		return FText::Format(
 			NSLOCTEXT("DueTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
-			FText::AsNumber(TweenData.Duration - FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->TimeElapsed, &DelayTimeFormatOptions)).ToString();
+			FText::AsNumber(
+				tween->TweenData.Duration - FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->TimeElapsed,
+				&DelayTimeFormatOptions)).ToString();
 	}
 #endif
 };

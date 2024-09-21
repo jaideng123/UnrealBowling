@@ -2,17 +2,15 @@
 
 void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 {
-	if (!TweenData.Target.IsValid())
-	{
-		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
-		return;
-	}
-	if (ActiveDueTween == INVALID_DUETWEEN_HANDLE)
+	if (ActiveDueTween == NULL_DUETWEEN_HANDLE)
 	{
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
 
-	Response.FinishAndTriggerIf(FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->Status != EDUETweenStatus::Running, ExecutionFunction, OutputLink,
+	FActiveDueTween* Tween = FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween);
+
+	Response.FinishAndTriggerIf(Tween->Status == EDUETweenStatus::Completed || Tween->Status == EDUETweenStatus::Unset,
+	                            ExecutionFunction, OutputLink,
 	                            CallbackTarget);
 }
