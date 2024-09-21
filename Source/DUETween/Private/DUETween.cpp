@@ -388,11 +388,11 @@ FActiveDueTweenHandle FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 bool FDUETweenModule::PauseTween(const FActiveDueTweenHandle& TweenHandle) const
 {
 	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
-	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	if (Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
 	{
 		return false;
 	}
-	
+
 	if (Tween->Status == EDUETweenStatus::Running)
 	{
 		Tween->Status = EDUETweenStatus::Paused;
@@ -404,11 +404,11 @@ bool FDUETweenModule::PauseTween(const FActiveDueTweenHandle& TweenHandle) const
 bool FDUETweenModule::ResumeTween(const FActiveDueTweenHandle& TweenHandle) const
 {
 	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
-	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	if (Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
 	{
 		return false;
 	}
-	
+
 	if (Tween->Status == EDUETweenStatus::Paused)
 	{
 		Tween->Status = EDUETweenStatus::Running;
@@ -420,7 +420,7 @@ bool FDUETweenModule::ResumeTween(const FActiveDueTweenHandle& TweenHandle) cons
 bool FDUETweenModule::FastForwardTween(const FActiveDueTweenHandle& TweenHandle) const
 {
 	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
-	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	if (Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
 	{
 		return false;
 	}
@@ -436,7 +436,7 @@ bool FDUETweenModule::FastForwardTween(const FActiveDueTweenHandle& TweenHandle)
 bool FDUETweenModule::StopTween(const FActiveDueTweenHandle& TweenHandle) const
 {
 	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
-	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	if (Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
 	{
 		return false;
 	}

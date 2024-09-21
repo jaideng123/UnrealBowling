@@ -16,7 +16,7 @@ private:
 	FActiveDueTweenHandle ActiveDueTween;
 
 public:
-	FDueTweenAction(const FLatentActionInfo& LatentInfo, FActiveDueTweenHandle NewActiveDueTweenHandle)
+	FDueTweenAction(const FLatentActionInfo& LatentInfo, const FActiveDueTweenHandle& NewActiveDueTweenHandle)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)

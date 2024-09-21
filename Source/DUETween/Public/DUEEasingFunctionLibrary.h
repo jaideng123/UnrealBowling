@@ -53,37 +53,37 @@ enum EDueEasingType : int
 class DUEEasingFunctionLibrary
 {
 public:
-	static double Ease(double A, double B, double Alpha, EDueEasingType EasingType, int32 Steps = 0);
+	static double Ease(const double& Begin, const double& End, const double& Alpha, const EDueEasingType& Easing, const int32& Steps = 0);
 
 	// Easing Functions
-	static double EaseInSin(double Alpha);
-	static double EaseOutSin(double Alpha);
-	static double EaseInOutSin(double Alpha);
-	static double EaseInQuad(double Alpha);
-	static double EaseOutQuad(double Alpha);
-	static double EaseInOutQuad(double Alpha);
-	static double EaseInCubic(double Alpha);
-	static double EaseOutCubic(double Alpha);
-	static double EaseInOutCubic(double Alpha);
-	static double EaseInQuart(double Alpha);
-	static double EaseOutQuart(double Alpha);
-	static double EaseInOutQuart(double Alpha);
-	static double EaseInQuint(double Alpha);
-	static double EaseOutQuint(double Alpha);
-	static double EaseInOutQuint(double Alpha);
-	static double EaseInExpo(double Alpha);
-	static double EaseOutExpo(double Alpha);
-	static double EaseInOutExpo(double Alpha);
-	static double EaseInCirc(double Alpha);
-	static double EaseOutCirc(double Alpha);
-	static double EaseInOutCirc(double Alpha);
-	static double EaseInElastic(double Alpha);
-	static double EaseOutElastic(double Alpha);
-	static double EaseInOutElastic(double Alpha);
-	static double EaseInBack(double Alpha);
-	static double EaseOutBack(double Alpha);
-	static double EaseInOutBack(double Alpha);
-	static double EaseInBounce(double Alpha);
-	static double EaseOutBounce(double Alpha);
-	static double EaseInOutBounce(double Alpha);
+	static double EaseInSin(const double& Alpha);
+	static double EaseOutSin(const double& Alpha);
+	static double EaseInOutSin(const double& Alpha);
+	static double EaseInQuad(const double& Alpha);
+	static double EaseOutQuad(const double& Alpha);
+	static double EaseInOutQuad(const double& Alpha);
+	static double EaseInCubic(const double& Alpha);
+	static double EaseOutCubic(const double& Alpha);
+	static double EaseInOutCubic(const double& Alpha);
+	static double EaseInQuart(const double& Alpha);
+	static double EaseOutQuart(const double& Alpha);
+	static double EaseInOutQuart(const double& Alpha);
+	static double EaseInQuint(const double& Alpha);
+	static double EaseOutQuint(const double& Alpha);
+	static double EaseInOutQuint(const double& Alpha);
+	static double EaseInExpo(const double& Alpha);
+	static double EaseOutExpo(const double& Alpha);
+	static double EaseInOutExpo(const double& Alpha);
+	static double EaseInCirc(const double& Alpha);
+	static double EaseOutCirc(const double& Alpha);
+	static double EaseInOutCirc(const double& Alpha);
+	static double EaseInElastic(const double& Alpha);
+	static double EaseOutElastic(const double& Alpha);
+	static double EaseInOutElastic(const double& Alpha);
+	static double EaseInBack(const double& Alpha);
+	static double EaseOutBack(const double& Alpha);
+	static double EaseInOutBack(const double& Alpha);
+	static double EaseInBounce(const double& Alpha);
+	static double EaseOutBounce(const double& Alpha);
+	static double EaseInOutBounce(const double& Alpha);
 };
