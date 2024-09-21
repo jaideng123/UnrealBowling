@@ -176,18 +176,19 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target, FLatent
 }
 
 FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
-	UWorld* World, FLatentActionInfo LatentInfo,
-	FDUETweenData TweenData)
+	UWorld* World, const FLatentActionInfo& LatentInfo,
+	const FDUETweenData& TweenData)
 {
 	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
 	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 		nullptr)
 	{
-		FActiveDueTweenHandle NewHandle = FDUETweenModule::Get().AddTween(TweenData);
+		const FActiveDueTweenHandle NewHandle = FDUETweenModule::Get().AddTween(TweenData);
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
 		                                 new FDueTweenAction(LatentInfo, NewHandle));
+		UE_LOG(LogDUETween, Verbose, TEXT("Starting latent due tween action with UUID: %d"), LatentInfo.UUID);
 		return NewHandle;
 	}
-	UE_LOG(LogDUETween, Warning, TEXT("Unable to start latent action with UUID: %d"), LatentInfo.UUID);
+	UE_LOG(LogDUETween, Warning, TEXT("Unable to start due tween latent action with UUID: %d"), LatentInfo.UUID);
 	return NULL_DUETWEEN_HANDLE;
 }

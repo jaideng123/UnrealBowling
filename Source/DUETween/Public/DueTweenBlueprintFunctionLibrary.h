@@ -79,5 +79,5 @@ public:
 	                            int32 Steps = 0);
 
 private:
-	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, FLatentActionInfo LatentInfo, FDUETweenData);
+	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo, const FDUETweenData&);
 };
