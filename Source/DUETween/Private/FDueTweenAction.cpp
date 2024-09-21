@@ -7,12 +7,12 @@ void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
-	if (ActiveDueTween == nullptr)
+	if (ActiveDueTween == INVALID_DUETWEEN_HANDLE)
 	{
 		Response.FinishAndTriggerIf(true, ExecutionFunction, OutputLink, CallbackTarget);
 		return;
 	}
 
-	Response.FinishAndTriggerIf(ActiveDueTween->Status != EDUETweenStatus::Running, ExecutionFunction, OutputLink,
+	Response.FinishAndTriggerIf(FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->Status != EDUETweenStatus::Running, ExecutionFunction, OutputLink,
 	                            CallbackTarget);
 }

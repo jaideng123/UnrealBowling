@@ -5,8 +5,6 @@
 #include "Containers/Union.h"
 #include "Modules/ModuleManager.h"
 
-#include "DUETween.generated.h"
-
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
 DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced); 
 
@@ -30,6 +28,9 @@ enum class EDUEValueType
 };
 
 typedef TUnion<FVector,FRotator,float,double> FValueContainer;
+typedef int FActiveDueTweenHandle;
+constexpr FActiveDueTweenHandle INVALID_DUETWEEN_HANDLE = -1;
+
 
 // Data that defines the tween
 struct FDUETweenData
@@ -43,25 +44,25 @@ struct FDUETweenData
     FValueContainer TargetValue;
 };
 
-USTRUCT()
 struct FActiveDueTween
 {
-    GENERATED_BODY()
-public:
     FDUETweenData TweenData;
 
-    // State
+    // Constant state
+    FActiveDueTweenHandle Handle;
+    
+    // Per-Tween State
     unsigned int ID = 0; 
     float TimeElapsed = 0;
     EDUETweenStatus Status = EDUETweenStatus::Unset;
     FValueContainer StartingValue;
     union
     {
-        FActiveDueTween* NextFreeTween;
+        FActiveDueTweenHandle NextFreeTween;
         struct ActiveNode
         {
-            FActiveDueTween* NextActiveTween;
-            FActiveDueTween* LastActiveTween;
+            FActiveDueTweenHandle NextActiveTween;
+            FActiveDueTweenHandle LastActiveTween;
         };
         ActiveNode ActiveNode;
     } TweenPtr;
@@ -75,8 +76,10 @@ public:
 
     FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
     void SetCurrentValueToProperty(const FDUETweenData& TweenData, const FValueContainer& newValue);
-    // DUETWEEN_API is necessary to expose this method
-    DUETWEEN_API FActiveDueTween* AddTween(const FDUETweenData& TweenData);
+    // Creates and starts a new tween
+    DUETWEEN_API FActiveDueTweenHandle AddTween(const FDUETweenData& TweenData);
+    // Gets a pointer to a tween from its handle DO NOT SAVE THIS POINTER
+    DUETWEEN_API FActiveDueTween* GetTweenFromHandle(const FActiveDueTweenHandle& TweenHandle);
 
     static FDUETweenModule& Get()
     {
@@ -98,7 +101,7 @@ public:
     }
     virtual bool IsTickable() const override final 
     {
-        return ActiveTweenChainStart != nullptr;
+        return ActiveTweenChainStart != INVALID_DUETWEEN_HANDLE;
     }
 
     virtual bool IsTickableInEditor() const override
@@ -114,12 +117,15 @@ public:
     virtual TStatId GetStatId() const override { return TStatId(); }
 
 private:
-    void ReturnTweenToPool(FActiveDueTween* tween);
+    void ReturnTweenToPool(FActiveDueTweenHandle tween);
     void TickTween(float deltaTime, FActiveDueTween* currentTween);
     void InitTweenPool();
-    static constexpr int TWEEN_POOL_SIZE = 10000;
-    FActiveDueTween TweenPool[TWEEN_POOL_SIZE] = {};
-    FActiveDueTween* NextAvailableTween = nullptr;
-    FActiveDueTween* ActiveTweenChainStart = nullptr;
+    void ExpandPool(int Amount);
+    // TODO: make this configurable
+    const int INITIAL_POOL_SIZE = 10;
+    int TWEEN_POOL_SIZE = INITIAL_POOL_SIZE;
+    FActiveDueTween* TweenPool = nullptr;
+    FActiveDueTweenHandle NextAvailableTween = INVALID_DUETWEEN_HANDLE;
+    FActiveDueTweenHandle ActiveTweenChainStart = INVALID_DUETWEEN_HANDLE;
     unsigned int LastAssignedTweenId = 0;
 };

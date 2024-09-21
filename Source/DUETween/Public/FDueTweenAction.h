@@ -15,7 +15,7 @@ public:
 	FDUETweenData TweenData;
 
 private:
-	FActiveDueTween* ActiveDueTween;
+	FActiveDueTweenHandle ActiveDueTween;
 
 public:
 	FDueTweenAction(const FLatentActionInfo& LatentInfo, FDUETweenData TweenData)
@@ -25,7 +25,6 @@ public:
 		  , TweenData(TweenData)
 	{
 		ActiveDueTween = FDUETweenModule::Get().AddTween(TweenData);
-		
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;
@@ -39,7 +38,7 @@ public:
 		                                                               .SetMaximumFractionalDigits(3);
 		return FText::Format(
 			NSLOCTEXT("DueTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
-			FText::AsNumber(TweenData.Duration - ActiveDueTween->TimeElapsed, &DelayTimeFormatOptions)).ToString();
+			FText::AsNumber(TweenData.Duration - FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->TimeElapsed, &DelayTimeFormatOptions)).ToString();
 	}
 #endif
 };
