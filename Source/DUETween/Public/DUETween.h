@@ -6,6 +6,7 @@
 #include "Modules/ModuleManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
+
 DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced);
 
 enum class EDUETweenStatus
@@ -81,8 +82,16 @@ class FDUETweenModule : public IModuleInterface, public FTickableGameObject
 public:
 	// Creates and starts a new tween
 	DUETWEEN_API FActiveDueTweenHandle AddTween(const FDUETweenData& TweenData);
+	// Pauses a currently running tween (returns true if successful)
+	DUETWEEN_API bool PauseTween(const FActiveDueTweenHandle& TweenHandle) const;
+	// Resumes a paused tween (returns true if successful)
+	DUETWEEN_API bool ResumeTween(const FActiveDueTweenHandle& TweenHandle) const;
+	// Skips to the end of a tween (returns true if successful)
+	DUETWEEN_API bool FastForwardTween(const FActiveDueTweenHandle& TweenHandle) const;
+	// Skips to the end of a tween (returns true if successful)
+	DUETWEEN_API bool StopTween(const FActiveDueTweenHandle& TweenHandle) const;
 	// Gets a pointer to a tween from its handle DO NOT SAVE THIS POINTER
-	DUETWEEN_API FActiveDueTween* GetTweenFromHandle(const FActiveDueTweenHandle& TweenHandle) const;
+	FActiveDueTween* GetTweenFromHandle(const FActiveDueTweenHandle& TweenHandle) const;
 	// Get active DueTween Module Instance
 	static FDUETweenModule& Get();
 

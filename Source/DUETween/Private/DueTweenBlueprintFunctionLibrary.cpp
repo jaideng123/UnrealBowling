@@ -7,12 +7,12 @@
 #include "UObject/UnrealTypePrivate.h"
 
 void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
-                                                FLatentActionInfo LatentInfo,
-                                                float Duration,
-                                                FVector TargetLocation,
-                                                EDueEasingType DueEasingType,
+                                                const FLatentActionInfo LatentInfo,
+                                                const float Duration,
+                                                const FVector TargetLocation,
+                                                const EDueEasingType DueEasingType,
                                                 int& OutHandle,
-                                                int32 Steps)
+                                                const int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
@@ -31,10 +31,13 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentActionInfo LatentInfo, float Duration,
-                                                  FRotator TargetRotation,
-                                                  EDueEasingType DueEasingType,
-                                                  int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
+                                                  const FLatentActionInfo LatentInfo,
+                                                  const float Duration,
+                                                  const FRotator TargetRotation,
+                                                  const EDueEasingType DueEasingType,
+                                                  int& OutHandle,
+                                                  const int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
@@ -49,14 +52,18 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target, FLatentAction
 		tweenData.TargetValue.SetSubtype<FRotator>(TargetRotation);
 		tweenData.ValueType = EDUEValueType::Rotator;
 
-		CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentActionInfo LatentInfo,
-                                                      FName FieldName, float Duration, float TargetValue,
-                                                      EDueEasingType DueEasingType,
-                                                      int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
+                                                      const FLatentActionInfo LatentInfo,
+                                                      const FName FieldName,
+                                                      const float Duration,
+                                                      const float TargetValue,
+                                                      const EDueEasingType DueEasingType,
+                                                      int& OutHandle,
+                                                      const int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
@@ -79,14 +86,19 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target, FLatentAc
 			tweenData.TargetValue.SetSubtype<float>(TargetValue);
 			tweenData.ValueType = EDUEValueType::Float;
 
-			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
-                                                       float Duration, double TargetValue, EDueEasingType DueEasingType,
-                                                       int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
+                                                       const FLatentActionInfo LatentInfo,
+                                                       const FName FieldName,
+                                                       const float Duration,
+                                                       const double TargetValue,
+                                                       const EDueEasingType DueEasingType,
+                                                       int& OutHandle,
+                                                       const int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
@@ -109,14 +121,19 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target, FLatentA
 			tweenData.TargetValue.SetSubtype<double>(TargetValue);
 			tweenData.ValueType = EDUEValueType::Double;
 
-			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
-                                                       float Duration, FVector TargetValue,
-                                                       EDueEasingType DueEasingType, int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
+                                                       const FLatentActionInfo LatentInfo,
+                                                       const FName FieldName,
+                                                       const float Duration,
+                                                       const FVector TargetValue,
+                                                       const EDueEasingType DueEasingType,
+                                                       int& OutHandle,
+                                                       const int32 Steps)
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
@@ -139,14 +156,19 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target, FLatentA
 			tweenData.TargetValue.SetSubtype<FVector>(TargetValue);
 			tweenData.ValueType = EDUEValueType::Vector;
 
-			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target, FLatentActionInfo LatentInfo, FName FieldName,
-                                                        float Duration, FRotator TargetValue,
-                                                        EDueEasingType DueEasingType, int32 Steps)
+void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
+                                                        const FLatentActionInfo LatentInfo,
+                                                        const FName FieldName,
+                                                        const float Duration,
+                                                        const FRotator TargetValue,
+                                                        const EDueEasingType DueEasingType,
+                                                        int& OutHandle,
+                                                        const int32 Steps)
 {
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
@@ -170,9 +192,29 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target, FLatent
 			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
 			tweenData.ValueType = EDUEValueType::Vector;
 
-			CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
 	}
+}
+
+bool UDueTweenBlueprintFunctionLibrary::PauseDueTween(const int& DueTweenHandle)
+{
+	return FDUETweenModule::Get().PauseTween(DueTweenHandle);
+}
+
+bool UDueTweenBlueprintFunctionLibrary::ResumeDueTween(const int& DueTweenHandle)
+{
+	return FDUETweenModule::Get().ResumeTween(DueTweenHandle);
+}
+
+bool UDueTweenBlueprintFunctionLibrary::FastForwardDueTween(const int& DueTweenHandle)
+{
+	return FDUETweenModule::Get().FastForwardTween(DueTweenHandle);
+}
+
+bool UDueTweenBlueprintFunctionLibrary::StopDueTween(const int& DueTweenHandle)
+{
+	return FDUETweenModule::Get().StopTween(DueTweenHandle);
 }
 
 FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(

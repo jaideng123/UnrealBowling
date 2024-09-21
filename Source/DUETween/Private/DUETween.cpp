@@ -385,9 +385,72 @@ FActiveDueTweenHandle FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 	return NewTweenObject->Handle;
 }
 
+bool FDUETweenModule::PauseTween(const FActiveDueTweenHandle& TweenHandle) const
+{
+	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
+	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	{
+		return false;
+	}
+	
+	if (Tween->Status == EDUETweenStatus::Running)
+	{
+		Tween->Status = EDUETweenStatus::Paused;
+		return true;
+	}
+	return false;
+}
+
+bool FDUETweenModule::ResumeTween(const FActiveDueTweenHandle& TweenHandle) const
+{
+	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
+	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	{
+		return false;
+	}
+	
+	if (Tween->Status == EDUETweenStatus::Paused)
+	{
+		Tween->Status = EDUETweenStatus::Running;
+		return true;
+	}
+	return false;
+}
+
+bool FDUETweenModule::FastForwardTween(const FActiveDueTweenHandle& TweenHandle) const
+{
+	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
+	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	{
+		return false;
+	}
+	if (Tween->Status != EDUETweenStatus::Completed &&
+		Tween->Status != EDUETweenStatus::FastForward)
+	{
+		Tween->Status = EDUETweenStatus::FastForward;
+		return true;
+	}
+	return false;
+}
+
+bool FDUETweenModule::StopTween(const FActiveDueTweenHandle& TweenHandle) const
+{
+	FActiveDueTween* Tween = GetTweenFromHandle(TweenHandle);
+	if(Tween == nullptr || Tween->Status == EDUETweenStatus::Unset)
+	{
+		return false;
+	}
+	if (Tween->Status != EDUETweenStatus::Completed)
+	{
+		Tween->Status = EDUETweenStatus::Completed;
+		return true;
+	}
+	return false;
+}
+
 FActiveDueTween* FDUETweenModule::GetTweenFromHandle(const FActiveDueTweenHandle& TweenHandle) const
 {
-	if (TweenHandle == NULL_DUETWEEN_HANDLE)
+	if (TweenHandle == NULL_DUETWEEN_HANDLE || TweenHandle >= TWEEN_POOL_SIZE)
 	{
 		return nullptr;
 	}
