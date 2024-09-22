@@ -50,7 +50,7 @@ enum EDueEasingType : int
 	InOutBounce
 };
 
-class DUEEasingFunctionLibrary
+class DueEasingFunctionLibrary
 {
 public:
 	static double Ease(const double& Begin, const double& End, const double& Alpha, const EDueEasingType& Easing, const int32& Steps = 0);

@@ -1,6 +1,6 @@
 ﻿#include "DUETween.h"
 
-#include "DUEEasingFunctionLibrary.h"
+#include "DueEasingFunctionLibrary.h"
 #include "DueTweenSettings.h"
 #include "UObject/UnrealTypePrivate.h"
 
@@ -534,7 +534,7 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 		{
 		case EDUEValueType::Float:
 			{
-				const float NewValue = DUEEasingFunctionLibrary::Ease(CurrentTween->StartingValue.GetSubtype<float>(),
+				const float NewValue = DueEasingFunctionLibrary::Ease(CurrentTween->StartingValue.GetSubtype<float>(),
 				                                                      CurrentTween->TweenData.TargetValue.GetSubtype<
 					                                                      float>(),
 				                                                      TweenProgress,
@@ -546,7 +546,7 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 			}
 		case EDUEValueType::Double:
 			{
-				const double NewValue = DUEEasingFunctionLibrary::Ease(CurrentTween->StartingValue.GetSubtype<double>(),
+				const double NewValue = DueEasingFunctionLibrary::Ease(CurrentTween->StartingValue.GetSubtype<double>(),
 				                                                       CurrentTween->TweenData.TargetValue.GetSubtype<
 					                                                       double>(),
 				                                                       TweenProgress,
@@ -558,7 +558,7 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 			}
 		case EDUEValueType::Vector:
 			{
-				const double Alpha = DUEEasingFunctionLibrary::Ease(0,
+				const double Alpha = DueEasingFunctionLibrary::Ease(0,
 				                                                    1.0,
 				                                                    TweenProgress,
 				                                                    CurrentTween->TweenData.EasingType,
@@ -571,7 +571,7 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 			}
 		case EDUEValueType::Rotator:
 			{
-				const double Alpha = DUEEasingFunctionLibrary::Ease(0,
+				const double Alpha = DueEasingFunctionLibrary::Ease(0,
 				                                                    1.0,
 				                                                    TweenProgress,
 				                                                    CurrentTween->TweenData.EasingType,

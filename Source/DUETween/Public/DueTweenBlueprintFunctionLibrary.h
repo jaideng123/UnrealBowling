@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DUEEasingFunctionLibrary.h"
+#include "DueEasingFunctionLibrary.h"
 #include "DUETween.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"

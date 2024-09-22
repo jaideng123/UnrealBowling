@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "DUETween.h"
-#include "DUEEasingFunctionLibrary.h"
+#include "DueEasingFunctionLibrary.h"
 #include "LatentActions.h"
 
 

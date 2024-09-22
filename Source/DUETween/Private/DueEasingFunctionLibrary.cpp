@@ -1,9 +1,9 @@
-#include "DUEEasingFunctionLibrary.h"
+#include "DueEasingFunctionLibrary.h"
 
 #include "DUETween.h"
 #include "Kismet/KismetMathLibrary.h"
 
-double DUEEasingFunctionLibrary::Ease(const double& Begin, const double& End, const double& Alpha,
+double DueEasingFunctionLibrary::Ease(const double& Begin, const double& End, const double& Alpha,
                                       const EDueEasingType& Easing, const int32& Steps)
 {
 	// Clamp Input Alpha In-case it exceeds 1 or is negative
@@ -117,92 +117,92 @@ double DUEEasingFunctionLibrary::Ease(const double& Begin, const double& End, co
 	return FMath::Lerp(Begin, End, ResultAlpha);
 }
 
-double DUEEasingFunctionLibrary::EaseInSin(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInSin(const double& Alpha)
 {
 	return 1.0 - FMath::Cos(Alpha * UE_DOUBLE_HALF_PI);
 }
 
-double DUEEasingFunctionLibrary::EaseOutSin(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutSin(const double& Alpha)
 {
 	return FMath::Sin(Alpha * UE_DOUBLE_HALF_PI);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutSin(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutSin(const double& Alpha)
 {
 	return -(FMath::Cos(UE_DOUBLE_PI * Alpha) - 1.0) / 2.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInQuad(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInQuad(const double& Alpha)
 {
 	return FMath::Square(Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseOutQuad(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutQuad(const double& Alpha)
 {
 	return 1.0 - FMath::Square(1.0 - Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutQuad(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutQuad(const double& Alpha)
 {
 	return Alpha < 0.5 ? 2.0 * FMath::Square(Alpha) : 1.0 - (FMath::Pow(-2.0 * Alpha + 2.0, 2.0) / 2.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInCubic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInCubic(const double& Alpha)
 {
 	return FMath::Cube(Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseOutCubic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutCubic(const double& Alpha)
 {
 	return 1.0 - FMath::Cube(1.0 - Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutCubic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutCubic(const double& Alpha)
 {
 	return Alpha < 0.5 ? 4.0 * FMath::Cube(Alpha) : 1.0 - (FMath::Cube(-2.0 * Alpha + 2.0) / 2.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInQuart(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInQuart(const double& Alpha)
 {
 	return FMath::Pow(Alpha, 4.0);
 }
 
-double DUEEasingFunctionLibrary::EaseOutQuart(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutQuart(const double& Alpha)
 {
 	return 1.0 - FMath::Pow(1.0 - Alpha, 4.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutQuart(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutQuart(const double& Alpha)
 {
 	return Alpha < 0.5 ? 8.0 * FMath::Pow(Alpha, 4.0) : 1.0 - (FMath::Pow(-2.0 * Alpha + 2.0, 4.0) / 2.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInQuint(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInQuint(const double& Alpha)
 {
 	return FMath::Pow(Alpha, 5.0);
 }
 
-double DUEEasingFunctionLibrary::EaseOutQuint(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutQuint(const double& Alpha)
 {
 	return 1.0 - FMath::Pow(1.0 - Alpha, 5.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutQuint(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutQuint(const double& Alpha)
 {
 	return Alpha < 0.5 ? 16.0 * FMath::Pow(Alpha, 5.0) : 1.0 - (FMath::Pow(-2.0 * Alpha + 2.0, 5.0) / 2.0);
 }
 
-double DUEEasingFunctionLibrary::EaseInExpo(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInExpo(const double& Alpha)
 {
 	return Alpha == 0.0 ? 0.0 : FMath::Pow(2.0, 10.0 * Alpha - 10.0);
 }
 
-double DUEEasingFunctionLibrary::EaseOutExpo(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutExpo(const double& Alpha)
 {
 	return Alpha == 1.0 ? 1.0 : 1.0 - FMath::Pow(2.0, -10.0 * Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutExpo(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutExpo(const double& Alpha)
 {
 	if (Alpha == 0.0)
 	{
@@ -217,24 +217,24 @@ double DUEEasingFunctionLibrary::EaseInOutExpo(const double& Alpha)
 		       : (2.0 - FMath::Pow(2.0, -20.0 * Alpha + 10.0) / 2.0) / 2.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInCirc(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInCirc(const double& Alpha)
 {
 	return 1.0 - FMath::Sqrt(1.0 - FMath::Square(Alpha));
 }
 
-double DUEEasingFunctionLibrary::EaseOutCirc(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutCirc(const double& Alpha)
 {
 	return FMath::Sqrt(1.0 - FMath::Square(Alpha - 1.0));
 }
 
-double DUEEasingFunctionLibrary::EaseInOutCirc(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutCirc(const double& Alpha)
 {
 	return Alpha < 0.5
 		       ? (1.0 - FMath::Sqrt(1.0 - FMath::Square(2.0 * Alpha))) / 2.0
 		       : (FMath::Sqrt(1.0 - FMath::Square(-2.0 * Alpha + 2.0)) + 1.0) / 2.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInElastic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInElastic(const double& Alpha)
 {
 	if (Alpha == 0)
 	{
@@ -250,7 +250,7 @@ double DUEEasingFunctionLibrary::EaseInElastic(const double& Alpha)
 	return -FMath::Pow(2.0, 10.0 * Alpha - 10.0) * FMath::Sin((Alpha * 10.0 - 10.75) * C4);
 }
 
-double DUEEasingFunctionLibrary::EaseOutElastic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutElastic(const double& Alpha)
 {
 	if (Alpha == 0)
 	{
@@ -266,7 +266,7 @@ double DUEEasingFunctionLibrary::EaseOutElastic(const double& Alpha)
 	return FMath::Pow(2.0, -10.0 * Alpha) * FMath::Sin((Alpha * 10.0 - 0.75) * C4) + 1.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInOutElastic(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutElastic(const double& Alpha)
 {
 	if (Alpha == 0)
 	{
@@ -286,7 +286,7 @@ double DUEEasingFunctionLibrary::EaseInOutElastic(const double& Alpha)
 	return ((FMath::Pow(2.0, -20 * Alpha + 10) * FMath::Sin((Alpha * 20 - 11.125) * C5)) / 2) + 1.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInBack(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInBack(const double& Alpha)
 {
 	constexpr double C1 = 1.70158;
 	constexpr double C3 = C1 + 1.0;
@@ -294,7 +294,7 @@ double DUEEasingFunctionLibrary::EaseInBack(const double& Alpha)
 	return C3 * FMath::Cube(Alpha) - C1 * FMath::Square(Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseOutBack(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutBack(const double& Alpha)
 {
 	constexpr double C1 = 1.70158;
 	constexpr double C3 = C1 + 1;
@@ -302,7 +302,7 @@ double DUEEasingFunctionLibrary::EaseOutBack(const double& Alpha)
 	return 1 + C3 * FMath::Cube(Alpha - 1.0) + C1 * FMath::Square(1.0 - Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseInOutBack(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutBack(const double& Alpha)
 {
 	constexpr double C1 = 1.70158;
 	constexpr double C2 = C1 * 1.525;
@@ -314,12 +314,12 @@ double DUEEasingFunctionLibrary::EaseInOutBack(const double& Alpha)
 	return (FMath::Cube(2.0 * Alpha - 2.0) * ((C2 + 1.0) * (Alpha * 2.0 - 2.0) + C2) + 2.0) / 2.0;
 }
 
-double DUEEasingFunctionLibrary::EaseInBounce(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInBounce(const double& Alpha)
 {
 	return 1.0 - EaseOutBounce(1.0 - Alpha);
 }
 
-double DUEEasingFunctionLibrary::EaseOutBounce(const double& Alpha)
+double DueEasingFunctionLibrary::EaseOutBounce(const double& Alpha)
 {
 	constexpr double N1 = 7.5625;
 	constexpr double D1 = 2.75;
@@ -343,7 +343,7 @@ double DUEEasingFunctionLibrary::EaseOutBounce(const double& Alpha)
 	return N1 * FMath::Square(NewAlpha) + 0.984375;
 }
 
-double DUEEasingFunctionLibrary::EaseInOutBounce(const double& Alpha)
+double DueEasingFunctionLibrary::EaseInOutBounce(const double& Alpha)
 {
 	return Alpha < 0.5
 		       ? EaseInBounce(2.0 * Alpha) * 0.5
