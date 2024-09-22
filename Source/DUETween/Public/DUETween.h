@@ -77,7 +77,7 @@ struct FActiveDueTween
 
 // TODO Try:
 // UGameInstanceSubsystem https://benui.ca/unreal/subsystem-singleton/
-class FDUETweenModule : public IModuleInterface, public FTickableGameObject
+class FDUETweenModule : public IModuleInterface
 {
 public:
 	// Creates and starts a new tween
@@ -95,18 +95,18 @@ public:
 	// Get active DueTween Module Instance
 	static FDUETweenModule& Get();
 
+	// Tween Pool Methods
+	void InitTweenPool();
+	void ExpandPool(const int& Amount);
+	FActiveDueTweenHandle GetTweenFromPool();
+	void ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle);
+	FActiveDueTweenHandle GetActiveTweenChainStart() const;
+	void TickTween(float DeltaTime, FActiveDueTween* CurrentTween);
+
+
 	// IModuleInterface Methods
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
-
-	//FTickableGameObject Methods
-	virtual void Tick(float DeltaTime) override;
-	virtual UWorld* GetTickableGameObjectWorld() const override;
-	virtual ETickableTickType GetTickableTickType() const override;
-	virtual bool IsTickable() const override final;
-	virtual bool IsTickableInEditor() const override;
-	virtual bool IsTickableWhenPaused() const override;
-	virtual TStatId GetStatId() const override { return TStatId(); }
 
 private:
 	static FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
@@ -114,16 +114,7 @@ private:
 	
 	int TWEEN_POOL_SIZE = 100;
 	FActiveDueTween* TweenPool = nullptr;
-	void InitTweenPool();
-	void ExpandPool(const int& Amount);
-	FActiveDueTweenHandle GetTweenFromPool();
-	void ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle);
 	FActiveDueTweenHandle NextAvailableTween = NULL_DUETWEEN_HANDLE;
-
-	void TickTween(float DeltaTime, FActiveDueTween* CurrentTween);
-
-	void HandleWorldBeginTearDown(UWorld* World);
-
 	FActiveDueTweenHandle ActiveTweenChainStart = NULL_DUETWEEN_HANDLE;
 	unsigned int LastAssignedTweenId = 0;
 };

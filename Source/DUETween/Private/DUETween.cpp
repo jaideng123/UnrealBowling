@@ -4,8 +4,6 @@
 #include "DueTweenSettings.h"
 #include "UObject/UnrealTypePrivate.h"
 
-#define LOCTEXT_NAMESPACE "FDUETweenModule"
-
 DEFINE_LOG_CATEGORY(LogDUETween);
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Pooled Tweens"), STAT_POOLED_TWEENS, STATGROUP_DUETWEEN);
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Tween Pool Size"), STAT_TWEEN_POOL_SIZE, STATGROUP_DUETWEEN);
@@ -17,9 +15,9 @@ void FDUETweenModule::InitTweenPool()
 	{
 		delete[] TweenPool;
 	}
-	
+
 	check(GetDefault<UDueTweenSettings>()->InitialTweenPoolSize <= GetDefault<UDueTweenSettings>()->MaxTweenPoolSize)
-	
+
 	TWEEN_POOL_SIZE = GetDefault<UDueTweenSettings>()->InitialTweenPoolSize;
 
 	TweenPool = new FActiveDueTween[TWEEN_POOL_SIZE];
@@ -116,46 +114,12 @@ FActiveDueTweenHandle FDUETweenModule::GetTweenFromPool()
 
 void FDUETweenModule::StartupModule()
 {
-	UE_LOG(LogDUETween, Display, TEXT("Loaded DUETween"));
-
-	FWorldDelegates::OnWorldBeginTearDown.AddRaw(this, &FDUETweenModule::HandleWorldBeginTearDown);
-	InitTweenPool();
-}
-
-void FDUETweenModule::HandleWorldBeginTearDown(UWorld* World)
-{
-	UE_LOG(LogDUETween, Display, TEXT("Cleaning Up On World Teardown"));
-	InitTweenPool();
+	UE_LOG(LogDUETween, Display, TEXT("Loaded DUETween Module"));
 }
 
 void FDUETweenModule::ShutdownModule()
 {
-	UE_LOG(LogDUETween, Display, TEXT("UnLoaded DUETween"));
-}
-
-UWorld* FDUETweenModule::GetTickableGameObjectWorld() const
-{
-	return nullptr;
-}
-
-ETickableTickType FDUETweenModule::GetTickableTickType() const
-{
-	return ETickableTickType::Conditional;
-}
-
-bool FDUETweenModule::IsTickable() const
-{
-	return ActiveTweenChainStart != NULL_DUETWEEN_HANDLE;
-}
-
-bool FDUETweenModule::IsTickableInEditor() const
-{
-	return false;
-}
-
-bool FDUETweenModule::IsTickableWhenPaused() const
-{
-	return false;
+	UE_LOG(LogDUETween, Display, TEXT("UnLoaded DUETween Module"));
 }
 
 FValueContainer FDUETweenModule::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
@@ -389,7 +353,7 @@ FActiveDueTweenHandle FDUETweenModule::AddTween(const FDUETweenData& TweenData)
 
 		INC_DWORD_STAT(STAT_ACTIVE_TWEENS);
 	}
-
+	
 	return NewTweenObject->Handle;
 }
 
@@ -517,6 +481,11 @@ void FDUETweenModule::ReturnTweenToPool(const FActiveDueTweenHandle TweenToRetur
 	}
 }
 
+FActiveDueTweenHandle FDUETweenModule::GetActiveTweenChainStart() const
+{
+	return ActiveTweenChainStart;
+}
+
 void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 {
 	DECLARE_CYCLE_STAT(TEXT("TickTween"), STAT_TickTween, STATGROUP_DUETWEEN);
@@ -636,27 +605,5 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 		ReturnTweenToPool(CurrentTween->Handle);
 	}
 }
-
-
-void FDUETweenModule::Tick(float deltaTime)
-{
-	DECLARE_CYCLE_STAT(TEXT("TickAllTweens"), STAT_TickAllTweens, STATGROUP_DUETWEEN);
-	SCOPE_CYCLE_COUNTER(STAT_TickAllTweens);
-
-	FActiveDueTweenHandle CurrentTweenHandle = ActiveTweenChainStart;
-	while (CurrentTweenHandle != NULL_DUETWEEN_HANDLE)
-	{
-		FActiveDueTween* currentTween = GetTweenFromHandle(CurrentTweenHandle);
-
-		// Grab this before we tick in-case tween is removed from chain during tick
-		FActiveDueTweenHandle nextTween = currentTween->TweenPtr.ActiveNode.NextActiveTween;
-
-		TickTween(deltaTime, currentTween);
-
-		CurrentTweenHandle = nextTween;
-	}
-}
-
-#undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FDUETweenModule, DUETween)
