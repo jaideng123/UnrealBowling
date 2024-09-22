@@ -514,11 +514,30 @@ void FDUETweenModule::TickTween(float DeltaTime, FActiveDueTween* CurrentTween)
 	DECLARE_CYCLE_STAT(TEXT("TickTween"), STAT_TickTween, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_TickTween);
 
+
 	// Early-Complete tween if target is gone
 	if (!CurrentTween->TweenData.Target.IsValid() && CurrentTween->Status != EDUETweenStatus::Completed)
 	{
 		CurrentTween->Status = EDUETweenStatus::Completed;
 		return;
+	}
+
+	// Make sure we're not paused
+	if (CurrentTween->TweenData.Target.IsValid())
+	{
+		UWorld* TweenWorld = CurrentTween->TweenData.Target.Get()->GetWorld();
+		if (TweenWorld && TweenWorld->IsPaused())
+		{
+#if WITH_EDITOR
+			if (!TweenWorld->bDebugFrameStepExecutedThisFrame)
+			{
+#endif
+				UE_LOG(LogDUETween, Verbose, TEXT("Skipping Paused Tween"));
+				return;
+#if WITH_EDITOR
+			}
+#endif
+		}
 	}
 
 	if (CurrentTween->Status == EDUETweenStatus::Running || CurrentTween->Status == EDUETweenStatus::FastForward)
@@ -615,6 +634,7 @@ void FDUETweenModule::Tick(float deltaTime)
 {
 	DECLARE_CYCLE_STAT(TEXT("TickAllTweens"), STAT_TickAllTweens, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_TickAllTweens);
+
 	FActiveDueTweenHandle CurrentTweenHandle = ActiveTweenChainStart;
 	while (CurrentTweenHandle != NULL_DUETWEEN_HANDLE)
 	{
