@@ -111,14 +111,8 @@ public:
 private:
 	static FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
 	static void SetCurrentValueToProperty(const FDUETweenData& TweenData, const FValueContainer& NewValue);
-
-	// TODO: make this configurable
-	// https://www.tomlooman.com/unreal-engine-developer-settings/
-	const int INITIAL_POOL_SIZE = 10000;
-	// TODO: make this configurable
-	// https://www.tomlooman.com/unreal-engine-developer-settings/
-	const int MAX_POOL_SIZE = 100000;
-	int TWEEN_POOL_SIZE = INITIAL_POOL_SIZE;
+	
+	int TWEEN_POOL_SIZE = 100;
 	FActiveDueTween* TweenPool = nullptr;
 	void InitTweenPool();
 	void ExpandPool(const int& Amount);

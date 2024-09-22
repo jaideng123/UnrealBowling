@@ -1,6 +1,7 @@
 ﻿#include "DUETween.h"
 
 #include "DUEEasingFunctionLibrary.h"
+#include "DueTweenSettings.h"
 #include "UObject/UnrealTypePrivate.h"
 
 #define LOCTEXT_NAMESPACE "FDUETweenModule"
@@ -15,8 +16,10 @@ void FDUETweenModule::InitTweenPool()
 	{
 		delete[] TweenPool;
 	}
-
-	TWEEN_POOL_SIZE = INITIAL_POOL_SIZE;
+	
+	check(GetDefault<UDueTweenSettings>()->InitialTweenPoolSize <= GetDefault<UDueTweenSettings>()->MaxTweenPoolSize)
+	
+	TWEEN_POOL_SIZE = GetDefault<UDueTweenSettings>()->InitialTweenPoolSize;
 
 	TweenPool = new FActiveDueTween[TWEEN_POOL_SIZE];
 
@@ -45,18 +48,18 @@ void FDUETweenModule::ExpandPool(const int& Amount)
 {
 	DECLARE_CYCLE_STAT(TEXT("ExpandPool"), STAT_ExpandPool, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_ExpandPool);
-
-	if (TWEEN_POOL_SIZE == MAX_POOL_SIZE)
+	const int MaxPoolSize = GetDefault<UDueTweenSettings>()->MaxTweenPoolSize;
+	if (TWEEN_POOL_SIZE == MaxPoolSize)
 	{
 		UE_LOG(LogDUETween, Warning,
-		       TEXT("Tween Pool Has Already Reached Max Size: %d"), MAX_POOL_SIZE);
+		       TEXT("Tween Pool Has Already Reached Max Size: %d"), MaxPoolSize);
 		return;
 	}
 
 	const int OldTweenPoolSize = TWEEN_POOL_SIZE;
 	const FActiveDueTween* OldTweenPool = TweenPool;
 
-	TWEEN_POOL_SIZE = FMath::Min(TWEEN_POOL_SIZE + Amount, MAX_POOL_SIZE);
+	TWEEN_POOL_SIZE = FMath::Min(TWEEN_POOL_SIZE + Amount, MaxPoolSize);
 	TweenPool = new FActiveDueTween[TWEEN_POOL_SIZE];
 
 	// Copy old pool to new
