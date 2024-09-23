@@ -1,5 +1,7 @@
 #include "DueTweenInternalUtils.h"
 
+#include "Components/CanvasPanelSlot.h"
+
 
 FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
 {
@@ -54,7 +56,7 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 				&& VectorProperty->Struct == TBaseStructure<FVector>::Get())
 			{
 				const FVector* StructAddress = VectorProperty->ContainerPtrToValuePtr<FVector>(TweenData.Target.Get());
-				FVector StartingValue = *StructAddress;
+				const FVector StartingValue = *StructAddress;
 
 				return FValueContainer(StartingValue);
 			}
@@ -85,12 +87,35 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 			{
 				const FRotator* StructAddress = RotatorProperty->ContainerPtrToValuePtr<FRotator>(
 					TweenData.Target.Get());
-				FRotator StartingValue = *StructAddress;
+				const FRotator StartingValue = *StructAddress;
 
 				return FValueContainer(StartingValue);
 			}
 			break;
 		}
+	case EDueValueType::Vector2D:
+		// We interpret null property as actor/component rotation
+		if (TweenData.TargetProperty == nullptr)
+		{
+			if (const UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(TweenData.Target.Get());
+				TargetAsCanvasPanelSlot)
+			{
+				return FValueContainer(TargetAsCanvasPanelSlot->GetPosition());
+			}
+			UE_LOG(LogDUETween, Error,
+			       TEXT("Unable to support null target property on type: %s"),
+			       *TweenData.Target.Get()->GetClass()->GetName());
+			return FValueContainer();
+		}
+		if (FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty); VectorProperty
+			&& VectorProperty->Struct == TBaseStructure<FVector2D>::Get())
+		{
+			const FVector2D* StructAddress = VectorProperty->ContainerPtrToValuePtr<FVector2D>(TweenData.Target.Get());
+			const FVector2D StartingValue = *StructAddress;
+
+			return FValueContainer(StartingValue);
+		}
+		break;
 	}
 	UE_LOG(LogDUETween, Error,
 	       TEXT("Unsupported Get for Value Type: %d"),
@@ -189,11 +214,26 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 			}
 			break;
 		}
-	default:
+	case EDueValueType::Vector2D:
+		if (TweenData.TargetProperty == nullptr)
 		{
+			if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(TweenData.Target.Get());
+				TargetAsCanvasPanelSlot)
+			{
+				TargetAsCanvasPanelSlot->SetPosition(NewValue.GetSubtype<FVector2D>());
+			}
 			UE_LOG(LogDUETween, Error,
-			       TEXT("Unsupported Set For Value Type: %d"),
-			       TweenData.ValueType);
+			       TEXT("Unable to support null target property on type: %s"),
+			       *TweenData.Target.Get()->GetClass()->GetName());
+			return;
 		}
+		if (const FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
+			VectorProperty
+			&& VectorProperty->Struct == TBaseStructure<FVector2D>::Get())
+		{
+			FVector2D* StructAddress = VectorProperty->ContainerPtrToValuePtr<FVector2D>(TweenData.Target.Get());
+			*StructAddress = NewValue.GetSubtype<FVector2D>();
+		}
+		break;
 	}
 }

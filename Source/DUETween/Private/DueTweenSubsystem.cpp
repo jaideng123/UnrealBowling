@@ -256,8 +256,20 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
 			}
 			break;
-		default:
-			UE_LOG(LogDUETween, Error, TEXT("Unhandled Data type"));
+		case EDueValueType::Vector2D:
+			{
+				const double Alpha = DueEasingFunctionLibrary::Ease(0,
+				                                                    1.0,
+				                                                    TweenProgress,
+				                                                    CurrentTween->TweenData.EasingType,
+				                                                    CurrentTween->TweenData.Steps);
+				const FVector2D NewValue = FMath::Lerp(CurrentTween->StartingValue.GetSubtype<FVector2D>(),
+				                                       CurrentTween->TweenData.TargetValue.GetSubtype<FVector2D>(),
+				                                       Alpha);
+				UE_LOG(LogDUETween, Verbose, TEXT("Updating Vector 2D Value: %s"), *NewValue.ToString());
+				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				break;
+			}
 			break;
 		}
 		if (TweenProgress >= 1.0)

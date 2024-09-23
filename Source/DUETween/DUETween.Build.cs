@@ -9,7 +9,7 @@ public class DUETween : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "Engine", "DeveloperSettings"
+                "Core", "Engine", "DeveloperSettings",
             }
         );
 
@@ -19,7 +19,8 @@ public class DUETween : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "UMG"
             }
         );
     }

@@ -32,6 +32,31 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 	}
 }
 
+void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
+                                                  FLatentActionInfo LatentInfo,
+                                                  float Duration,
+                                                  FVector2D TargetValue,
+                                                  EDueEasingType DueEasingType,
+                                                  int& OutHandle,
+                                                  int32 Steps)
+{
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		// null property ref -> use location
+		FProperty* propertyRef = nullptr;
+		FDUETweenData tweenData;
+		tweenData.Target = Target;
+		tweenData.Duration = Duration;
+		tweenData.EasingType = DueEasingType;
+		tweenData.Steps = Steps;
+		tweenData.TargetProperty = propertyRef;
+		tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
+		tweenData.ValueType = EDueValueType::Vector2D;
+
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+	}
+}
+
 void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
                                                   const FLatentActionInfo LatentInfo,
                                                   const float Duration,
@@ -192,6 +217,40 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
 			tweenData.ValueType = EDueValueType::Vector;
+
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		}
+	}
+}
+
+void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
+                                                         FLatentActionInfo LatentInfo, FName FieldName,
+                                                         float Duration,
+                                                         FVector2D TargetValue,
+                                                         EDueEasingType DueEasingType,
+                                                         int& OutHandle,
+                                                         int32 Steps)
+{
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+			nullptr)
+		{
+			FDUETweenData tweenData;
+			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (propertyRef == nullptr)
+			{
+				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
+				return;
+			}
+			tweenData.Target = Target;
+			tweenData.Duration = Duration;
+			tweenData.EasingType = DueEasingType;
+			tweenData.Steps = Steps;
+			tweenData.TargetProperty = propertyRef;
+			tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
+			tweenData.ValueType = EDueValueType::Vector2D;
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}

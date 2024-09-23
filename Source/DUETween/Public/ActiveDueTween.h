@@ -5,7 +5,7 @@
 typedef int FActiveDueTweenHandle;
 constexpr FActiveDueTweenHandle NULL_DUETWEEN_HANDLE = -1;
 
-using FValueContainer = TUnion<FVector, FRotator, float, double>;
+using FValueContainer = TUnion<FVector, FVector2D, FRotator, float, double>;
 
 /**
  * Status of a tween
@@ -33,6 +33,15 @@ enum class EDueValueType
 	Double,
 	Vector,
 	Rotator,
+	Vector2D
+/**
+ * When adding a new type update:
+ * 1. This
+ * 2. FValueContainer
+ * 3. Set and GetCurrentValueFromProperty
+ * 4. TickTween
+ * 5. UDueTweenBlueprintFunctionLibrary
+ */
 };
 
 /**
