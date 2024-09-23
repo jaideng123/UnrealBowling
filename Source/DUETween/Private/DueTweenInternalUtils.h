@@ -1,5 +1,6 @@
 #pragma once
 #include "ActiveDueTween.h"
+#include "DUETween.h"
 
 
 /**
