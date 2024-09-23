@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "DUETween.h"
 #include "DueEasingFunctionLibrary.h"
+#include "DueTweenSubsystem.h"
 #include "LatentActions.h"
 
 
@@ -33,11 +34,13 @@ public:
 		static const FNumberFormattingOptions DelayTimeFormatOptions = FNumberFormattingOptions()
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
-		FActiveDueTween* tween = FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween);
+		FActiveDueTween* tween = CallbackTarget.Get()->GetWorld()->GetSubsystem<UDueTweenSubsystem>()->
+		                                        GetTweenFromHandle(ActiveDueTween);
 		return FText::Format(
 			NSLOCTEXT("DueTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
 			FText::AsNumber(
-				tween->TweenData.Duration - FDUETweenModule::Get().GetTweenFromHandle(ActiveDueTween)->TimeElapsed,
+				tween->TweenData.Duration - CallbackTarget.Get()->GetWorld()->GetSubsystem<UDueTweenSubsystem>()->
+				                                           GetTweenFromHandle(ActiveDueTween)->TimeElapsed,
 				&DelayTimeFormatOptions)).ToString();
 	}
 #endif

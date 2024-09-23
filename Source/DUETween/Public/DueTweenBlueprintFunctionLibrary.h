@@ -90,20 +90,20 @@ public:
 	                            int32 Steps = 0);
 
 	// Pause an actively running tween
-	UFUNCTION(BlueprintCallable, Category = "DUETween")
-	static bool PauseDueTween(const int& DueTweenHandle);
+	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
+	static void PauseDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
 	
 	// Resume a paused tween
-	UFUNCTION(BlueprintCallable, Category = "DUETween")
-	static bool ResumeDueTween(const int& DueTweenHandle);
+	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
+	static void ResumeDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
 
 	// Fast-Forward a tween to it's end state
-	UFUNCTION(BlueprintCallable, Category = "DUETween")
-	static bool FastForwardDueTween(const int& DueTweenHandle);
+	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
+	static void FastForwardDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
 
 	// Stop and cancel a tween
-	UFUNCTION(BlueprintCallable, Category = "DUETween")
-	static bool StopDueTween(const int& DueTweenHandle);
+	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
+	static void StopDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
 
 private:
 	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo, const FDUETweenData&);

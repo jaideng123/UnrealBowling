@@ -21,4 +21,7 @@ public:
 	// Max number of Tweens that can be active at any given time
 	UPROPERTY(Config, EditAnywhere, Category=General)
 	int MaxTweenPoolSize = 10000;
+	// How much the pool expands by each time it runs our of space
+	UPROPERTY(Config, EditAnywhere, Category=General)
+	int PoolExpansionIncrement = 100;
 };

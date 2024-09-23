@@ -3,6 +3,7 @@
 
 #include "DueTweenBlueprintFunctionLibrary.h"
 
+#include "DueTweenSubsystem.h"
 #include "FDueTweenAction.h"
 #include "UObject/UnrealTypePrivate.h"
 
@@ -197,24 +198,40 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 	}
 }
 
-bool UDueTweenBlueprintFunctionLibrary::PauseDueTween(const int& DueTweenHandle)
+void UDueTweenBlueprintFunctionLibrary::PauseDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
 {
-	return FDUETweenModule::Get().PauseTween(DueTweenHandle);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		Success = World->GetSubsystem<UDueTweenSubsystem>()->PauseTween(DueTweenHandle);
+	}
+	Success = false;
 }
 
-bool UDueTweenBlueprintFunctionLibrary::ResumeDueTween(const int& DueTweenHandle)
+void UDueTweenBlueprintFunctionLibrary::ResumeDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
 {
-	return FDUETweenModule::Get().ResumeTween(DueTweenHandle);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		Success = World->GetSubsystem<UDueTweenSubsystem>()->ResumeTween(DueTweenHandle);
+	}
+	Success = false;
 }
 
-bool UDueTweenBlueprintFunctionLibrary::FastForwardDueTween(const int& DueTweenHandle)
+void UDueTweenBlueprintFunctionLibrary::FastForwardDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
 {
-	return FDUETweenModule::Get().FastForwardTween(DueTweenHandle);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		Success = World->GetSubsystem<UDueTweenSubsystem>()->FastForwardTween(DueTweenHandle);
+	}
+	Success = false;
 }
 
-bool UDueTweenBlueprintFunctionLibrary::StopDueTween(const int& DueTweenHandle)
+void UDueTweenBlueprintFunctionLibrary::StopDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
 {
-	return FDUETweenModule::Get().StopTween(DueTweenHandle);
+	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
+	{
+		Success = World->GetSubsystem<UDueTweenSubsystem>()->StopTween(DueTweenHandle);
+	}
+	Success = false;
 }
 
 FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
@@ -225,7 +242,7 @@ FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAct
 	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 		nullptr)
 	{
-		const FActiveDueTweenHandle NewHandle = FDUETweenModule::Get().AddTween(TweenData);
+		const FActiveDueTweenHandle NewHandle = World->GetSubsystem<UDueTweenSubsystem>()->AddTween(TweenData);
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
 		                                 new FDueTweenAction(LatentInfo, NewHandle));
 		UE_LOG(LogDUETween, Verbose, TEXT("Starting latent due tween action with UUID: %d"), LatentInfo.UUID);
