@@ -9,7 +9,7 @@
 #include "DueTweenSubsystem.generated.h"
 
 /**
- * 
+ * World Subsystem that manages and ticks tweens
  */
 UCLASS()
 class DUETWEEN_API UDueTweenSubsystem : public UTickableWorldSubsystem
@@ -41,7 +41,7 @@ public:
 
 	void TickTween(float DeltaTime, FActiveDueTween* CurrentTween);
 private:
-	DueTweenPool Pool = DueTweenPool();
+	FDueTweenPool Pool = FDueTweenPool();
 	void RemoveTweenFromActiveChain(FActiveDueTweenHandle TweenHandleToRemove);
 	FActiveDueTweenHandle ActiveTweenChainStart = NULL_DUETWEEN_HANDLE;
 	unsigned int LastAssignedTweenId = 0;

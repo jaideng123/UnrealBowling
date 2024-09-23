@@ -4,7 +4,7 @@
 #include "DueTweenBlueprintFunctionLibrary.h"
 
 #include "DueTweenSubsystem.h"
-#include "FDueTweenAction.h"
+#include "DueTweenAction.h"
 #include "UObject/UnrealTypePrivate.h"
 
 void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
@@ -26,7 +26,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 		tweenData.Steps = Steps;
 		tweenData.TargetProperty = propertyRef;
 		tweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
-		tweenData.ValueType = EDUEValueType::Vector;
+		tweenData.ValueType = EDueValueType::Vector;
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
@@ -51,7 +51,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 		tweenData.Steps = Steps;
 		tweenData.TargetProperty = propertyRef;
 		tweenData.TargetValue.SetSubtype<FRotator>(TargetRotation);
-		tweenData.ValueType = EDUEValueType::Rotator;
+		tweenData.ValueType = EDueValueType::Rotator;
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
@@ -85,7 +85,7 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
 			tweenData.Steps = Steps;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<float>(TargetValue);
-			tweenData.ValueType = EDUEValueType::Float;
+			tweenData.ValueType = EDueValueType::Float;
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
@@ -120,7 +120,7 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
 			tweenData.Steps = Steps;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<double>(TargetValue);
-			tweenData.ValueType = EDUEValueType::Double;
+			tweenData.ValueType = EDueValueType::Double;
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
@@ -155,7 +155,7 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
 			tweenData.Steps = Steps;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FVector>(TargetValue);
-			tweenData.ValueType = EDUEValueType::Vector;
+			tweenData.ValueType = EDueValueType::Vector;
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}
@@ -191,7 +191,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 			tweenData.Steps = Steps;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
-			tweenData.ValueType = EDUEValueType::Vector;
+			tweenData.ValueType = EDueValueType::Vector;
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 		}

@@ -1,4 +1,4 @@
-﻿#include "FDueTweenAction.h"
+﻿#include "DueTweenAction.h"
 
 void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 {
@@ -11,7 +11,7 @@ void FDueTweenAction::UpdateOperation(FLatentResponse& Response)
 	FActiveDueTween* Tween = CallbackTarget.Get()->GetWorld()->GetSubsystem<UDueTweenSubsystem>()->
 	                                        GetTweenFromHandle(ActiveDueTween);
 
-	Response.FinishAndTriggerIf(Tween->Status == EDUETweenStatus::Completed || Tween->Status == EDUETweenStatus::Unset,
+	Response.FinishAndTriggerIf(Tween->Status == EDueTweenStatus::Completed || Tween->Status == EDueTweenStatus::Unset,
 	                            ExecutionFunction, OutputLink,
 	                            CallbackTarget);
 }

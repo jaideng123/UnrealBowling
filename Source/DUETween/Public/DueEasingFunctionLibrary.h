@@ -50,6 +50,9 @@ enum EDueEasingType : int
 	InOutBounce
 };
 
+/**
+ * Library of easing functions used by DueTween
+ */
 class DueEasingFunctionLibrary
 {
 public:

@@ -6,7 +6,7 @@
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Pooled Tweens"), STAT_POOLED_TWEENS, STATGROUP_DUETWEEN);
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Tween Pool Size"), STAT_TWEEN_POOL_SIZE, STATGROUP_DUETWEEN);
 
-void DueTweenPool::InitTweenPool()
+void FDueTweenPool::InitTweenPool()
 {
 	if (TweenPool != nullptr)
 	{
@@ -22,12 +22,12 @@ void DueTweenPool::InitTweenPool()
 	for (int i = 0; i < CurrentTotalPoolSize - 1; ++i)
 	{
 		TweenPool[i].TweenPtr.NextFreeTween = FActiveDueTweenHandle(i + 1);
-		TweenPool[i].Status = EDUETweenStatus::Unset;
+		TweenPool[i].Status = EDueTweenStatus::Unset;
 		TweenPool[i].ID = 0;
 		TweenPool[i].Handle = i;
 	}
 	TweenPool[CurrentTotalPoolSize - 1].TweenPtr.NextFreeTween = NULL_DUETWEEN_HANDLE;
-	TweenPool[CurrentTotalPoolSize - 1].Status = EDUETweenStatus::Unset;
+	TweenPool[CurrentTotalPoolSize - 1].Status = EDueTweenStatus::Unset;
 	TweenPool[CurrentTotalPoolSize - 1].ID = 0;
 	TweenPool[CurrentTotalPoolSize - 1].Handle = CurrentTotalPoolSize - 1;
 
@@ -37,7 +37,7 @@ void DueTweenPool::InitTweenPool()
 	SET_DWORD_STAT(STAT_TWEEN_POOL_SIZE, CurrentTotalPoolSize);
 }
 
-void DueTweenPool::ExpandPool(const int& Amount)
+void FDueTweenPool::ExpandPool(const int& Amount)
 {
 	DECLARE_CYCLE_STAT(TEXT("ExpandPool"), STAT_ExpandPool, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_ExpandPool);
@@ -62,12 +62,12 @@ void DueTweenPool::ExpandPool(const int& Amount)
 	for (int i = OldTweenPoolSize; i < CurrentTotalPoolSize - 1; ++i)
 	{
 		TweenPool[i].TweenPtr.NextFreeTween = i + 1;
-		TweenPool[i].Status = EDUETweenStatus::Unset;
+		TweenPool[i].Status = EDueTweenStatus::Unset;
 		TweenPool[i].ID = 0;
 		TweenPool[i].Handle = i;
 	}
 	TweenPool[CurrentTotalPoolSize - 1].TweenPtr.NextFreeTween = NULL_DUETWEEN_HANDLE;
-	TweenPool[CurrentTotalPoolSize - 1].Status = EDUETweenStatus::Unset;
+	TweenPool[CurrentTotalPoolSize - 1].Status = EDueTweenStatus::Unset;
 	TweenPool[CurrentTotalPoolSize - 1].ID = 0;
 	TweenPool[CurrentTotalPoolSize - 1].Handle = CurrentTotalPoolSize - 1;
 	if (NextAvailableTween == NULL_DUETWEEN_HANDLE)
@@ -78,7 +78,7 @@ void DueTweenPool::ExpandPool(const int& Amount)
 	SET_DWORD_STAT(STAT_TWEEN_POOL_SIZE, CurrentTotalPoolSize);
 }
 
-FActiveDueTween* DueTweenPool::GetTweenFromHandle(const FActiveDueTweenHandle TweenHandle) const
+FActiveDueTween* FDueTweenPool::GetTweenFromHandle(const FActiveDueTweenHandle TweenHandle) const
 {
 	if (TweenHandle == NULL_DUETWEEN_HANDLE || TweenHandle >= CurrentTotalPoolSize)
 	{
@@ -87,7 +87,7 @@ FActiveDueTween* DueTweenPool::GetTweenFromHandle(const FActiveDueTweenHandle Tw
 	return &TweenPool[TweenHandle];
 }
 
-FActiveDueTweenHandle DueTweenPool::GetTweenFromPool()
+FActiveDueTweenHandle FDueTweenPool::GetTweenFromPool()
 {
 	DECLARE_CYCLE_STAT(TEXT("GetTweenFromPool"), STAT_GetTweenFromPool, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_GetTweenFromPool);
@@ -113,7 +113,7 @@ FActiveDueTweenHandle DueTweenPool::GetTweenFromPool()
 	return HandleFromPool;
 }
 
-void DueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
+void FDueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
 {
 	FActiveDueTween* TweenToReturn = GetTweenFromHandle(TweenToReturnHandle);
 	DECLARE_CYCLE_STAT(TEXT("ReturnTweenToPool"), STAT_ReturnTweenToPool, STATGROUP_DUETWEEN);
@@ -124,7 +124,7 @@ void DueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
 		DECLARE_CYCLE_STAT(TEXT("ReturnTweenToPool_AddToFreeList"), STAT_ReturnTweenToPool_AddToFreeList,
 		                   STATGROUP_DUETWEEN);
 		SCOPE_CYCLE_COUNTER(STAT_ReturnTweenToPool_AddToFreeList);
-		TweenToReturn->Status = EDUETweenStatus::Unset;
+		TweenToReturn->Status = EDueTweenStatus::Unset;
 		TweenToReturn->TweenPtr.NextFreeTween = NextAvailableTween;
 		NextAvailableTween = TweenToReturn->Handle;
 
@@ -132,7 +132,7 @@ void DueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
 	}
 }
 
-int DueTweenPool::GetCurrentPoolSize() const
+int FDueTweenPool::GetCurrentPoolSize() const
 {
 	return CurrentTotalPoolSize;
 }

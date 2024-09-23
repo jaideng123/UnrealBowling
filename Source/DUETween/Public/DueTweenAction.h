@@ -5,7 +5,9 @@
 #include "LatentActions.h"
 
 
-// Tweens from one location to another over a duration
+/**
+ * Latent Action that tracks an active tween
+ */
 class DUETWEEN_API FDueTweenAction : public FPendingLatentAction
 {
 public:

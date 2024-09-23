@@ -7,7 +7,7 @@
 #include "DueTweenSettings.generated.h"
 
 /**
- * 
+ * Developer Settings for Due Tween
  */
 UCLASS(Config=Plugin, defaultconfig, meta = (DisplayName="Due Tween Settings"))
 class DUETWEEN_API UDueTweenSettings : public UDeveloperSettings

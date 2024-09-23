@@ -1,7 +1,10 @@
 #pragma once
 #include "ActiveDueTween.h"
 
-class DueTweenPool
+/**
+ * Pool that manages a heap-allocated array of tweens
+ */
+class FDueTweenPool
 {
 public:
 	// Tween Pool Methods
@@ -11,6 +14,7 @@ public:
 	FActiveDueTweenHandle GetTweenFromPool();
 	void ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle);
 	int GetCurrentPoolSize() const;
+
 private:
 	int CurrentTotalPoolSize = 0;
 	int CurrentUnusedElements = 0;

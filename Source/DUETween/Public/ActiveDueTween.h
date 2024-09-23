@@ -7,7 +7,10 @@ constexpr FActiveDueTweenHandle NULL_DUETWEEN_HANDLE = -1;
 
 using FValueContainer = TUnion<FVector, FRotator, float, double>;
 
-enum class EDUETweenStatus
+/**
+ * Status of a tween
+ */
+enum class EDueTweenStatus
 {
 	// This tween is unused and ready to be reclaimed
 	Unset,
@@ -21,7 +24,10 @@ enum class EDUETweenStatus
 	FastForward,
 };
 
-enum class EDUEValueType
+/**
+ * Value type for data manipulated by tween
+ */
+enum class EDueValueType
 {
 	Float,
 	Double,
@@ -29,7 +35,9 @@ enum class EDUEValueType
 	Rotator,
 };
 
-// Data that defines the characteristics of the tween
+/**
+ * Data that defines the characteristics of the tween
+ */
 struct FDUETweenData
 {
 	FProperty* TargetProperty;
@@ -37,10 +45,13 @@ struct FDUETweenData
 	FValueContainer TargetValue;
 	float Duration = 0;
 	EDueEasingType EasingType = EDueEasingType::Linear;
-	EDUEValueType ValueType = EDUEValueType::Float;
+	EDueValueType ValueType = EDueValueType::Float;
 	int32 Steps = 0;
 };
 
+/**
+ * Data structure for an active tween
+ */
 struct FActiveDueTween
 {
 	FDUETweenData TweenData;
@@ -51,7 +62,7 @@ struct FActiveDueTween
 	// Per-Tween State
 	unsigned int ID = 0;
 	float TimeElapsed = 0;
-	EDUETweenStatus Status = EDUETweenStatus::Unset;
+	EDueTweenStatus Status = EDueTweenStatus::Unset;
 	FValueContainer StartingValue;
 
 	union

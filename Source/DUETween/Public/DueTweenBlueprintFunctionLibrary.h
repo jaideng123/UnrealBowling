@@ -11,7 +11,7 @@
 
 struct FDUETweenData;
 /**
- * Old Tween Function Library
+ * Due Tween Function Library
  */
 UCLASS()
 class DUETWEEN_API UDueTweenBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
