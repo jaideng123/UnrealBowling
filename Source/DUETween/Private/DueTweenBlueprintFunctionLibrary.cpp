@@ -26,6 +26,26 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 		tweenData.TargetProperty = propertyRef;
 		tweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
 		tweenData.ValueType = EDueValueType::Vector;
+		TWeakObjectPtr<UObject> TargetWeakPtr = tweenData.Target;
+		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
+			TargetAsSceneComponent)
+		{
+			tweenData.StartingValue.SetSubtype<FVector>(TargetAsSceneComponent->GetRelativeLocation());
+			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue, const FDUETweenData& NewTweenData)
+			{
+				USceneComponent* SceneComp = Cast<USceneComponent>(NewTweenData.Target.Get());
+				SceneComp->SetRelativeLocation(UpdatedValue.GetSubtype<FVector>());
+			};
+		}
+		if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
+		{
+			tweenData.StartingValue.SetSubtype<FVector>(TargetAsActor->GetActorLocation());
+			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue, const FDUETweenData& NewTweenData)
+			{
+				AActor* TargetActor = Cast<AActor>(NewTweenData.Target.Get());
+				TargetActor->SetActorLocation(UpdatedValue.GetSubtype<FVector>());
+			};
+		}
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}

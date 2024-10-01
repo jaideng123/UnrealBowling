@@ -56,7 +56,7 @@ void FDueTweenPool::ExpandPool(const int& Amount)
 	TweenPool = new FActiveDueTween[CurrentTotalPoolSize];
 
 	// Copy old pool to new
-	memcpy(TweenPool, OldTweenPool, sizeof(FActiveDueTween) * OldTweenPoolSize);
+	FMemory::Memcpy(TweenPool, OldTweenPool, sizeof(FActiveDueTween) * OldTweenPoolSize);
 
 	TweenPool[OldTweenPoolSize - 1].TweenPtr.NextFreeTween = OldTweenPoolSize;
 	for (int i = OldTweenPoolSize; i < CurrentTotalPoolSize - 1; ++i)

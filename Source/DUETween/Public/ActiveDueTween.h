@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+
 #include "DueEasingFunctionLibrary.h"
 #include "Containers/Union.h"
 
@@ -34,14 +36,31 @@ enum class EDueValueType
 	Vector,
 	Rotator,
 	Vector2D
+	/**
+	 * When adding a new type update:
+	 * 1. This
+	 * 2. FValueContainer
+	 * 3. Set and GetCurrentValueFromProperty
+	 * 4. TickTween
+	 * 5. UDueTweenBlueprintFunctionLibrary
+	 */
+};
+
 /**
- * When adding a new type update:
- * 1. This
- * 2. FValueContainer
- * 3. Set and GetCurrentValueFromProperty
- * 4. TickTween
- * 5. UDueTweenBlueprintFunctionLibrary
+ * Value type for data manipulated by tween
  */
+enum class EDueUpdateType
+{
+	Unset,
+	Property
+	/**
+	 * When adding a new type update:
+	 * 1. This
+	 * 2. FValueContainer
+	 * 3. Set and GetCurrentValueFromProperty
+	 * 4. TickTween
+	 * 5. UDueTweenBlueprintFunctionLibrary
+	 */
 };
 
 /**
@@ -50,8 +69,13 @@ enum class EDueValueType
 struct FDUETweenData
 {
 	FProperty* TargetProperty;
+	TFunction<void(const FValueContainer&, const FDUETweenData&)> TargetCallback;
+	EDueUpdateType UpdateType = EDueUpdateType::Unset;
+
+	
 	TWeakObjectPtr<> Target;
 	FValueContainer TargetValue;
+	FValueContainer StartingValue;
 	float Duration = 0;
 	EDueEasingType EasingType = EDueEasingType::Linear;
 	EDueValueType ValueType = EDueValueType::Float;
@@ -63,6 +87,18 @@ struct FDUETweenData
  */
 struct FActiveDueTween
 {
+	union
+	{
+		struct FActiveNode
+		{
+			FActiveDueTweenHandle NextActiveTween;
+			FActiveDueTweenHandle LastActiveTween;
+		};
+
+		FActiveNode ActiveNode;
+		FActiveDueTweenHandle NextFreeTween;
+	} TweenPtr;
+
 	FDUETweenData TweenData;
 
 	// Constant state
@@ -73,17 +109,5 @@ struct FActiveDueTween
 	float TimeElapsed = 0;
 	EDueTweenStatus Status = EDueTweenStatus::Unset;
 	FValueContainer StartingValue;
-
-	union
-	{
-		FActiveDueTweenHandle NextFreeTween;
-
-		struct FActiveNode
-		{
-			FActiveDueTweenHandle NextActiveTween;
-			FActiveDueTweenHandle LastActiveTween;
-		};
-
-		FActiveNode ActiveNode;
-	} TweenPtr;
 };
+static_assert(std::is_trivially_copyable_v<EDueTweenStatus> == true);

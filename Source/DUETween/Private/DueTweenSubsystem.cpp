@@ -52,7 +52,9 @@ FActiveDueTweenHandle UDueTweenSubsystem::AddTween(const FDUETweenData& TweenDat
 		NewTweenObject->TweenData = TweenData;
 		NewTweenObject->Status = EDueTweenStatus::Running;
 		NewTweenObject->TimeElapsed = 0;
-		NewTweenObject->StartingValue = FDueTweenInternalUtils::GetCurrentValueFromProperty(TweenData);
+		NewTweenObject->StartingValue = TweenData.StartingValue.GetCurrentSubtypeIndex() == static_cast<uint8>(-1)
+			                                ? FDueTweenInternalUtils::GetCurrentValueFromProperty(TweenData)
+			                                : TweenData.StartingValue;
 		NewTweenObject->ID = LastAssignedTweenId + 1;
 		UE_LOG(LogDUETween, Verbose, TEXT("Creating Tween: %u"), NewTweenObject->ID);
 		LastAssignedTweenId += 1;

@@ -132,6 +132,16 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 	{
 		return;
 	}
+	// TODO check type
+	if(TweenData.TargetCallback)
+	{
+		TweenData.TargetCallback(NewValue, TweenData);
+	}
+	if (TweenData.TargetProperty == nullptr)
+	{
+		return;
+	}
+	
 	switch (TweenData.ValueType)
 	{
 	case EDueValueType::Float:
