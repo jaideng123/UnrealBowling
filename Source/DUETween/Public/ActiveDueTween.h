@@ -68,12 +68,15 @@ enum class EDueUpdateType
  */
 struct FDUETweenData
 {
-	FProperty* TargetProperty;
-	TFunction<void(const FValueContainer&, const FDUETweenData&)> TargetCallback;
+	union
+	{
+		TFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)> TargetCallback;
+		FProperty* TargetProperty;
+	} UpdateData;
+
 	EDueUpdateType UpdateType = EDueUpdateType::Unset;
 
-	
-	TWeakObjectPtr<> Target;
+	TWeakObjectPtr<UObject> Target;
 	FValueContainer TargetValue;
 	FValueContainer StartingValue;
 	float Duration = 0;
@@ -110,4 +113,5 @@ struct FActiveDueTween
 	EDueTweenStatus Status = EDueTweenStatus::Unset;
 	FValueContainer StartingValue;
 };
+
 static_assert(std::is_trivially_copyable_v<EDueTweenStatus> == true);
