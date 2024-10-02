@@ -1,6 +1,8 @@
 #pragma once
 #include "ActiveDueTween.h"
 
+LLM_DECLARE_TAG(FDueTweenPoolTag);
+
 /**
  * Pool that manages a heap-allocated array of tweens
  */
