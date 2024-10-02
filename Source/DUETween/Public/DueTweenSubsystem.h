@@ -21,7 +21,7 @@ public:
 	virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override;
 
 	// Creates and starts a new tween
-	FActiveDueTweenHandle AddTween(const FDUETweenData& TweenData);
+	FActiveDueTweenHandle AddTween(FDUETweenData& TweenData);
 	// Pauses a currently running tween (returns true if successful)
 	bool PauseTween(const FActiveDueTweenHandle& TweenHandle) const;
 	// Resumes a paused tween (returns true if successful)

@@ -25,7 +25,7 @@ bool UDueTweenSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) 
 	return WorldType == EWorldType::PIE || WorldType == EWorldType::Game;
 }
 
-FActiveDueTweenHandle UDueTweenSubsystem::AddTween(const FDUETweenData& TweenData)
+FActiveDueTweenHandle UDueTweenSubsystem::AddTween(FDUETweenData& TweenData)
 {
 	DECLARE_CYCLE_STAT(TEXT("AddTween"), STAT_AddTween, STATGROUP_DUETWEEN);
 	SCOPE_CYCLE_COUNTER(STAT_AddTween);
@@ -49,7 +49,7 @@ FActiveDueTweenHandle UDueTweenSubsystem::AddTween(const FDUETweenData& TweenDat
 	{
 		DECLARE_CYCLE_STAT(TEXT("AddTween_Init"), STAT_AddTween_Init, STATGROUP_DUETWEEN);
 		SCOPE_CYCLE_COUNTER(STAT_AddTween_Init);
-		NewTweenObject->TweenData = TweenData;
+		NewTweenObject->TweenData = MoveTemp(TweenData);
 		NewTweenObject->Status = EDueTweenStatus::Running;
 		NewTweenObject->TimeElapsed = 0;
 		NewTweenObject->StartingValue = TweenData.StartingValue.GetCurrentSubtypeIndex() == static_cast<uint8>(-1)
@@ -212,7 +212,7 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				                                                      CurrentTween->TweenData.EasingType,
 				                                                      CurrentTween->TweenData.Steps);
 				UE_LOG(LogDUETween, Verbose, TEXT("Updating Float Value:: %f"), NewValue);
-				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				FDueTweenInternalUtils::SetCurrentValue(CurrentTween->TweenData, FValueContainer(NewValue));
 				break;
 			}
 		case EDueValueType::Double:
@@ -224,7 +224,7 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				                                                       CurrentTween->TweenData.EasingType,
 				                                                       CurrentTween->TweenData.Steps);
 				UE_LOG(LogDUETween, Verbose, TEXT("Updating Double Value:: %f"), NewValue);
-				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				FDueTweenInternalUtils::SetCurrentValue(CurrentTween->TweenData, FValueContainer(NewValue));
 				break;
 			}
 		case EDueValueType::Vector:
@@ -237,7 +237,7 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				const FVector NewValue = FMath::Lerp(CurrentTween->StartingValue.GetSubtype<FVector>(),
 				                                     CurrentTween->TweenData.TargetValue.GetSubtype<FVector>(), Alpha);
 				UE_LOG(LogDUETween, Verbose, TEXT("Updating Vector Value: %s"), *NewValue.ToString());
-				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				FDueTweenInternalUtils::SetCurrentValue(CurrentTween->TweenData, FValueContainer(NewValue));
 				break;
 			}
 		case EDueValueType::Rotator:
@@ -255,7 +255,7 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				);
 
 				UE_LOG(LogDUETween, Verbose, TEXT("Updating Rotator Value: %s"), *NewValue.ToString());
-				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				FDueTweenInternalUtils::SetCurrentValue(CurrentTween->TweenData, FValueContainer(NewValue));
 			}
 			break;
 		case EDueValueType::Vector2D:
@@ -269,7 +269,7 @@ void UDueTweenSubsystem::TickTween(float DeltaTime, FActiveDueTween* CurrentTwee
 				                                       CurrentTween->TweenData.TargetValue.GetSubtype<FVector2D>(),
 				                                       Alpha);
 				UE_LOG(LogDUETween, Verbose, TEXT("Updating Vector 2D Value: %s"), *NewValue.ToString());
-				FDueTweenInternalUtils::SetCurrentValueToProperty(CurrentTween->TweenData, FValueContainer(NewValue));
+				FDueTweenInternalUtils::SetCurrentValue(CurrentTween->TweenData, FValueContainer(NewValue));
 				break;
 			}
 			break;

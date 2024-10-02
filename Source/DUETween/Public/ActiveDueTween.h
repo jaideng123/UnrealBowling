@@ -52,7 +52,8 @@ enum class EDueValueType
 enum class EDueUpdateType
 {
 	Unset,
-	Property
+	Property,
+	Function
 	/**
 	 * When adding a new type update:
 	 * 1. This
@@ -68,21 +69,20 @@ enum class EDueUpdateType
  */
 struct FDUETweenData
 {
-	union
-	{
-		TFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)> TargetCallback;
-		FProperty* TargetProperty;
-	} UpdateData;
+	TUniqueFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)> TargetCallback;
+	FProperty* TargetProperty;
 
 	EDueUpdateType UpdateType = EDueUpdateType::Unset;
 
-	TWeakObjectPtr<UObject> Target;
 	FValueContainer TargetValue;
 	FValueContainer StartingValue;
+	EDueValueType ValueType = EDueValueType::Float;
+
+	TWeakObjectPtr<UObject> Target;
 	float Duration = 0;
 	EDueEasingType EasingType = EDueEasingType::Linear;
-	EDueValueType ValueType = EDueValueType::Float;
 	int32 Steps = 0;
+	
 };
 
 /**

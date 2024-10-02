@@ -5,7 +5,7 @@
 
 FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
 {
-	if (!TweenData.Target.IsValid())
+	if (!TweenData.Target.IsValid() || TweenData.UpdateType != EDueUpdateType::Property)
 	{
 		return FValueContainer();
 	}
@@ -52,7 +52,8 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 				       *TweenData.Target.Get()->GetClass()->GetName());
 				return FValueContainer();
 			}
-			if (FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty); VectorProperty
+			if (FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
+				VectorProperty
 				&& VectorProperty->Struct == TBaseStructure<FVector>::Get())
 			{
 				const FVector* StructAddress = VectorProperty->ContainerPtrToValuePtr<FVector>(TweenData.Target.Get());
@@ -81,7 +82,8 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 				       *TweenData.Target.Get()->GetClass()->GetName());
 				return FValueContainer();
 			}
-			if (const FStructProperty* RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
+			if (const FStructProperty* RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty)
+				;
 				RotatorProperty
 				&& RotatorProperty->Struct == TBaseStructure<FRotator>::Get())
 			{
@@ -107,7 +109,8 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 			       *TweenData.Target.Get()->GetClass()->GetName());
 			return FValueContainer();
 		}
-		if (FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty); VectorProperty
+		if (FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
+			VectorProperty
 			&& VectorProperty->Struct == TBaseStructure<FVector2D>::Get())
 		{
 			const FVector2D* StructAddress = VectorProperty->ContainerPtrToValuePtr<FVector2D>(TweenData.Target.Get());
@@ -123,25 +126,8 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 	return FValueContainer();
 }
 
-void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& TweenData, const FValueContainer& NewValue)
+void FDueTweenInternalUtils::SetProperty(const FDUETweenData& TweenData, const FValueContainer& NewValue)
 {
-	DECLARE_CYCLE_STAT(TEXT("SetCurrentValue"), STAT_SetCurrentValue, STATGROUP_DUETWEEN);
-	SCOPE_CYCLE_COUNTER(STAT_SetCurrentValue);
-
-	if (!TweenData.Target.IsValid())
-	{
-		return;
-	}
-	// TODO check type
-	if(TweenData.TargetCallback)
-	{
-		TweenData.TargetCallback(NewValue, TweenData);
-	}
-	if (TweenData.TargetProperty == nullptr)
-	{
-		return;
-	}
-	
 	switch (TweenData.ValueType)
 	{
 	case EDueValueType::Float:
@@ -164,27 +150,6 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 		{
 			const FVector NewVector = NewValue.GetSubtype<FVector>();
 			UObject* TargetUObject = TweenData.Target.Get();
-			// We interpret null property as actor/component location
-			if (TweenData.TargetProperty == nullptr)
-			{
-				DECLARE_CYCLE_STAT(TEXT("SetCurrentValue_Cast"), STAT_SetCurrentValue_Cast, STATGROUP_DUETWEEN);
-				SCOPE_CYCLE_COUNTER(STAT_SetCurrentValue_Cast);
-				if (USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TargetUObject);
-					TargetAsSceneComponent)
-				{
-					TargetAsSceneComponent->SetRelativeLocation(NewVector);
-					return;
-				}
-				if (AActor* TargetAsActor = Cast<AActor>(TargetUObject); TargetAsActor)
-				{
-					TargetAsActor->SetActorLocation(NewVector);
-					return;
-				}
-				UE_LOG(LogDUETween, Error,
-				       TEXT("Unable to support null TargetUObject property on non component/actor type: %s"),
-				       *TweenData.Target.Get()->GetClass()->GetName());
-			}
-
 			if (const FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 				VectorProperty
 				&& VectorProperty->Struct == TBaseStructure<FVector>::Get())
@@ -196,26 +161,9 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 		}
 	case EDueValueType::Rotator:
 		{
-			FRotator NewRotatorValue = NewValue.GetSubtype<FRotator>();
-			// We interpret null property as actor/component rotation
-			if (TweenData.TargetProperty == nullptr)
-			{
-				if (USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(TweenData.Target.Get());
-					TargetAsSceneComponent)
-				{
-					TargetAsSceneComponent->SetRelativeRotation(NewRotatorValue);
-					return;
-				}
-				if (AActor* TargetAsActor = Cast<AActor>(TweenData.Target.Get()); TargetAsActor)
-				{
-					TargetAsActor->SetActorRotation(NewRotatorValue);
-					return;
-				}
-				UE_LOG(LogDUETween, Error,
-				       TEXT("Unable to support null target property on non component/actor type: %s"),
-				       *TweenData.Target.Get()->GetClass()->GetName());
-			}
-			if (const FStructProperty* RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
+			const FRotator NewRotatorValue = NewValue.GetSubtype<FRotator>();
+			if (const FStructProperty* RotatorProperty = CastField<FStructProperty>(TweenData.TargetProperty)
+				;
 				RotatorProperty
 				&& RotatorProperty->Struct == TBaseStructure<FRotator>::Get())
 			{
@@ -225,18 +173,6 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 			break;
 		}
 	case EDueValueType::Vector2D:
-		if (TweenData.TargetProperty == nullptr)
-		{
-			if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(TweenData.Target.Get());
-				TargetAsCanvasPanelSlot)
-			{
-				TargetAsCanvasPanelSlot->SetPosition(NewValue.GetSubtype<FVector2D>());
-			}
-			UE_LOG(LogDUETween, Error,
-			       TEXT("Unable to support null target property on type: %s"),
-			       *TweenData.Target.Get()->GetClass()->GetName());
-			return;
-		}
 		if (const FStructProperty* VectorProperty = CastField<FStructProperty>(TweenData.TargetProperty);
 			VectorProperty
 			&& VectorProperty->Struct == TBaseStructure<FVector2D>::Get())
@@ -245,5 +181,25 @@ void FDueTweenInternalUtils::SetCurrentValueToProperty(const FDUETweenData& Twee
 			*StructAddress = NewValue.GetSubtype<FVector2D>();
 		}
 		break;
+	}
+}
+
+void FDueTweenInternalUtils::SetCurrentValue(const FDUETweenData& TweenData, const FValueContainer& NewValue)
+{
+	DECLARE_CYCLE_STAT(TEXT("SetCurrentValue"), STAT_SetCurrentValue, STATGROUP_DUETWEEN);
+	SCOPE_CYCLE_COUNTER(STAT_SetCurrentValue);
+
+	if (!TweenData.Target.IsValid())
+	{
+		return;
+	}
+	if (TweenData.UpdateType == EDueUpdateType::Function)
+	{
+		TweenData.TargetCallback(NewValue, TweenData.Target);
+		return;
+	}
+	if (TweenData.UpdateType == EDueUpdateType::Property)
+	{
+		SetProperty(TweenData, NewValue);
 	}
 }

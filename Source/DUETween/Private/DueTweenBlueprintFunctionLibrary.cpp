@@ -5,6 +5,7 @@
 
 #include "DueTweenSubsystem.h"
 #include "DueTweenAction.h"
+#include "Components/CanvasPanelSlot.h"
 
 void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
                                                 const FLatentActionInfo LatentInfo,
@@ -16,38 +17,43 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		// null property ref -> use location
-		FProperty* propertyRef = nullptr;
-		FDUETweenData tweenData;
-		tweenData.Target = Target;
-		tweenData.Duration = Duration;
-		tweenData.EasingType = DueEasingType;
-		tweenData.Steps = Steps;
-		tweenData.TargetProperty = propertyRef;
-		tweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
-		tweenData.ValueType = EDueValueType::Vector;
-		TWeakObjectPtr<UObject> TargetWeakPtr = tweenData.Target;
+		FDUETweenData TweenData;
+		TweenData.Target = Target;
+		TweenData.Duration = Duration;
+		TweenData.EasingType = DueEasingType;
+		TweenData.Steps = Steps;
+		TweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
+		TweenData.ValueType = EDueValueType::Vector;
+		TWeakObjectPtr<UObject> TargetWeakPtr = TweenData.Target;
+		TweenData.UpdateType = EDueUpdateType::Function;
 		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
 			TargetAsSceneComponent)
 		{
-			tweenData.StartingValue.SetSubtype<FVector>(TargetAsSceneComponent->GetRelativeLocation());
-			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue, const FDUETweenData& NewTweenData)
+			TweenData.StartingValue.SetSubtype<FVector>(TargetAsSceneComponent->GetRelativeLocation());
+			TweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
-				USceneComponent* SceneComp = Cast<USceneComponent>(NewTweenData.Target.Get());
+				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
 				SceneComp->SetRelativeLocation(UpdatedValue.GetSubtype<FVector>());
 			};
 		}
-		if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
+		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
 		{
-			tweenData.StartingValue.SetSubtype<FVector>(TargetAsActor->GetActorLocation());
-			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue, const FDUETweenData& NewTweenData)
+			TweenData.StartingValue.SetSubtype<FVector>(TargetAsActor->GetActorLocation());
+			TweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
-				AActor* TargetActor = Cast<AActor>(NewTweenData.Target.Get());
+				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
 				TargetActor->SetActorLocation(UpdatedValue.GetSubtype<FVector>());
 			};
 		}
+		else
+		{
+			UE_LOG(LogDUETween, Error, TEXT("Unsupported type for due move: %s"),
+			       *Target->StaticClass()->GetClassPathName().ToString());
+		}
 
-		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, TweenData);
 	}
 }
 
@@ -61,16 +67,31 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		// null property ref -> use location
-		FProperty* propertyRef = nullptr;
 		FDUETweenData tweenData;
 		tweenData.Target = Target;
 		tweenData.Duration = Duration;
 		tweenData.EasingType = DueEasingType;
 		tweenData.Steps = Steps;
-		tweenData.TargetProperty = propertyRef;
 		tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
 		tweenData.ValueType = EDueValueType::Vector2D;
+
+		tweenData.UpdateType = EDueUpdateType::Function;
+		if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(tweenData.Target.Get());
+			TargetAsCanvasPanelSlot)
+		{
+			tweenData.StartingValue.SetSubtype<FVector2D>(TargetAsCanvasPanelSlot->GetPosition());
+			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			{
+				UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TargetToUpdate.Get());
+				CanvasPanelSlot->SetPosition(UpdatedValue.GetSubtype<FVector2D>());
+			};
+		}
+		else
+		{
+			UE_LOG(LogDUETween, Error, TEXT("Unsupported type for due move 2d: %s"),
+			       *Target->StaticClass()->GetClassPathName().ToString());
+		}
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
@@ -86,16 +107,41 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		// null property ref -> use rotation
-		FProperty* propertyRef = nullptr;
 		FDUETweenData tweenData;
 		tweenData.Target = Target;
 		tweenData.Duration = Duration;
 		tweenData.EasingType = DueEasingType;
 		tweenData.Steps = Steps;
-		tweenData.TargetProperty = propertyRef;
 		tweenData.TargetValue.SetSubtype<FRotator>(TargetRotation);
 		tweenData.ValueType = EDueValueType::Rotator;
+		tweenData.UpdateType = EDueUpdateType::Function;
+		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
+			TargetAsSceneComponent)
+		{
+			tweenData.StartingValue.SetSubtype<FRotator>(TargetAsSceneComponent->GetRelativeRotation());
+			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			{
+				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
+				SceneComp->SetRelativeRotation(UpdatedValue.GetSubtype<FRotator>());
+			};
+		}
+		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
+		{
+			tweenData.StartingValue.SetSubtype<FRotator>(TargetAsActor->GetActorRotation());
+			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			{
+				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
+				TargetActor->SetActorRotation(UpdatedValue.GetSubtype<FRotator>());
+			};
+		}
+		else
+		{
+			UE_LOG(LogDUETween, Error, TEXT("Unsupported type for due rotate: %s"),
+			       *Target->StaticClass()->GetClassPathName().ToString());
+		}
+
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
 	}
@@ -127,6 +173,7 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
 			tweenData.Duration = Duration;
 			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.UpdateType = EDueUpdateType::Property;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<float>(TargetValue);
 			tweenData.ValueType = EDueValueType::Float;
@@ -162,6 +209,7 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
 			tweenData.Duration = Duration;
 			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.UpdateType = EDueUpdateType::Property;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<double>(TargetValue);
 			tweenData.ValueType = EDueValueType::Double;
@@ -197,6 +245,7 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
 			tweenData.Duration = Duration;
 			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.UpdateType = EDueUpdateType::Property;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FVector>(TargetValue);
 			tweenData.ValueType = EDueValueType::Vector;
@@ -233,6 +282,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 			tweenData.Duration = Duration;
 			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.UpdateType = EDueUpdateType::Property;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
 			tweenData.ValueType = EDueValueType::Vector;
@@ -267,6 +317,7 @@ void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
 			tweenData.Duration = Duration;
 			tweenData.EasingType = DueEasingType;
 			tweenData.Steps = Steps;
+			tweenData.UpdateType = EDueUpdateType::Property;
 			tweenData.TargetProperty = propertyRef;
 			tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
 			tweenData.ValueType = EDueValueType::Vector2D;
@@ -314,7 +365,7 @@ void UDueTweenBlueprintFunctionLibrary::StopDueTween(UObject* Target, const int&
 
 FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
 	UWorld* World, const FLatentActionInfo& LatentInfo,
-	const FDUETweenData& TweenData)
+	FDUETweenData& TweenData)
 {
 	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
 	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
