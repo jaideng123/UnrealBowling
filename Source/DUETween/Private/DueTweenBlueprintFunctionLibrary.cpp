@@ -3,6 +3,7 @@
 
 #include "DueTweenBlueprintFunctionLibrary.h"
 
+#include "DUETween.h"
 #include "DueTweenSubsystem.h"
 #include "DueTweenAction.h"
 #include "Components/CanvasPanelSlot.h"
@@ -17,35 +18,31 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FDUETweenData TweenData;
-		TweenData.Target = Target;
-		TweenData.Duration = Duration;
-		TweenData.EasingType = DueEasingType;
-		TweenData.Steps = Steps;
-		TweenData.TargetValue.SetSubtype<FVector>(TargetLocation);
-		TweenData.ValueType = EDueValueType::Vector;
-		TWeakObjectPtr<UObject> TargetWeakPtr = TweenData.Target;
-		TweenData.UpdateType = EDueUpdateType::Function;
+		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
 		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
 			TargetAsSceneComponent)
 		{
-			TweenData.StartingValue.SetSubtype<FVector>(TargetAsSceneComponent->GetRelativeLocation());
-			TweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
-			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			FVector StartingValue = TargetAsSceneComponent->GetRelativeLocation();
+			FTweenCallback TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                   const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
 				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
 				SceneComp->SetRelativeLocation(UpdatedValue.GetSubtype<FVector>());
 			};
+			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
+			                              DueEasingType, Steps);
 		}
 		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
 		{
-			TweenData.StartingValue.SetSubtype<FVector>(TargetAsActor->GetActorLocation());
-			TweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
-			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			FVector StartingValue = TargetAsActor->GetActorLocation();
+			FTweenCallback TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                   const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
 				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
 				TargetActor->SetActorLocation(UpdatedValue.GetSubtype<FVector>());
 			};
+			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
+			                              DueEasingType, Steps);
 		}
 		else
 		{
@@ -53,7 +50,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 			       *Target->StaticClass()->GetClassPathName().ToString());
 		}
 
-		OutHandle = CreateAndStartLatentAction(World, LatentInfo, TweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 	}
 }
 
@@ -67,25 +64,20 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FDUETweenData tweenData;
-		tweenData.Target = Target;
-		tweenData.Duration = Duration;
-		tweenData.EasingType = DueEasingType;
-		tweenData.Steps = Steps;
-		tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
-		tweenData.ValueType = EDueValueType::Vector2D;
+		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
 
-		tweenData.UpdateType = EDueUpdateType::Function;
-		if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(tweenData.Target.Get());
+		if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(Target);
 			TargetAsCanvasPanelSlot)
 		{
-			tweenData.StartingValue.SetSubtype<FVector2D>(TargetAsCanvasPanelSlot->GetPosition());
-			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
-			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			FVector2D StartingValue = TargetAsCanvasPanelSlot->GetPosition();
+			FTweenCallback TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                   const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
 				UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TargetToUpdate.Get());
 				CanvasPanelSlot->SetPosition(UpdatedValue.GetSubtype<FVector2D>());
 			};
+			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetValue, Duration,
+			                              DueEasingType, Steps);
 		}
 		else
 		{
@@ -93,7 +85,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 			       *Target->StaticClass()->GetClassPathName().ToString());
 		}
 
-		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 	}
 }
 
@@ -107,34 +99,32 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FDUETweenData tweenData;
-		tweenData.Target = Target;
-		tweenData.Duration = Duration;
-		tweenData.EasingType = DueEasingType;
-		tweenData.Steps = Steps;
-		tweenData.TargetValue.SetSubtype<FRotator>(TargetRotation);
-		tweenData.ValueType = EDueValueType::Rotator;
-		tweenData.UpdateType = EDueUpdateType::Function;
+		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
+
 		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
 			TargetAsSceneComponent)
 		{
-			tweenData.StartingValue.SetSubtype<FRotator>(TargetAsSceneComponent->GetRelativeRotation());
-			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
-			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			FRotator StartingValue = TargetAsSceneComponent->GetRelativeRotation();
+			FTweenCallback TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                   const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
 				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
 				SceneComp->SetRelativeRotation(UpdatedValue.GetSubtype<FRotator>());
 			};
+			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
+			                              DueEasingType, Steps);
 		}
 		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
 		{
-			tweenData.StartingValue.SetSubtype<FRotator>(TargetAsActor->GetActorRotation());
-			tweenData.TargetCallback = [](const FValueContainer& UpdatedValue,
-			                                         const TWeakObjectPtr<UObject>& TargetToUpdate)
+			FRotator StartingValue = TargetAsActor->GetActorRotation();
+			FTweenCallback TargetCallback = [](const FValueContainer& UpdatedValue,
+			                                   const TWeakObjectPtr<UObject>& TargetToUpdate)
 			{
 				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
 				TargetActor->SetActorRotation(UpdatedValue.GetSubtype<FRotator>());
 			};
+			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
+			                              DueEasingType, Steps);
 		}
 		else
 		{
@@ -143,7 +133,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 		}
 
 
-		OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 	}
 }
 
@@ -162,23 +152,16 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
 		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FDUETweenData tweenData;
-			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (propertyRef == nullptr)
+			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (PropertyRef == nullptr)
 			{
 				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
 				return;
 			}
-			tweenData.Target = Target;
-			tweenData.Duration = Duration;
-			tweenData.EasingType = DueEasingType;
-			tweenData.Steps = Steps;
-			tweenData.UpdateType = EDueUpdateType::Property;
-			tweenData.TargetProperty = propertyRef;
-			tweenData.TargetValue.SetSubtype<float>(TargetValue);
-			tweenData.ValueType = EDueValueType::Float;
+			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+			                                                          DueEasingType, Steps);
 
-			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
@@ -198,23 +181,16 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
 		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FDUETweenData tweenData;
-			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (propertyRef == nullptr)
+			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (PropertyRef == nullptr)
 			{
 				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
 				return;
 			}
-			tweenData.Target = Target;
-			tweenData.Duration = Duration;
-			tweenData.EasingType = DueEasingType;
-			tweenData.Steps = Steps;
-			tweenData.UpdateType = EDueUpdateType::Property;
-			tweenData.TargetProperty = propertyRef;
-			tweenData.TargetValue.SetSubtype<double>(TargetValue);
-			tweenData.ValueType = EDueValueType::Double;
+			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+																	  DueEasingType, Steps);
 
-			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
@@ -234,23 +210,16 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
 		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FDUETweenData tweenData;
-			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (propertyRef == nullptr)
+			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (PropertyRef == nullptr)
 			{
 				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
 				return;
 			}
-			tweenData.Target = Target;
-			tweenData.Duration = Duration;
-			tweenData.EasingType = DueEasingType;
-			tweenData.Steps = Steps;
-			tweenData.UpdateType = EDueUpdateType::Property;
-			tweenData.TargetProperty = propertyRef;
-			tweenData.TargetValue.SetSubtype<FVector>(TargetValue);
-			tweenData.ValueType = EDueValueType::Vector;
+			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+																	  DueEasingType, Steps);
 
-			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
@@ -267,28 +236,16 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
-			nullptr)
+		FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+		if (PropertyRef == nullptr)
 		{
-			FDUETweenData tweenData;
-			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (propertyRef == nullptr)
-			{
-				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-				return;
-			}
-			tweenData.Target = Target;
-			tweenData.Duration = Duration;
-			tweenData.EasingType = DueEasingType;
-			tweenData.Steps = Steps;
-			tweenData.UpdateType = EDueUpdateType::Property;
-			tweenData.TargetProperty = propertyRef;
-			tweenData.TargetValue.SetSubtype<FRotator>(TargetValue);
-			tweenData.ValueType = EDueValueType::Vector;
-
-			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
+			return;
 		}
+		const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+																  DueEasingType, Steps);
+
+		OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 	}
 }
 
@@ -306,23 +263,16 @@ void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
 		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FDUETweenData tweenData;
-			FProperty* propertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (propertyRef == nullptr)
+			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
+			if (PropertyRef == nullptr)
 			{
 				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
 				return;
 			}
-			tweenData.Target = Target;
-			tweenData.Duration = Duration;
-			tweenData.EasingType = DueEasingType;
-			tweenData.Steps = Steps;
-			tweenData.UpdateType = EDueUpdateType::Property;
-			tweenData.TargetProperty = propertyRef;
-			tweenData.TargetValue.SetSubtype<FVector2D>(TargetValue);
-			tweenData.ValueType = EDueValueType::Vector2D;
+			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+																	  DueEasingType, Steps);
 
-			OutHandle = CreateAndStartLatentAction(World, LatentInfo, tweenData);
+			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
@@ -363,19 +313,19 @@ void UDueTweenBlueprintFunctionLibrary::StopDueTween(UObject* Target, const int&
 	Success = false;
 }
 
+
 FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
 	UWorld* World, const FLatentActionInfo& LatentInfo,
-	FDUETweenData& TweenData)
+	const FActiveDueTweenHandle& TweenHandle)
 {
 	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
 	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
-		nullptr)
+		nullptr || TweenHandle == NULL_DUETWEEN_HANDLE)
 	{
-		const FActiveDueTweenHandle NewHandle = World->GetSubsystem<UDueTweenSubsystem>()->AddTween(TweenData);
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
-		                                 new FDueTweenAction(LatentInfo, NewHandle));
+		                                 new FDueTweenAction(LatentInfo, TweenHandle));
 		UE_LOG(LogDUETween, Verbose, TEXT("Starting latent due tween action with UUID: %d"), LatentInfo.UUID);
-		return NewHandle;
+		return TweenHandle;
 	}
 	UE_LOG(LogDUETween, Warning, TEXT("Unable to start due tween latent action with UUID: %d"), LatentInfo.UUID);
 	return NULL_DUETWEEN_HANDLE;

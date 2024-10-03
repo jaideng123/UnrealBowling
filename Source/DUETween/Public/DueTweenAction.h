@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "DUETween.h"
+#include "DUETweenModule.h"
 #include "DueEasingFunctionLibrary.h"
 #include "DueTweenSubsystem.h"
 #include "LatentActions.h"

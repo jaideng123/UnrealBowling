@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DueEasingFunctionLibrary.h"
-#include "DUETween.h"
+#include "DUETweenModule.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DueTweenBlueprintFunctionLibrary.generated.h"
@@ -129,5 +129,6 @@ public:
 	static void StopDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
 
 private:
-	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo, FDUETweenData&);
+	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo,
+	                                                        const FActiveDueTweenHandle& TweenHandle);
 };

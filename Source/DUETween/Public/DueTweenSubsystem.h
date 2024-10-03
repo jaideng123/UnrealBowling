@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DUETween.h"
+#include "DUETweenModule.h"
 #include "DueTweenPool.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DueTweenSubsystem.generated.h"

@@ -1,6 +1,6 @@
 #include "DueTweenPool.h"
 
-#include "DUETween.h"
+#include "DUETweenModule.h"
 #include "DueTweenSettings.h"
 
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Pooled Tweens"), STAT_POOLED_TWEENS, STATGROUP_DUETWEEN);

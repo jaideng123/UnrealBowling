@@ -1,25 +1,57 @@
-﻿#pragma once
-
-#include "CoreMinimal.h"
-#include "DueEasingFunctionLibrary.h"
+#pragma once
 #include "ActiveDueTween.h"
-#include "Containers/Union.h"
-#include "Modules/ModuleManager.h"
+#include "DueTweenSubsystem.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
-DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced);
-
-
-/**
- * Main Module for Due Tween
- */
-class FDUETweenModule : public IModuleInterface
+class DUETWEEN_API DUETween
 {
 public:
-	// Get active DueTween Module Instance
-	static FDUETweenModule& Get();
-	
-	// IModuleInterface Methods
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+	template <typename T>
+	static FActiveDueTweenHandle StartTween(const TWeakObjectPtr<UObject> Target,
+	                                        FProperty* Property,
+	                                        const T& TargetValue,
+	                                        const float& Duration,
+	                                        const EDueEasingType& Easing = EDueEasingType::InOutSin,
+	                                        const int32& Steps = 0)
+	{
+		static_assert(GetDueValueTypeConst<T>() == EDueValueType::Unset, "Unsupported Type");
+
+		FDUETweenData TweenData;
+		TweenData.Target = Target;
+		TweenData.Duration = Duration;
+		TweenData.EasingType = Easing;
+		TweenData.Steps = Steps;
+		TweenData.UpdateType = EDueUpdateType::Property;
+		TweenData.TargetProperty = Property;
+		TweenData.TargetValue.SetSubtype<T>(TargetValue);
+		TweenData.ValueType = GetDueValueType<T>();
+
+		const UWorld* World = Target.Get()->GetWorld();
+		return World->GetSubsystem<UDueTweenSubsystem>()->AddTween(TweenData);
+	}
+
+	template <typename T>
+	static FActiveDueTweenHandle StartTween(const TWeakObjectPtr<UObject> Target,
+	                                        FTweenCallback& Callback,
+	                                        const T& StartingValue,
+	                                        const T& TargetValue,
+	                                        const float& Duration,
+	                                        const EDueEasingType& Easing = EDueEasingType::InOutSin,
+	                                        const int32& Steps = 0)
+	{
+		static_assert(GetDueValueTypeConst<T>() == EDueValueType::Unset, "Unsupported Type");
+
+		FDUETweenData TweenData;
+		TweenData.Target = Target;
+		TweenData.Duration = Duration;
+		TweenData.EasingType = Easing;
+		TweenData.Steps = Steps;
+		TweenData.UpdateType = EDueUpdateType::Function;
+		TweenData.TargetCallback = std::move(Callback);
+		TweenData.StartingValue.SetSubtype<T>(StartingValue);
+		TweenData.TargetValue.SetSubtype<T>(TargetValue);
+		TweenData.ValueType = GetDueValueType<T>();
+
+		const UWorld* World = Target.Get()->GetWorld();
+		return World->GetSubsystem<UDueTweenSubsystem>()->AddTween(TweenData);
+	}
 };

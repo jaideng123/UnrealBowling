@@ -8,6 +8,7 @@ typedef int FActiveDueTweenHandle;
 constexpr FActiveDueTweenHandle NULL_DUETWEEN_HANDLE = -1;
 
 using FValueContainer = TUnion<FVector, FVector2D, FRotator, float, double>;
+using FTweenCallback = TUniqueFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)>;
 
 /**
  * Status of a tween
@@ -31,6 +32,7 @@ enum class EDueTweenStatus
  */
 enum class EDueValueType
 {
+	Unset,
 	Float,
 	Double,
 	Vector,
@@ -43,8 +45,65 @@ enum class EDueValueType
 	 * 3. Set and GetCurrentValueFromProperty
 	 * 4. TickTween
 	 * 5. UDueTweenBlueprintFunctionLibrary
+	 * 6. GetDueValueType
 	 */
 };
+
+// This doesn't work if you change or add anything for some reason
+// TODO: figure out why
+template <typename T>
+constexpr EDueValueType GetDueValueTypeConst()
+{
+	if (std::is_same_v<T, const float&>)
+	{
+		return EDueValueType::Float;
+	}
+	if (std::is_same_v<T, const double&>)
+	{
+		return EDueValueType::Double;
+	}
+	if (std::is_same_v<T, const FVector&>)
+	{
+		return EDueValueType::Vector;
+	}
+	if (std::is_same_v<T, const FRotator&>)
+	{
+		return EDueValueType::Rotator;
+	}
+	if (std::is_same_v<T, const FVector2D&>)
+	{
+		return EDueValueType::Vector2D;
+	}
+	return EDueValueType::Unset;
+}
+
+
+// This is necessary because above only works as constexpr and this doesnt
+template <typename T>
+constexpr EDueValueType GetDueValueType()
+{
+	if (std::is_same_v<T, float>)
+	{
+		return EDueValueType::Float;
+	}
+	if (std::is_same_v<T, double>)
+	{
+		return EDueValueType::Double;
+	}
+	if (std::is_same_v<T, FVector>)
+	{
+		return EDueValueType::Vector;
+	}
+	if (std::is_same_v<T, FRotator>)
+	{
+		return EDueValueType::Rotator;
+	}
+	if (std::is_same_v<T, FVector2D>)
+	{
+		return EDueValueType::Vector2D;
+	}
+	return EDueValueType::Unset;
+}
 
 /**
  * Value type for data manipulated by tween
@@ -69,7 +128,7 @@ enum class EDueUpdateType
  */
 struct FDUETweenData
 {
-	TUniqueFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)> TargetCallback;
+	FTweenCallback TargetCallback;
 	FProperty* TargetProperty;
 
 	EDueUpdateType UpdateType = EDueUpdateType::Unset;
@@ -82,7 +141,6 @@ struct FDUETweenData
 	float Duration = 0;
 	EDueEasingType EasingType = EDueEasingType::Linear;
 	int32 Steps = 0;
-	
 };
 
 /**

@@ -1,6 +1,6 @@
 #include "DueEasingFunctionLibrary.h"
 
-#include "DUETween.h"
+#include "DUETweenModule.h"
 #include "Kismet/KismetMathLibrary.h"
 
 double DueEasingFunctionLibrary::Ease(const double& Begin, const double& End, const double& Alpha,
