@@ -1,14 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DueTweenBlueprintFunctionLibrary.h"
+#include "DUETweenBlueprintFunctionLibrary.h"
 
 #include "DUETween.h"
-#include "DueTweenSubsystem.h"
-#include "DueTweenAction.h"
+#include "DUETweenSubsystem.h"
+#include "DUETweenAction.h"
 #include "Components/CanvasPanelSlot.h"
 
-void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueMove(UObject* Target,
                                                 const FLatentActionInfo LatentInfo,
                                                 const float Duration,
                                                 const FVector TargetLocation,
@@ -18,7 +18,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
+		FActiveDUETweenHandle Handle = NULL_DUETWEEN_HANDLE;
 		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
 			TargetAsSceneComponent)
 		{
@@ -29,7 +29,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
 				SceneComp->SetRelativeLocation(UpdatedValue.GetSubtype<FVector>());
 			};
-			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
+			Handle = DUETween::StartDUETween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
 			                              DueEasingType, Steps);
 		}
 		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
@@ -41,7 +41,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
 				TargetActor->SetActorLocation(UpdatedValue.GetSubtype<FVector>());
 			};
-			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
+			Handle = DUETween::StartDUETween(Target, TargetCallback, StartingValue, TargetLocation, Duration,
 			                              DueEasingType, Steps);
 		}
 		else
@@ -54,7 +54,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
                                                   FLatentActionInfo LatentInfo,
                                                   float Duration,
                                                   FVector2D TargetValue,
@@ -64,7 +64,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
+		FActiveDUETweenHandle Handle = NULL_DUETWEEN_HANDLE;
 
 		if (UCanvasPanelSlot* TargetAsCanvasPanelSlot = Cast<UCanvasPanelSlot>(Target);
 			TargetAsCanvasPanelSlot)
@@ -76,7 +76,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 				UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TargetToUpdate.Get());
 				CanvasPanelSlot->SetPosition(UpdatedValue.GetSubtype<FVector2D>());
 			};
-			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetValue, Duration,
+			Handle = DUETween::StartDUETween(Target, TargetCallback, StartingValue, TargetValue, Duration,
 			                              DueEasingType, Steps);
 		}
 		else
@@ -89,7 +89,7 @@ void UDueTweenBlueprintFunctionLibrary::DueMove2D(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
                                                   const FLatentActionInfo LatentInfo,
                                                   const float Duration,
                                                   const FRotator TargetRotation,
@@ -99,7 +99,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 {
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FActiveDueTweenHandle Handle = NULL_DUETWEEN_HANDLE;
+		FActiveDUETweenHandle Handle = NULL_DUETWEEN_HANDLE;
 
 		if (const USceneComponent* TargetAsSceneComponent = Cast<USceneComponent>(Target);
 			TargetAsSceneComponent)
@@ -111,7 +111,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 				USceneComponent* SceneComp = Cast<USceneComponent>(TargetToUpdate.Get());
 				SceneComp->SetRelativeRotation(UpdatedValue.GetSubtype<FRotator>());
 			};
-			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
+			Handle = DUETween::StartDUETween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
 			                              DueEasingType, Steps);
 		}
 		else if (AActor* TargetAsActor = Cast<AActor>(Target); TargetAsActor)
@@ -123,7 +123,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 				AActor* TargetActor = Cast<AActor>(TargetToUpdate.Get());
 				TargetActor->SetActorRotation(UpdatedValue.GetSubtype<FRotator>());
 			};
-			Handle = DUETween::StartTween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
+			Handle = DUETween::StartDUETween(Target, TargetCallback, StartingValue, TargetRotation, Duration,
 			                              DueEasingType, Steps);
 		}
 		else
@@ -137,7 +137,7 @@ void UDueTweenBlueprintFunctionLibrary::DueRotate(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
                                                       const FLatentActionInfo LatentInfo,
                                                       const FName FieldName,
                                                       const float Duration,
@@ -149,16 +149,10 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+		if (LatentActionManager.FindExistingAction<FDUETweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (PropertyRef == nullptr)
-			{
-				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-				return;
-			}
-			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+			const FActiveDUETweenHandle Handle = DUETween::StartDUETween(Target, FieldName, TargetValue, Duration,
 			                                                          DueEasingType, Steps);
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
@@ -166,7 +160,7 @@ void UDueTweenBlueprintFunctionLibrary::DueFloatField(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
                                                        const FLatentActionInfo LatentInfo,
                                                        const FName FieldName,
                                                        const float Duration,
@@ -178,24 +172,18 @@ void UDueTweenBlueprintFunctionLibrary::DueDoubleField(UObject* Target,
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+		if (LatentActionManager.FindExistingAction<FDUETweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (PropertyRef == nullptr)
-			{
-				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-				return;
-			}
-			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
-																	  DueEasingType, Steps);
+			const FActiveDUETweenHandle Handle = DUETween::StartDUETween(Target, FieldName, TargetValue, Duration,
+			                                                          DueEasingType, Steps);
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
                                                        const FLatentActionInfo LatentInfo,
                                                        const FName FieldName,
                                                        const float Duration,
@@ -207,24 +195,18 @@ void UDueTweenBlueprintFunctionLibrary::DueVectorField(UObject* Target,
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+		if (LatentActionManager.FindExistingAction<FDUETweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (PropertyRef == nullptr)
-			{
-				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-				return;
-			}
-			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
-																	  DueEasingType, Steps);
+			const FActiveDUETweenHandle Handle = DUETween::StartDUETween(Target, FieldName, TargetValue, Duration,
+			                                                          DueEasingType, Steps);
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 		}
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
                                                         const FLatentActionInfo LatentInfo,
                                                         const FName FieldName,
                                                         const float Duration,
@@ -236,20 +218,14 @@ void UDueTweenBlueprintFunctionLibrary::DueRotatorField(UObject* Target,
 	// Prepare latent action
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
-		FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-		if (PropertyRef == nullptr)
-		{
-			UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-			return;
-		}
-		const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
-																  DueEasingType, Steps);
+		const FActiveDUETweenHandle Handle = DUETween::StartDUETween(Target, FieldName, TargetValue, Duration,
+		                                                          DueEasingType, Steps);
 
 		OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
+void UDUETweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
                                                          FLatentActionInfo LatentInfo, FName FieldName,
                                                          float Duration,
                                                          FVector2D TargetValue,
@@ -260,16 +236,10 @@ void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
 	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
 	{
 		FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-		if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+		if (LatentActionManager.FindExistingAction<FDUETweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 			nullptr)
 		{
-			FProperty* PropertyRef = Target->GetClass()->FindPropertyByName(FieldName);
-			if (PropertyRef == nullptr)
-			{
-				UE_LOG(LogDUETween, Error, TEXT("No Property Found For:%s"), *FieldName.ToString());
-				return;
-			}
-			const FActiveDueTweenHandle Handle = DUETween::StartTween(Target, PropertyRef, TargetValue, Duration,
+			const FActiveDUETweenHandle Handle = DUETween::StartDUETween(Target, FieldName, TargetValue, Duration,
 																	  DueEasingType, Steps);
 
 			OutHandle = CreateAndStartLatentAction(World, LatentInfo, Handle);
@@ -277,53 +247,37 @@ void UDueTweenBlueprintFunctionLibrary::DueVector2DField(UObject* Target,
 	}
 }
 
-void UDueTweenBlueprintFunctionLibrary::PauseDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
+void UDUETweenBlueprintFunctionLibrary::PauseDUETween(UObject* Target, const int& DUETweenHandle, bool& Success)
 {
-	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
-	{
-		Success = World->GetSubsystem<UDueTweenSubsystem>()->PauseTween(DueTweenHandle);
-	}
-	Success = false;
+	Success = DUETween::PauseDUETween(Target,DUETweenHandle);
 }
 
-void UDueTweenBlueprintFunctionLibrary::ResumeDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
+void UDUETweenBlueprintFunctionLibrary::ResumeDUETween(UObject* Target, const int& DUETweenHandle, bool& Success)
 {
-	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
-	{
-		Success = World->GetSubsystem<UDueTweenSubsystem>()->ResumeTween(DueTweenHandle);
-	}
-	Success = false;
+	Success = DUETween::ResumeDUETween(Target,DUETweenHandle);
 }
 
-void UDueTweenBlueprintFunctionLibrary::FastForwardDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
+void UDUETweenBlueprintFunctionLibrary::FastForwardDUETween(UObject* Target, const int& DUETweenHandle, bool& Success)
 {
-	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
-	{
-		Success = World->GetSubsystem<UDueTweenSubsystem>()->FastForwardTween(DueTweenHandle);
-	}
-	Success = false;
+	Success = DUETween::FastForwardDUETween(Target,DUETweenHandle);
 }
 
-void UDueTweenBlueprintFunctionLibrary::StopDueTween(UObject* Target, const int& DueTweenHandle, bool& Success)
+void UDUETweenBlueprintFunctionLibrary::StopDUETween(UObject* Target, const int& DUETweenHandle, bool& Success)
 {
-	if (UWorld* World = GEngine->GetWorldFromContextObject(Target, EGetWorldErrorMode::ReturnNull))
-	{
-		Success = World->GetSubsystem<UDueTweenSubsystem>()->StopTween(DueTweenHandle);
-	}
-	Success = false;
+	Success = DUETween::StopDUETween(Target,DUETweenHandle);
 }
 
 
-FActiveDueTweenHandle UDueTweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
+FActiveDUETweenHandle UDUETweenBlueprintFunctionLibrary::CreateAndStartLatentAction(
 	UWorld* World, const FLatentActionInfo& LatentInfo,
-	const FActiveDueTweenHandle& TweenHandle)
+	const FActiveDUETweenHandle& TweenHandle)
 {
 	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
-	if (LatentActionManager.FindExistingAction<FDueTweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
+	if (LatentActionManager.FindExistingAction<FDUETweenAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) ==
 		nullptr || TweenHandle == NULL_DUETWEEN_HANDLE)
 	{
 		LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID,
-		                                 new FDueTweenAction(LatentInfo, TweenHandle));
+		                                 new FDUETweenAction(LatentInfo, TweenHandle));
 		UE_LOG(LogDUETween, Verbose, TEXT("Starting latent due tween action with UUID: %d"), LatentInfo.UUID);
 		return TweenHandle;
 	}

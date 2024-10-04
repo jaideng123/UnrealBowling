@@ -51,9 +51,9 @@ enum EDueEasingType : int
 };
 
 /**
- * Library of easing functions used by DueTween
+ * Library of easing functions used by DUETween
  */
-class DueEasingFunctionLibrary
+class DUEEasingFunctionLibrary
 {
 public:
 	static double Ease(const double& Begin, const double& End, const double& Alpha, const EDueEasingType& Easing, const int32& Steps = 0);

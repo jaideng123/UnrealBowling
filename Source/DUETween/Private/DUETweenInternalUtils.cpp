@@ -1,9 +1,9 @@
-#include "DueTweenInternalUtils.h"
+#include "DUETweenInternalUtils.h"
 
 #include "Components/CanvasPanelSlot.h"
 
 
-FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
+FValueContainer FDUETweenInternalUtils::GetCurrentValueFromProperty(const FDUETweenData& TweenData)
 {
 	if (!TweenData.Target.IsValid() || TweenData.UpdateType != EDueUpdateType::Property)
 	{
@@ -126,7 +126,7 @@ FValueContainer FDueTweenInternalUtils::GetCurrentValueFromProperty(const FDUETw
 	return FValueContainer();
 }
 
-void FDueTweenInternalUtils::SetProperty(const FDUETweenData& TweenData, const FValueContainer& NewValue)
+void FDUETweenInternalUtils::SetProperty(const FDUETweenData& TweenData, const FValueContainer& NewValue)
 {
 	switch (TweenData.ValueType)
 	{
@@ -184,9 +184,9 @@ void FDueTweenInternalUtils::SetProperty(const FDUETweenData& TweenData, const F
 	}
 }
 
-void FDueTweenInternalUtils::SetCurrentValue(const FDUETweenData& TweenData, const FValueContainer& NewValue)
+void FDUETweenInternalUtils::SetCurrentValue(const FDUETweenData& TweenData, const FValueContainer& NewValue)
 {
-	DECLARE_CYCLE_STAT(TEXT("SetCurrentValue"), STAT_SetCurrentValue, STATGROUP_DUETWEEN);
+	DECLARE_CYCLE_STAT(TEXT("SetCurrentValue"), STAT_SetCurrentValue, STATGROUP_DUETween);
 	SCOPE_CYCLE_COUNTER(STAT_SetCurrentValue);
 
 	if (!TweenData.Target.IsValid())
@@ -195,7 +195,7 @@ void FDueTweenInternalUtils::SetCurrentValue(const FDUETweenData& TweenData, con
 	}
 	if (TweenData.UpdateType == EDueUpdateType::Function)
 	{
-		TweenData.TargetCallback(NewValue, TweenData.Target);
+		TweenData.UpdateCallback(NewValue, TweenData.Target);
 		return;
 	}
 	if (TweenData.UpdateType == EDueUpdateType::Property)

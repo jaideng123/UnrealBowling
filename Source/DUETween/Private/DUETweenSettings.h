@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
-#include "DueTweenSettings.generated.h"
+#include "DUETweenSettings.generated.h"
 
 /**
  * Developer Settings for Due Tween
  */
 UCLASS(Config=Plugin, defaultconfig, meta = (DisplayName="Due Tween Settings"))
-class DUETWEEN_API UDueTweenSettings : public UDeveloperSettings
+class UDUETweenSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 

@@ -1,35 +1,35 @@
-#include "DueTweenPool.h"
+#include "DUETweenPool.h"
 
 #include "DUETweenModule.h"
-#include "DueTweenSettings.h"
+#include "DUETweenSettings.h"
 
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Pooled Tweens"), STAT_POOLED_TWEENS, STATGROUP_DUETWEEN);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Tween Pool Size"), STAT_TWEEN_POOL_SIZE, STATGROUP_DUETWEEN);
-LLM_DEFINE_TAG(FDueTweenPoolTag);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Pooled Tweens"), STAT_POOLED_TWEENS, STATGROUP_DUETween);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Tween Pool Size"), STAT_TWEEN_POOL_SIZE, STATGROUP_DUETween);
+LLM_DEFINE_TAG(FDUETweenPoolTag);
 
-void FDueTweenPool::InitTweenPool()
+void FDUETweenPool::InitTweenPool()
 {
-	LLM_SCOPE_BYTAG(FDueTweenPoolTag);
+	LLM_SCOPE_BYTAG(FDUETweenPoolTag);
 	if (TweenPool != nullptr)
 	{
 		delete[] TweenPool;
 	}
 
-	check(GetDefault<UDueTweenSettings>()->InitialTweenPoolSize <= GetDefault<UDueTweenSettings>()->MaxTweenPoolSize)
+	check(GetDefault<UDUETweenSettings>()->InitialTweenPoolSize <= GetDefault<UDUETweenSettings>()->MaxTweenPoolSize)
 
-	CurrentTotalPoolSize = GetDefault<UDueTweenSettings>()->InitialTweenPoolSize;
+	CurrentTotalPoolSize = GetDefault<UDUETweenSettings>()->InitialTweenPoolSize;
 
-	TweenPool = new FActiveDueTween[CurrentTotalPoolSize];
+	TweenPool = new FActiveDUETween[CurrentTotalPoolSize];
 
 	for (int i = 0; i < CurrentTotalPoolSize - 1; ++i)
 	{
-		TweenPool[i].TweenPtr.NextFreeTween = FActiveDueTweenHandle(i + 1);
-		TweenPool[i].Status = EDueTweenStatus::Unset;
+		TweenPool[i].TweenPtr.NextFreeTween = FActiveDUETweenHandle(i + 1);
+		TweenPool[i].Status = EDUETweenStatus::Unset;
 		TweenPool[i].ID = 0;
 		TweenPool[i].Handle = i;
 	}
 	TweenPool[CurrentTotalPoolSize - 1].TweenPtr.NextFreeTween = NULL_DUETWEEN_HANDLE;
-	TweenPool[CurrentTotalPoolSize - 1].Status = EDueTweenStatus::Unset;
+	TweenPool[CurrentTotalPoolSize - 1].Status = EDUETweenStatus::Unset;
 	TweenPool[CurrentTotalPoolSize - 1].ID = 0;
 	TweenPool[CurrentTotalPoolSize - 1].Handle = CurrentTotalPoolSize - 1;
 
@@ -39,12 +39,12 @@ void FDueTweenPool::InitTweenPool()
 	SET_DWORD_STAT(STAT_TWEEN_POOL_SIZE, CurrentTotalPoolSize);
 }
 
-void FDueTweenPool::ExpandPool(const int& Amount)
+void FDUETweenPool::ExpandPool(const int& Amount)
 {
-	DECLARE_CYCLE_STAT(TEXT("ExpandPool"), STAT_ExpandPool, STATGROUP_DUETWEEN);
+	DECLARE_CYCLE_STAT(TEXT("ExpandPool"), STAT_ExpandPool, STATGROUP_DUETween);
 	SCOPE_CYCLE_COUNTER(STAT_ExpandPool);
-	LLM_SCOPE_BYTAG(FDueTweenPoolTag);
-	const int MaxPoolSize = GetDefault<UDueTweenSettings>()->MaxTweenPoolSize;
+	LLM_SCOPE_BYTAG(FDUETweenPoolTag);
+	const int MaxPoolSize = GetDefault<UDUETweenSettings>()->MaxTweenPoolSize;
 	if (CurrentTotalPoolSize == MaxPoolSize)
 	{
 		UE_LOG(LogDUETween, Warning,
@@ -53,31 +53,31 @@ void FDueTweenPool::ExpandPool(const int& Amount)
 	}
 
 	const int OldTweenPoolSize = CurrentTotalPoolSize;
-	const FActiveDueTween* OldTweenPool = TweenPool;
+	const FActiveDUETween* OldTweenPool = TweenPool;
 
 	CurrentTotalPoolSize = FMath::Min(CurrentTotalPoolSize + Amount, MaxPoolSize);
 	UE_LOG(LogDUETween, Verbose,
-		   TEXT("Allocating: %d"), CurrentTotalPoolSize * static_cast<int>(sizeof(FActiveDueTween)));
-	TweenPool = new FActiveDueTween[CurrentTotalPoolSize];
+		   TEXT("Allocating: %d"), CurrentTotalPoolSize * static_cast<int>(sizeof(FActiveDUETween)));
+	TweenPool = new FActiveDUETween[CurrentTotalPoolSize];
 
 	// Copy old pool to new
-	FMemory::Memcpy(TweenPool, OldTweenPool, sizeof(FActiveDueTween) * OldTweenPoolSize);
+	FMemory::Memcpy(TweenPool, OldTweenPool, sizeof(FActiveDUETween) * OldTweenPoolSize);
 
 	// Delete the old pool
 	UE_LOG(LogDUETween, Verbose,
-	   TEXT("De-Allocating: %d"), OldTweenPoolSize * static_cast<int>(sizeof(FActiveDueTween)));
+	   TEXT("De-Allocating: %d"), OldTweenPoolSize * static_cast<int>(sizeof(FActiveDUETween)));
 	delete[] OldTweenPool;
 
 	TweenPool[OldTweenPoolSize - 1].TweenPtr.NextFreeTween = OldTweenPoolSize;
 	for (int i = OldTweenPoolSize; i < CurrentTotalPoolSize - 1; ++i)
 	{
 		TweenPool[i].TweenPtr.NextFreeTween = i + 1;
-		TweenPool[i].Status = EDueTweenStatus::Unset;
+		TweenPool[i].Status = EDUETweenStatus::Unset;
 		TweenPool[i].ID = 0;
 		TweenPool[i].Handle = i;
 	}
 	TweenPool[CurrentTotalPoolSize - 1].TweenPtr.NextFreeTween = NULL_DUETWEEN_HANDLE;
-	TweenPool[CurrentTotalPoolSize - 1].Status = EDueTweenStatus::Unset;
+	TweenPool[CurrentTotalPoolSize - 1].Status = EDUETweenStatus::Unset;
 	TweenPool[CurrentTotalPoolSize - 1].ID = 0;
 	TweenPool[CurrentTotalPoolSize - 1].Handle = CurrentTotalPoolSize - 1;
 	if (NextAvailableTween == NULL_DUETWEEN_HANDLE)
@@ -88,7 +88,7 @@ void FDueTweenPool::ExpandPool(const int& Amount)
 	SET_DWORD_STAT(STAT_TWEEN_POOL_SIZE, CurrentTotalPoolSize);
 }
 
-FActiveDueTween* FDueTweenPool::GetTweenFromHandle(const FActiveDueTweenHandle TweenHandle) const
+FActiveDUETween* FDUETweenPool::GetTweenFromHandle(const FActiveDUETweenHandle TweenHandle) const
 {
 	if (TweenHandle == NULL_DUETWEEN_HANDLE || TweenHandle >= CurrentTotalPoolSize)
 	{
@@ -97,12 +97,12 @@ FActiveDueTween* FDueTweenPool::GetTweenFromHandle(const FActiveDueTweenHandle T
 	return &TweenPool[TweenHandle];
 }
 
-FActiveDueTweenHandle FDueTweenPool::GetTweenFromPool()
+FActiveDUETweenHandle FDUETweenPool::GetTweenFromPool()
 {
-	DECLARE_CYCLE_STAT(TEXT("GetTweenFromPool"), STAT_GetTweenFromPool, STATGROUP_DUETWEEN);
+	DECLARE_CYCLE_STAT(TEXT("GetTweenFromPool"), STAT_GetTweenFromPool, STATGROUP_DUETween);
 	SCOPE_CYCLE_COUNTER(STAT_GetTweenFromPool);
 
-	const FActiveDueTweenHandle HandleFromPool = NextAvailableTween;
+	const FActiveDUETweenHandle HandleFromPool = NextAvailableTween;
 	if (NextAvailableTween == NULL_DUETWEEN_HANDLE)
 	{
 		UE_LOG(LogDUETween, Error,
@@ -116,25 +116,25 @@ FActiveDueTweenHandle FDueTweenPool::GetTweenFromPool()
 	if (GetTweenFromHandle(NextAvailableTween)->TweenPtr.NextFreeTween == NULL_DUETWEEN_HANDLE)
 	{
 		// If there's only 1 tween left, expand the pool
-		ExpandPool(GetDefault<UDueTweenSettings>()->PoolExpansionIncrement);
+		ExpandPool(GetDefault<UDUETweenSettings>()->PoolExpansionIncrement);
 	}
 
 	DEC_DWORD_STAT(STAT_POOLED_TWEENS);
 	return HandleFromPool;
 }
 
-void FDueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
+void FDUETweenPool::ReturnTweenToPool(FActiveDUETweenHandle TweenToReturnHandle)
 {
-	FActiveDueTween* TweenToReturn = GetTweenFromHandle(TweenToReturnHandle);
-	DECLARE_CYCLE_STAT(TEXT("ReturnTweenToPool"), STAT_ReturnTweenToPool, STATGROUP_DUETWEEN);
+	FActiveDUETween* TweenToReturn = GetTweenFromHandle(TweenToReturnHandle);
+	DECLARE_CYCLE_STAT(TEXT("ReturnTweenToPool"), STAT_ReturnTweenToPool, STATGROUP_DUETween);
 	SCOPE_CYCLE_COUNTER(STAT_ReturnTweenToPool);
 	UE_LOG(LogDUETween, Verbose, TEXT("Returning Tween: %u to pool"), TweenToReturn->ID);
 	// add to free list
 	{
 		DECLARE_CYCLE_STAT(TEXT("ReturnTweenToPool_AddToFreeList"), STAT_ReturnTweenToPool_AddToFreeList,
-		                   STATGROUP_DUETWEEN);
+		                   STATGROUP_DUETween);
 		SCOPE_CYCLE_COUNTER(STAT_ReturnTweenToPool_AddToFreeList);
-		TweenToReturn->Status = EDueTweenStatus::Unset;
+		TweenToReturn->Status = EDUETweenStatus::Unset;
 		TweenToReturn->TweenPtr.NextFreeTween = NextAvailableTween;
 		NextAvailableTween = TweenToReturn->Handle;
 
@@ -142,7 +142,7 @@ void FDueTweenPool::ReturnTweenToPool(FActiveDueTweenHandle TweenToReturnHandle)
 	}
 }
 
-int FDueTweenPool::GetCurrentPoolSize() const
+int FDUETweenPool::GetCurrentPoolSize() const
 {
 	return CurrentTotalPoolSize;
 }

@@ -1,13 +1,13 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "DueEasingFunctionLibrary.h"
-#include "ActiveDueTween.h"
+#include "DUEEasingFunctionLibrary.h"
+#include "ActiveDUETween.h"
 #include "Containers/Union.h"
 #include "Modules/ModuleManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDUETween, Log, All);
-DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced);
+DECLARE_STATS_GROUP(TEXT("DUETween"), STATGROUP_DUETween, STATCAT_Advanced);
 
 
 /**
@@ -16,7 +16,7 @@ DECLARE_STATS_GROUP(TEXT("DUETWEEN"), STATGROUP_DUETWEEN, STATCAT_Advanced);
 class FDUETweenModule : public IModuleInterface
 {
 public:
-	// Get active DueTween Module Instance
+	// Get active DUETween Module Instance
 	static FDUETweenModule& Get();
 	
 	// IModuleInterface Methods

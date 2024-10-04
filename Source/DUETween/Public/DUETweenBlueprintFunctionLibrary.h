@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DueEasingFunctionLibrary.h"
+#include "DUEEasingFunctionLibrary.h"
 #include "DUETweenModule.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "DueTweenBlueprintFunctionLibrary.generated.h"
+#include "DUETweenBlueprintFunctionLibrary.generated.h"
 
 struct FDUETweenData;
 /**
  * Due Tween Function Library
  */
 UCLASS()
-class DUETWEEN_API UDueTweenBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
+class DUETWEEN_API UDUETweenBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -114,21 +114,21 @@ public:
 
 	// Pause an actively running tween
 	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
-	static void PauseDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
+	static void PauseDUETween(UObject* Target, const int& DUETweenHandle, bool& Success);
 	
 	// Resume a paused tween
 	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
-	static void ResumeDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
+	static void ResumeDUETween(UObject* Target, const int& DUETweenHandle, bool& Success);
 
 	// Fast-Forward a tween to it's end state
 	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
-	static void FastForwardDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
+	static void FastForwardDUETween(UObject* Target, const int& DUETweenHandle, bool& Success);
 
 	// Stop and cancel a tween
 	UFUNCTION(BlueprintCallable, Category = "DUETween", meta = (DefaultToSelf="Target"))
-	static void StopDueTween(UObject* Target, const int& DueTweenHandle, bool& Success);
+	static void StopDUETween(UObject* Target, const int& DUETweenHandle, bool& Success);
 
 private:
-	static FActiveDueTweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo,
-	                                                        const FActiveDueTweenHandle& TweenHandle);
+	static FActiveDUETweenHandle CreateAndStartLatentAction(UWorld* World, const FLatentActionInfo& LatentInfo,
+	                                                        const FActiveDUETweenHandle& TweenHandle);
 };

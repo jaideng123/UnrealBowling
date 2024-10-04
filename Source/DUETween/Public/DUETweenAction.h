@@ -1,14 +1,14 @@
 ﻿#pragma once
 #include "DUETweenModule.h"
-#include "DueEasingFunctionLibrary.h"
-#include "DueTweenSubsystem.h"
+#include "DUEEasingFunctionLibrary.h"
+#include "DUETweenSubsystem.h"
 #include "LatentActions.h"
 
 
 /**
  * Latent Action that tracks an active tween
  */
-class DUETWEEN_API FDueTweenAction : public FPendingLatentAction
+class DUETWEEN_API FDUETweenAction : public FPendingLatentAction
 {
 public:
 	FName ExecutionFunction;
@@ -16,15 +16,15 @@ public:
 	FWeakObjectPtr CallbackTarget;
 
 private:
-	FActiveDueTweenHandle ActiveDueTween;
+	FActiveDUETweenHandle ActiveDUETween;
 
 public:
-	FDueTweenAction(const FLatentActionInfo& LatentInfo, const FActiveDueTweenHandle& NewActiveDueTweenHandle)
+	FDUETweenAction(const FLatentActionInfo& LatentInfo, const FActiveDUETweenHandle& NewActiveDUETweenHandle)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		  , OutputLink(LatentInfo.Linkage)
 		  , CallbackTarget(LatentInfo.CallbackTarget)
 	{
-		ActiveDueTween = NewActiveDueTweenHandle;
+		ActiveDUETween = NewActiveDUETweenHandle;
 	}
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;
@@ -36,13 +36,13 @@ public:
 		static const FNumberFormattingOptions DelayTimeFormatOptions = FNumberFormattingOptions()
 		                                                               .SetMinimumFractionalDigits(3)
 		                                                               .SetMaximumFractionalDigits(3);
-		FActiveDueTween* tween = CallbackTarget.Get()->GetWorld()->GetSubsystem<UDueTweenSubsystem>()->
-		                                        GetTweenFromHandle(ActiveDueTween);
+		FActiveDUETween* tween = CallbackTarget.Get()->GetWorld()->GetSubsystem<UDUETweenSubsystem>()->
+		                                        GetTweenFromHandle(ActiveDUETween);
 		return FText::Format(
-			NSLOCTEXT("DueTweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
+			NSLOCTEXT("DUETweenAction", "DelayActionTimeFmt", "Tween ({0} seconds left)"),
 			FText::AsNumber(
-				tween->TweenData.Duration - CallbackTarget.Get()->GetWorld()->GetSubsystem<UDueTweenSubsystem>()->
-				                                           GetTweenFromHandle(ActiveDueTween)->TimeElapsed,
+				tween->TweenData.Duration - CallbackTarget.Get()->GetWorld()->GetSubsystem<UDUETweenSubsystem>()->
+				                                           GetTweenFromHandle(ActiveDUETween)->TimeElapsed,
 				&DelayTimeFormatOptions)).ToString();
 	}
 #endif

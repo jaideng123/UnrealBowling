@@ -1,11 +1,11 @@
 #pragma once
 #include <functional>
 
-#include "DueEasingFunctionLibrary.h"
+#include "DUEEasingFunctionLibrary.h"
 #include "Containers/Union.h"
 
-typedef int FActiveDueTweenHandle;
-constexpr FActiveDueTweenHandle NULL_DUETWEEN_HANDLE = -1;
+typedef int FActiveDUETweenHandle;
+constexpr FActiveDUETweenHandle NULL_DUETWEEN_HANDLE = -1;
 
 using FValueContainer = TUnion<FVector, FVector2D, FRotator, float, double>;
 using FTweenCallback = TUniqueFunction<void(const FValueContainer&, const TWeakObjectPtr<UObject>&)>;
@@ -13,7 +13,7 @@ using FTweenCallback = TUniqueFunction<void(const FValueContainer&, const TWeakO
 /**
  * Status of a tween
  */
-enum class EDueTweenStatus
+enum class EDUETweenStatus
 {
 	// This tween is unused and ready to be reclaimed
 	Unset,
@@ -44,7 +44,7 @@ enum class EDueValueType
 	 * 2. FValueContainer
 	 * 3. Set and GetCurrentValueFromProperty
 	 * 4. TickTween
-	 * 5. UDueTweenBlueprintFunctionLibrary
+	 * 5. UDUETweenBlueprintFunctionLibrary
 	 * 6. GetDueValueType
 	 */
 };
@@ -116,10 +116,7 @@ enum class EDueUpdateType
 	/**
 	 * When adding a new type update:
 	 * 1. This
-	 * 2. FValueContainer
-	 * 3. Set and GetCurrentValueFromProperty
-	 * 4. TickTween
-	 * 5. UDueTweenBlueprintFunctionLibrary
+	 * 3. Set and GetCurrentValue
 	 */
 };
 
@@ -128,7 +125,7 @@ enum class EDueUpdateType
  */
 struct FDUETweenData
 {
-	FTweenCallback TargetCallback;
+	FTweenCallback UpdateCallback;
 	FProperty* TargetProperty;
 
 	EDueUpdateType UpdateType = EDueUpdateType::Unset;
@@ -146,30 +143,30 @@ struct FDUETweenData
 /**
  * Data structure for an active tween
  */
-struct FActiveDueTween
+struct FActiveDUETween
 {
 	union
 	{
 		struct FActiveNode
 		{
-			FActiveDueTweenHandle NextActiveTween;
-			FActiveDueTweenHandle LastActiveTween;
+			FActiveDUETweenHandle NextActiveTween;
+			FActiveDUETweenHandle LastActiveTween;
 		};
 
 		FActiveNode ActiveNode;
-		FActiveDueTweenHandle NextFreeTween;
+		FActiveDUETweenHandle NextFreeTween;
 	} TweenPtr;
 
 	FDUETweenData TweenData;
 
 	// Constant state
-	FActiveDueTweenHandle Handle;
+	FActiveDUETweenHandle Handle;
 
 	// Per-Tween State
 	unsigned int ID = 0;
 	float TimeElapsed = 0;
-	EDueTweenStatus Status = EDueTweenStatus::Unset;
+	EDUETweenStatus Status = EDUETweenStatus::Unset;
 	FValueContainer StartingValue;
 };
 
-static_assert(std::is_trivially_copyable_v<EDueTweenStatus> == true);
+static_assert(std::is_trivially_copyable_v<EDUETweenStatus> == true);

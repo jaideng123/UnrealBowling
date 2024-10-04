@@ -1,12 +1,12 @@
 #pragma once
-#include "ActiveDueTween.h"
+#include "ActiveDUETween.h"
 #include "DUETweenModule.h"
 
 
 /**
  * Internal utilities for tweening
  */
-class FDueTweenInternalUtils
+class FDUETweenInternalUtils
 {
 public:
 	static FValueContainer GetCurrentValueFromProperty(const FDUETweenData& TweenData);
