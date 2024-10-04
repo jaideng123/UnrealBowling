@@ -11,14 +11,13 @@
 			"AdditionalDependencies": [
 				"Engine"
 			]
-		},
-		{
-			"Name": "DUETween",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "DUETween",
+			"Enabled": true
+		},
 		{
 			"Name": "SteamVR",
 			"Enabled": false,

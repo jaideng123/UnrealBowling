@@ -15,6 +15,5 @@ public class BowlingTarget : TargetRules
 
 	private void RegisterModulesCreatedByRider()
 	{
-		ExtraModuleNames.AddRange(new string[] { "DUETween" });
 	}
 }
