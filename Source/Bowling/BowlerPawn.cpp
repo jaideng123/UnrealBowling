@@ -4,6 +4,7 @@
 #include "BowlerPawn.h"
 
 #include "BowlerPlayerController.h"
+#include "DUETween.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -75,14 +76,16 @@ void ABowlerPawn::BeginPlay()
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
+	MoveTweenHandle = NULL_DUETWEEN_HANDLE;
+
 	UpdateMovementModeDisplay();
 }
 
 void ABowlerPawn::HideUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if(bowlingPlayerController)
+	if (bowlingPlayerController)
 	{
 		bowlingPlayerController->HideControlUI();
 	}
@@ -90,11 +93,40 @@ void ABowlerPawn::HideUI()
 
 void ABowlerPawn::ShowUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if(bowlingPlayerController)
+	if (bowlingPlayerController)
 	{
 		bowlingPlayerController->ShowControlUI();
+	}
+}
+
+void ABowlerPawn::PossiblyStartRunUpTween()
+{
+	if (MoveTweenHandle == NULL_DUETWEEN_HANDLE)
+	{
+		const FVector TargetLocation = BallGripStartPosition.GetValue() + GetActorForwardVector() *
+			StartDistance;
+		const FVector StartPosition = BallGripStartPosition.GetValue();
+		FTweenCallback TargetCallback = [TargetLocation,StartPosition,Curve = RunUpCurve.GetRichCurveConst()](
+			const FValueContainer& UpdatedValue,
+			const TWeakObjectPtr<UObject>& TargetToUpdate)
+		{
+			AActor* Actor = Cast<AActor>(TargetToUpdate.Get());
+			const FVector CurrentLocation = FMath::Lerp(StartPosition, TargetLocation,
+			                                            Curve->Eval(UpdatedValue.GetSubtype<float>()));
+			Actor->SetActorLocation(CurrentLocation);
+		};
+		MoveTweenHandle = DUETween::StartDUETween<float>(this, TargetCallback, 0.0, 1.0, RunUpTimeMS, EDueEasingType::Linear);
+	}
+}
+
+void ABowlerPawn::CancelRunUpTween()
+{
+	if(MoveTweenHandle != NULL_DUETWEEN_HANDLE)
+	{
+		DUETween::StopDUETween(this, MoveTweenHandle);
+		MoveTweenHandle = NULL_DUETWEEN_HANDLE;
 	}
 }
 
@@ -102,15 +134,12 @@ void ABowlerPawn::ShowUI()
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(CurrentBall != nullptr)
+	if (CurrentBall != nullptr)
 	{
-		if(BallGripped)
+		if (BallGripped)
 		{
 			check(BallGripStartPosition.IsSet());
-			const FVector TargetLocation = BallGripStartPosition.GetValue() + GetActorForwardVector() * StartDistance;
-			const FVector CurrentLocation = FMath::Lerp(BallGripStartPosition.GetValue(), TargetLocation,
-			                                            RunUpCurve.GetRichCurveConst()->Eval(GrippedTime / RunUpTimeMS));
-			SetActorLocation(CurrentLocation);
+			PossiblyStartRunUpTween();
 
 			ThrowTime += DeltaTime;
 			GrippedTime += DeltaTime;
@@ -139,13 +168,15 @@ void ABowlerPawn::Tick(float DeltaTime)
 		{
 			// Reset to resting position
 			// TODO: convert to tunable var
-			BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 100.0f), MinArmAngle, MaxArmAngle);
+			BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 100.0f), MinArmAngle,
+			                                         MaxArmAngle);
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
-
-			if(BallGripStartPosition.IsSet())
+			
+			if (BallGripStartPosition.IsSet())
 			{
+				CancelRunUpTween();
 				SetActorLocation(BallGripStartPosition.GetValue());
 				BallGripStartPosition.Reset();
 				OnMoveReset();
@@ -172,11 +203,11 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void ABowlerPawn::MoveX(float input)
 {
 	OnMove(input);
-	if(input == 0 || BallGripped)
+	if (input == 0 || BallGripped)
 	{
 		return;
 	}
-	if(CurrentMovementMode == MOVE)
+	if (CurrentMovementMode == MOVE)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Moving in direction: %f"), input);
 		const FVector CurrentLocation = GetActorLocation();
@@ -184,11 +215,11 @@ void ABowlerPawn::MoveX(float input)
 		const FVector DesiredLocation = CurrentLocation + Offset;
 		SetActorLocation(DesiredLocation);
 	}
-	else if(CurrentMovementMode == ROTATE)
+	else if (CurrentMovementMode == ROTATE)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Rotating in direction: %f"), input);
 		FRotator CurrentRotation = GetActorRotation();
-		float    Offset = input * RotationSpeedDegrees * UGameplayStatics::GetWorldDeltaSeconds(this);
+		float Offset = input * RotationSpeedDegrees * UGameplayStatics::GetWorldDeltaSeconds(this);
 		CurrentRotation.Yaw = FMath::Clamp(CurrentRotation.Yaw + Offset, -MaxRotation, MaxRotation);
 		SetActorRotation(CurrentRotation);
 	}
@@ -200,14 +231,14 @@ void ABowlerPawn::MoveX(float input)
 
 void ABowlerPawn::MoveBallY(float input)
 {
-	if(!BallGripped || FMath::Abs(input) < .001)
+	if (!BallGripped || FMath::Abs(input) < .001)
 	{
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Moving Ball in direction: %f"), input);
 	BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + input, MinArmAngle, MaxArmAngle);
 	// If input has changed direction 
-	if(FMath::Sign(input) != FMath::Sign(ThrowDistance))
+	if (FMath::Sign(input) != FMath::Sign(ThrowDistance))
 	{
 		UE_LOG(LogTemp, Display, TEXT("Resetting Ball Force"));
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Resetting Ball Force")));
@@ -215,7 +246,7 @@ void ABowlerPawn::MoveBallY(float input)
 		ThrowTime = 0;
 		BallSpinAmount = 0;
 	}
-	if(BallRotationOffset != MinArmAngle && BallRotationOffset != MaxArmAngle)
+	if (BallRotationOffset != MinArmAngle && BallRotationOffset != MaxArmAngle)
 	{
 		ThrowDistance += input;
 	}
@@ -223,7 +254,7 @@ void ABowlerPawn::MoveBallY(float input)
 
 void ABowlerPawn::MoveBallX(float input)
 {
-	if(!BallGripped)
+	if (!BallGripped)
 	{
 		return;
 	}
@@ -232,7 +263,7 @@ void ABowlerPawn::MoveBallX(float input)
 
 void ABowlerPawn::GripBall()
 {
-	if(CurrentBall == nullptr || BowlingLocked)
+	if (CurrentBall == nullptr || BowlingLocked)
 	{
 		return;
 	}
@@ -261,13 +292,13 @@ void ABowlerPawn::ResetBallGripState()
 
 void ABowlerPawn::ReleaseBall()
 {
-	if(CurrentBall == nullptr || !BallGripped)
+	if (CurrentBall == nullptr || !BallGripped)
 	{
 		return;
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
-	if(FMath::Abs(CalculateReleaseForce()) < 10)
+	if (FMath::Abs(CalculateReleaseForce()) < 10)
 	{
 		GuideDecalComp->SetVisibility(true);
 		UpdateMovementModeDisplay();
@@ -276,6 +307,7 @@ void ABowlerPawn::ReleaseBall()
 		return;
 	}
 	BallGripStartPosition.Reset();
+	CancelRunUpTween();
 	OnRelease();
 	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 
@@ -284,11 +316,11 @@ void ABowlerPawn::ReleaseBall()
 	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
 	CurrentBall->IsActive = true;
 	float releaseForce = CalculateReleaseForce();
-	if(releaseForce >= 0 && releaseForce < MinBallForce)
+	if (releaseForce >= 0 && releaseForce < MinBallForce)
 	{
 		releaseForce = MinBallForce;
 	}
-	else if(releaseForce < 0 && releaseForce > -MinBallForce)
+	else if (releaseForce < 0 && releaseForce > -MinBallForce)
 	{
 		releaseForce = -MinBallForce;
 	}
@@ -302,9 +334,10 @@ void ABowlerPawn::ReleaseBall()
 		GetActorForwardVector() * -BallSpin);
 
 	UE_LOG(LogTemp, Display, TEXT("Release force: %f"), releaseForce);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("Release force: %f / %f"), releaseForce, MaxBallForce));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
+	                                 FString::Printf(TEXT("Release force: %f / %f"), releaseForce, MaxBallForce));
 
-	if(releaseForce >= 0 && releaseForce <= 20.0f)
+	if (releaseForce >= 0 && releaseForce <= 20.0f)
 	{
 		UE_LOG(LogTemp, Display, TEXT("No Release Force!"));
 		OnNoReleaseForce();
@@ -318,7 +351,7 @@ void ABowlerPawn::ReleaseBall()
 
 void ABowlerPawn::UpdateMovementModeDisplay() const
 {
-	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
+	if (CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
 		RotateModeDisplayComp->SetVisibility(false, true);
 		MoveModeDisplayComp->SetVisibility(true, true);
@@ -338,7 +371,7 @@ void ABowlerPawn::HideMovementModeDisplay() const
 
 void ABowlerPawn::ToggleMovementMode()
 {
-	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
+	if (CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
 		CurrentMovementMode = EBowlerMovementMode::ROTATE;
 	}
@@ -351,14 +384,15 @@ void ABowlerPawn::ToggleMovementMode()
 
 void ABowlerPawn::AttachBallToHand()
 {
-	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld,
+	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative,
+	                                                    EAttachmentRule::KeepWorld,
 	                                                    false);
 	check(CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules));
 }
 
 void ABowlerPawn::SpawnNewBall()
 {
-	if(CurrentBall != nullptr)
+	if (CurrentBall != nullptr)
 	{
 		CurrentBall->Destroy();
 	}
@@ -370,7 +404,7 @@ void ABowlerPawn::SpawnNewBall()
 
 void ABowlerPawn::ResetBall()
 {
-	if(ThrownBall == nullptr)
+	if (ThrownBall == nullptr)
 	{
 		return;
 	}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveDUETween.h"
 #include "BallBase.h"
 #include "GameFramework/Pawn.h"
 #include "BowlerPawn.generated.h"
@@ -187,6 +188,9 @@ protected:
 	void HideUI();
 	UFUNCTION(BlueprintCallable)
 	void ShowUI();
+	void PossiblyStartRunUpTween();
+	void CancelRunUpTween();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -237,4 +241,6 @@ public:
 
 private:
 	float CalculateReleaseForce() const;
+
+	FActiveDUETweenHandle MoveTweenHandle;
 };
