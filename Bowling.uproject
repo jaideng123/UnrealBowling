@@ -68,7 +68,10 @@
 		},
 		{
 			"Name": "MobileFSR",
-			"Enabled": true
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Android"
+			]
 		}
 	]
 }

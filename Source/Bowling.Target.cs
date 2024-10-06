@@ -8,7 +8,7 @@ public class BowlingTarget : TargetRules
 	public BowlingTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 		ExtraModuleNames.AddRange( new string[] { "Bowling" } );
 		RegisterModulesCreatedByRider();
 	}
