@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class BowlingEditorTarget : TargetRules
 {
-	public BowlingEditorTarget( TargetInfo Target) : base(Target)
+	public BowlingEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 		ExtraModuleNames.AddRange( new string[] { "Bowling" } );
 		RegisterModulesCreatedByRider();
 	}
