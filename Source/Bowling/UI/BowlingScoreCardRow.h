@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingScoreCardRow.generated.h"
 
+class UScrollBox;
 struct FBowlingFrame;
 class ABowlingPlayerState;
 class UBowlingScoreCardEntry;
@@ -20,7 +21,10 @@ class BOWLING_API UBowlingScoreCardRow : public UUserWidget
 	GENERATED_BODY()
 protected:
 	UPROPERTY(meta = (BindWidget))
-	UWrapBox* EntryContainer;
+	UPanelWidget* EntryContainer;
+
+	UPROPERTY(meta = (BindWidget))
+	UScrollBox* ScrollBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBowlingScoreCardEntry> EntryTemplate;

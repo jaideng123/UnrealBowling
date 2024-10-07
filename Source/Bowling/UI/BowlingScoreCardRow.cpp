@@ -7,6 +7,7 @@
 #include "BowlingScoreCardFinalEntry.h"
 #include "Bowling/BowlingGameModeBase.h"
 #include "Bowling/BowlingPlayerState.h"
+#include "Components/ScrollBox.h"
 #include "Components/WrapBox.h"
 
 void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState)
@@ -23,6 +24,7 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		EntryContainer->AddChild(FinalEntry);
 	}
 	int cumulativeScore = 0;
+	ScrollBox->ScrollWidgetIntoView(Entries[playerState->Frames.Num()]);
 	for (int i = 0; i < playerState->Frames.Num(); ++i)
 	{
 		const auto& currentFrame = playerState->Frames[i];
