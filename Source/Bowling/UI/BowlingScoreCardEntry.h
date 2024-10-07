@@ -16,6 +16,8 @@ class BOWLING_API UBowlingScoreCardEntry : public UUserWidget
 	GENERATED_BODY()
 protected:
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* FrameNumberText;
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ScoreText;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Ball1Text;
@@ -23,6 +25,7 @@ protected:
 	UTextBlock* Ball2Text;
 	void NativeConstruct() override;
 public:
+	void SetFrameNumber(int I);
 	void SetScore(int I);
 	void SetBall1(int ball1);
 	void SetBall2(int ball2);

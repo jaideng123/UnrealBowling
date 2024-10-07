@@ -14,11 +14,17 @@ void UBowlingScoreCardEntry::NativeConstruct()
 	ScoreText->SetText(FText::FromString(TEXT("")));
 	Ball1Text->SetText(FText::FromString(TEXT("")));
 	Ball2Text->SetText(FText::FromString(TEXT("")));
+	// FrameNumberText->SetText(FText::FromString(TEXT("")));
+}
+
+void UBowlingScoreCardEntry::SetFrameNumber(int I)
+{
+	FrameNumberText->SetText(FText::FromString(FString::Printf(TEXT("%d"), I)));
 }
 
 void UBowlingScoreCardEntry::SetScore(int score)
 {
-	if(score < 0)
+	if (score < 0)
 	{
 		ScoreText->SetText(FText::FromString(TEXT("")));
 	}
@@ -30,11 +36,11 @@ void UBowlingScoreCardEntry::SetScore(int score)
 
 void UBowlingScoreCardEntry::SetBall1(int ball1)
 {
-	if(ball1 < 0)
+	if (ball1 < 0)
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("")));
 	}
-	else if(ball1 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if (ball1 == ABowlingGameModeBase::GetNumPins(GetWorld()))
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("X")));
 	}
@@ -46,11 +52,11 @@ void UBowlingScoreCardEntry::SetBall1(int ball1)
 
 void UBowlingScoreCardEntry::SetBall2(int ball2)
 {
-	if(ball2 < 0)
+	if (ball2 < 0)
 	{
 		Ball2Text->SetText(FText::FromString(TEXT("")));
 	}
-	else if(ball2 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if (ball2 == ABowlingGameModeBase::GetNumPins(GetWorld()))
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("/")));
 	}
@@ -59,4 +65,3 @@ void UBowlingScoreCardEntry::SetBall2(int ball2)
 		Ball2Text->SetText(FText::FromString(FString::Printf(TEXT("%d"), ball2)));
 	}
 }
-

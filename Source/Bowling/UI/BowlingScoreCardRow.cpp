@@ -17,6 +17,7 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		for (int i = 0; i < ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1; ++i)
 		{
 			auto entryWidget = CreateWidget<UBowlingScoreCardEntry>(GetOwningPlayer(), EntryTemplate);
+			entryWidget->SetFrameNumber(i + 1);
 			EntryContainer->AddChild(entryWidget);
 			Entries.Add(entryWidget);
 		}
