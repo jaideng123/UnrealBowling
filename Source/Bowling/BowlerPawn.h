@@ -169,6 +169,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<EBowlerMovementMode> CurrentMovementMode = MOVE;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	bool IsZoomedIn = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	float StrafingSpeed = 1.0;
