@@ -9,6 +9,7 @@
 #include "Bowling/BowlingPlayerState.h"
 #include "Components/ScrollBox.h"
 #include "Components/WrapBox.h"
+#include "Logging/StructuredLog.h"
 
 void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> playerState)
 {
@@ -25,7 +26,14 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 		EntryContainer->AddChild(FinalEntry);
 	}
 	int cumulativeScore = 0;
-	ScrollBox->ScrollWidgetIntoView(Entries[playerState->Frames.Num()]);
+	if (playerState->CurrentFrame < ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1)
+	{
+		ScrollBox->ScrollWidgetIntoView(Entries[playerState->CurrentFrame]);
+	}
+	else
+	{
+		ScrollBox->ScrollWidgetIntoView(FinalEntry);
+	}
 	for (int i = 0; i < playerState->Frames.Num(); ++i)
 	{
 		const auto& currentFrame = playerState->Frames[i];
@@ -68,6 +76,12 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 			FinalEntry->SetBall3(currentFrame.ball3Pins,
 			                     currentFrame.ball2Pins != ABowlingGameModeBase::GetNumPins(GetWorld()));
 			continue;
+		}
+
+		if(i  > Entries.Num() - 1)
+		{
+			UE_LOGFMT(LogTemp, Error,"Exceeded Entry Count!");
+			break;
 		}
 
 		if (currentFrame.ball1Pins == -1)
@@ -123,8 +137,7 @@ void UBowlingScoreCardRow::SyncWithPlayerState(TObjectPtr<ABowlingPlayerState> p
 				score += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
 			}
 		}
-
-
+		
 		auto& entry = Entries[i];
 		if (score != -1)
 		{

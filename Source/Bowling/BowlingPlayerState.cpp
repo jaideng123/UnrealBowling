@@ -58,5 +58,16 @@ void ABowlingPlayerState::ReportPins(int numPins)
 
 void ABowlingPlayerState::TestPins()
 {
-	ReportPins(FMath::RandRange(0, 10));
+	static int lastValue = 0;
+	static int lastFrame = CurrentFrame;
+	int nextValue = FMath::RandRange(lastValue, 10);
+	ReportPins(nextValue);
+	if(lastFrame != CurrentFrame)
+	{
+		lastValue = 0;
+	}
+	else
+	{
+		lastValue = nextValue;
+	}
 }

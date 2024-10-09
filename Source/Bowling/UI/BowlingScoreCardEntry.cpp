@@ -14,7 +14,6 @@ void UBowlingScoreCardEntry::NativeConstruct()
 	ScoreText->SetText(FText::FromString(TEXT("")));
 	Ball1Text->SetText(FText::FromString(TEXT("")));
 	Ball2Text->SetText(FText::FromString(TEXT("")));
-	// FrameNumberText->SetText(FText::FromString(TEXT("")));
 }
 
 void UBowlingScoreCardEntry::SetFrameNumber(int I)
