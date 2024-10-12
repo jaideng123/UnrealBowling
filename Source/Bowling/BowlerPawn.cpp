@@ -108,14 +108,13 @@ void ABowlerPawn::PossiblyStartRunUpTween()
 		const FVector TargetLocation = BallGripStartPosition.GetValue() + GetActorForwardVector() *
 			StartDistance;
 		const FVector StartPosition = BallGripStartPosition.GetValue();
-		FTweenCallback TargetCallback = [TargetLocation,StartPosition,Curve = RunUpCurve.GetRichCurveConst()](
-			const FValueContainer& UpdatedValue,
-			const TWeakObjectPtr<UObject>& TargetToUpdate)
+		FTweenUpdateCallback TargetCallback = [TargetLocation,StartPosition,Curve = RunUpCurve.GetRichCurveConst(), this
+			](
+			const FValueContainer& UpdatedValue)
 		{
-			AActor* Actor = Cast<AActor>(TargetToUpdate.Get());
 			const FVector CurrentLocation = FMath::Lerp(StartPosition, TargetLocation,
 			                                            Curve->Eval(UpdatedValue.GetSubtype<float>()));
-			Actor->SetActorLocation(CurrentLocation);
+			this->SetActorLocation(CurrentLocation);
 		};
 		MoveTweenHandle = DUETween::StartDUETween<float>(this, TargetCallback, 0.0, 1.0, RunUpTimeMS,
 		                                                 EDueEasingType::Linear);
