@@ -117,13 +117,14 @@ void ABowlerPawn::PossiblyStartRunUpTween()
 			                                            Curve->Eval(UpdatedValue.GetSubtype<float>()));
 			Actor->SetActorLocation(CurrentLocation);
 		};
-		MoveTweenHandle = DUETween::StartDUETween<float>(this, TargetCallback, 0.0, 1.0, RunUpTimeMS, EDueEasingType::Linear);
+		MoveTweenHandle = DUETween::StartDUETween<float>(this, TargetCallback, 0.0, 1.0, RunUpTimeMS,
+		                                                 EDueEasingType::Linear);
 	}
 }
 
 void ABowlerPawn::CancelRunUpTween()
 {
-	if(MoveTweenHandle != NULL_DUETWEEN_HANDLE)
+	if (MoveTweenHandle != NULL_DUETWEEN_HANDLE)
 	{
 		DUETween::StopDUETween(this, MoveTweenHandle);
 		MoveTweenHandle = NULL_DUETWEEN_HANDLE;
@@ -173,7 +174,7 @@ void ABowlerPawn::Tick(float DeltaTime)
 			FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
-			
+
 			if (BallGripStartPosition.IsSet())
 			{
 				CancelRunUpTween();
@@ -413,7 +414,8 @@ void ABowlerPawn::ResetBall()
 	CurrentBall->PhysicsComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(false);
-	CurrentBall->SetActorLocationAndRotation(FVector::Zero(), FRotator::ZeroRotator);
+	CurrentBall->SetActorLocationAndRotation(FVector::Zero(), FRotator::ZeroRotator, false, nullptr,
+	                                         ETeleportType::ResetPhysics);
 	CurrentBall->IsActive = false;
 	GuideDecalComp->SetVisibility(true);
 	UpdateMovementModeDisplay();
