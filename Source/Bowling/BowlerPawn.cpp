@@ -76,7 +76,7 @@ void ABowlerPawn::BeginPlay()
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
-	MoveTweenHandle = NULL_DUETWEEN_HANDLE;
+	MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
 
 	UpdateMovementModeDisplay();
 }
@@ -103,7 +103,7 @@ void ABowlerPawn::ShowUI()
 
 void ABowlerPawn::PossiblyStartRunUpTween()
 {
-	if (MoveTweenHandle == NULL_DUETWEEN_HANDLE)
+	if (MoveTweenHandle == nullptr)
 	{
 		const FVector TargetLocation = BallGripStartPosition.GetValue() + GetActorForwardVector() *
 			StartDistance;
@@ -123,10 +123,10 @@ void ABowlerPawn::PossiblyStartRunUpTween()
 
 void ABowlerPawn::CancelRunUpTween()
 {
-	if (MoveTweenHandle != NULL_DUETWEEN_HANDLE)
+	if (MoveTweenHandle != nullptr)
 	{
 		DUETween::StopDUETween(this, MoveTweenHandle);
-		MoveTweenHandle = NULL_DUETWEEN_HANDLE;
+		MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
 	}
 }
 
