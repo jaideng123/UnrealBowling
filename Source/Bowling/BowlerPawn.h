@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActiveDUETween.h"
+#include "ActiveDUETweenHandle.h"
 #include "BallBase.h"
 #include "GameFramework/Pawn.h"
 #include "BowlerPawn.generated.h"

@@ -125,7 +125,7 @@ void ABowlerPawn::CancelRunUpTween()
 {
 	if (MoveTweenHandle != nullptr)
 	{
-		DUETween::StopDUETween(this, MoveTweenHandle);
+		MoveTweenHandle.StopTween();
 		MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
 	}
 }
