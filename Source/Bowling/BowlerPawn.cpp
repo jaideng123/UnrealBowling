@@ -240,16 +240,13 @@ void ABowlerPawn::MoveBallY(float input)
 	// If input has changed direction 
 	if (FMath::Sign(input) != FMath::Sign(ThrowDistance))
 	{
-		UE_LOG(LogTemp, Display, TEXT("Resetting Ball Force"));
+		// UE_LOG(LogTemp, Display, TEXT("Resetting Ball Force"));
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Resetting Ball Force")));
 		ThrowDistance = 0;
 		ThrowTime = 0;
 		BallSpinAmount = 0;
 	}
-	if (BallRotationOffset != MinArmAngle && BallRotationOffset != MaxArmAngle)
-	{
 		ThrowDistance += input;
-	}
 }
 
 void ABowlerPawn::MoveBallX(float input)

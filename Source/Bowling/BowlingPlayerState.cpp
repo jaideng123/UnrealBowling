@@ -53,7 +53,7 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		CurrentFrame++;
 	}
 
-	Cast<ABowlerPlayerController>(GetPlayerController())->ScoreCardInstance->SyncWithGameState();
+	Cast<ABowlerPlayerController>(GetPlayerController())->UpdateScoreCard();
 }
 
 void ABowlingPlayerState::TestPins()

@@ -28,8 +28,6 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
-
-	ScoreCardInstance->SyncWithGameState();
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
@@ -51,14 +49,14 @@ void ABowlerPlayerController::Tick(float DeltaSeconds)
 
 void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
+	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
 	ControlledBowler->GripBall();
 }
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange,
-	                                 FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
+	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange,
+	//                                  FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
 	ControlledBowler->ReleaseBall();
 	LastHoldPosition = NullPos;
 }
@@ -69,7 +67,6 @@ void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::
 	{
 		LastHoldPosition = location;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Orange, FString::Printf(TEXT("Touch Held: %d Location: %s"), touchIndex, *location.ToString()));
 	int screenSizeX;
 	int screenSizeY;
 	GetViewportSize(screenSizeX, screenSizeY);
@@ -92,3 +89,4 @@ void ABowlerPlayerController::StopContinuousMove()
 {
 	CurrentContinuousMove = 0.0f;
 }
+

@@ -26,5 +26,6 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TMap<int32, UBowlingScoreCardRow*> Rows;
 public:
+	UFUNCTION(BlueprintCallable)
 	void SyncWithGameState();
 };
