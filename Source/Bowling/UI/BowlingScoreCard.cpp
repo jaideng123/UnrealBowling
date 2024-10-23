@@ -10,19 +10,28 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
-void UBowlingScoreCard::SyncWithGameState()
+void UBowlingScoreCard::NativeConstruct()
 {
-	ABowlingGameStateBase* gameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
-	for (auto playerState : gameState->PlayerArray)
+	Super::NativeConstruct();
+	for (TObjectPtr<APlayerState> PlayerState : GetWorld()->GetGameState()->PlayerArray)
 	{
-		auto bowlingPlayerState = Cast<ABowlingPlayerState>(playerState);
-		if (!Rows.Contains(playerState->GetPlayerId()))
+		ABowlingPlayerState* BowlingPlayerState = Cast<ABowlingPlayerState>(PlayerState);
+		if (BowlingPlayerState)
 		{
-			auto widget = CreateWidget<UBowlingScoreCardRow>(GetOwningPlayer(), RowTemplate);
-			RowContainer->AddChild(widget);
-			Rows.Add(playerState->GetPlayerId(), widget);
+			BowlingPlayerState->OnScoreChangedDelegate.AddUniqueDynamic(this, &UBowlingScoreCard::SyncWithPlayerState);
+			SyncWithPlayerState(BowlingPlayerState);
 		}
-		UBowlingScoreCardRow* playerRow = Rows[playerState->GetPlayerId()];
-		playerRow->SyncWithPlayerState(bowlingPlayerState);
 	}
+}
+
+void UBowlingScoreCard::SyncWithPlayerState(ABowlingPlayerState* PlayerState)
+{
+	if (!Rows.Contains(PlayerState->GetPlayerId()))
+	{
+		auto widget = CreateWidget<UBowlingScoreCardRow>(GetOwningPlayer(), RowTemplate);
+		RowContainer->AddChild(widget);
+		Rows.Add(PlayerState->GetPlayerId(), widget);
+	}
+	UBowlingScoreCardRow* playerRow = Rows[PlayerState->GetPlayerId()];
+	playerRow->SyncWithPlayerState(PlayerState);
 }

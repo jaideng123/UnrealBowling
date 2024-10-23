@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Bowling/BowlingPlayerState.h"
 #include "BowlingScoreCard.generated.h"
 
 class ABowlingGameStateBase;
@@ -19,6 +20,8 @@ class BOWLING_API UBowlingScoreCard : public UUserWidget
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* RowContainer;
+
+	virtual void NativeConstruct() override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBowlingScoreCardRow> RowTemplate;
@@ -27,5 +30,5 @@ protected:
 	TMap<int32, UBowlingScoreCardRow*> Rows;
 public:
 	UFUNCTION(BlueprintCallable)
-	void SyncWithGameState();
+	void SyncWithPlayerState(ABowlingPlayerState* PlayerState);
 };

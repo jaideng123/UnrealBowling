@@ -19,6 +19,8 @@ public:
 	int ball3Pins = -1;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScoreChanged, ABowlingPlayerState*, PlayerState);
+
 /**
  * 
  */
@@ -38,4 +40,7 @@ public:
 	int CurrentFrame = 0;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int CurrentBall = 0;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerScoreChanged OnScoreChangedDelegate;
 };

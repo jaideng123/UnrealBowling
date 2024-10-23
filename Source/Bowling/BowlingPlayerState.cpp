@@ -53,7 +53,7 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		CurrentFrame++;
 	}
 
-	Cast<ABowlerPlayerController>(GetPlayerController())->UpdateScoreCard();
+	OnScoreChangedDelegate.Broadcast(this);
 }
 
 void ABowlingPlayerState::TestPins()
