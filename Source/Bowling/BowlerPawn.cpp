@@ -101,6 +101,26 @@ void ABowlerPawn::ShowUI()
 	}
 }
 
+void ABowlerPawn::HidePreBowlUI()
+{
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
+	if (bowlingPlayerController)
+	{
+		bowlingPlayerController->HidePreBowlUI();
+	}
+}
+
+void ABowlerPawn::ShowPreBowlUI()
+{
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
+	if (bowlingPlayerController)
+	{
+		bowlingPlayerController->ShowPreBowlUI();
+	}
+}
+
 void ABowlerPawn::PossiblyStartRunUpTween()
 {
 	if (MoveTweenHandle == nullptr)

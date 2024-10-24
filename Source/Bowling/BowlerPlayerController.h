@@ -35,7 +35,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowControlUI();
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateScoreCard();
+	void HidePreBowlUI();
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowPreBowlUI();
 
 	UPROPERTY(BlueprintReadOnly)
 	ABowlerPawn* ControlledBowler;
