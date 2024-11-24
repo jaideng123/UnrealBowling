@@ -17,6 +17,8 @@ public:
 	int ball2Pins = -1;
 	UPROPERTY(VisibleInstanceOnly)
 	int ball3Pins = -1;
+	UPROPERTY(VisibleInstanceOnly)
+	int score = -1;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScoreChanged, ABowlingPlayerState*, PlayerState);
