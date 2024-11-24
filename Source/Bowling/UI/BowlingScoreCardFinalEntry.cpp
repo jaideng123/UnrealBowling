@@ -45,7 +45,7 @@ void UBowlingScoreCardFinalEntry::SetBall1(int ball1)
 	}
 }
 
-void UBowlingScoreCardFinalEntry::SetBall2(int ball2, bool wasSpare)
+void UBowlingScoreCardFinalEntry::SetBall2(int ball2, bool possibleSpare)
 {
 	if(ball2 < 0)
 	{
@@ -53,7 +53,7 @@ void UBowlingScoreCardFinalEntry::SetBall2(int ball2, bool wasSpare)
 	}
 	else if(ball2 == ABowlingGameModeBase::GetNumPins(GetWorld()))
 	{
-		if(wasSpare)
+		if(possibleSpare)
 		{
 			Ball2Text->SetText(FText::FromString(TEXT("/")));
 		}
@@ -68,7 +68,7 @@ void UBowlingScoreCardFinalEntry::SetBall2(int ball2, bool wasSpare)
 	}
 }
 
-void UBowlingScoreCardFinalEntry::SetBall3(int ball3, bool wasSpare)
+void UBowlingScoreCardFinalEntry::SetBall3(int ball3, bool possibleSpare)
 {
 	if(ball3 < 0)
 	{
@@ -77,7 +77,7 @@ void UBowlingScoreCardFinalEntry::SetBall3(int ball3, bool wasSpare)
 	else if(ball3 == ABowlingGameModeBase::GetNumPins(GetWorld()))
 	{
 		Ball3Text->SetText(FText::FromString(TEXT("/")));
-		if(wasSpare)
+		if(possibleSpare)
 		{
 			Ball3Text->SetText(FText::FromString(TEXT("/")));
 		}

@@ -18,7 +18,7 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	int ball3Pins = -1;
 	UPROPERTY(VisibleInstanceOnly)
-	int score = -1;
+	mutable int score = -1;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScoreChanged, ABowlingPlayerState*, PlayerState);
@@ -31,6 +31,7 @@ class BOWLING_API ABowlingPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 public:
+	void RecalculateScore(const TArray<FBowlingFrame>& Array);
 	UFUNCTION(BlueprintCallable)
 	void ReportPins(int numPins);
 	UFUNCTION(CallInEditor)

@@ -4,7 +4,96 @@
 #include "BowlingPlayerState.h"
 
 #include "BowlingGameModeBase.h"
+#include "Logging/StructuredLog.h"
 #include "UI/BowlingScoreCard.h"
+
+void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesToScore)
+{
+	int accumulatedScore = 0;
+	for (int i = 0; i < FramesToScore.Num(); ++i)
+	{
+		int frameScore = 0;
+
+		const auto& currentFrame = FramesToScore[i];
+
+		if (currentFrame.ball1Pins == -1)
+		{
+			continue;
+		}
+
+		// Handle Final Frame
+		if (i == ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1)
+		{
+			frameScore += currentFrame.ball1Pins == -1 ? 0 : currentFrame.ball1Pins;
+			if (currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+			{
+				frameScore += currentFrame.ball2Pins == -1 ? 0 : currentFrame.ball2Pins;
+				frameScore += currentFrame.ball3Pins == -1 ? 0 : currentFrame.ball3Pins;
+			}
+
+			frameScore += currentFrame.ball2Pins == -1 ? 0 : currentFrame.ball2Pins;
+			if (currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+			{
+				frameScore += currentFrame.ball3Pins == -1 ? 0 : currentFrame.ball3Pins;
+			}
+
+			frameScore += currentFrame.ball3Pins == -1 ? 0 : currentFrame.ball3Pins;
+
+			accumulatedScore += frameScore;
+			currentFrame.score = accumulatedScore;
+			continue;
+		}
+
+		frameScore += currentFrame.ball1Pins == -1 ? 0 : currentFrame.ball1Pins;
+		frameScore += currentFrame.ball2Pins == -1 ? 0 : currentFrame.ball2Pins;
+
+		if (currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		{
+			if (FramesToScore.Num() > i + 1)
+			{
+				const auto& nextFrame = FramesToScore[i + 1];
+				if (i + 1 == (ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1))
+				{
+					frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+					frameScore += nextFrame.ball2Pins == -1 ? 0 : nextFrame.ball2Pins;
+					if (currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+					{
+						frameScore += nextFrame.ball2Pins == -1 ? 0 : nextFrame.ball2Pins;
+					}
+					else
+					{
+						frameScore += nextFrame.ball2Pins == -1 ? 0 : (nextFrame.ball2Pins - nextFrame.ball1Pins);
+					}
+				}
+				else if (nextFrame.ball1Pins != ABowlingGameModeBase::GetNumPins(GetWorld()))
+				{
+					frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+					frameScore += nextFrame.ball2Pins == -1 ? 0 : (nextFrame.ball2Pins - nextFrame.ball1Pins);
+				}
+				else
+				{
+					frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+					if (FramesToScore.Num() > i + 2)
+					{
+						const auto& nextNextFrame = FramesToScore[i + 2];
+						frameScore += nextNextFrame.ball1Pins == -1 ? 0 : nextNextFrame.ball1Pins;
+					}
+				}
+			}
+		}
+		else if (currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		{
+			if (FramesToScore.Num() < i + 1)
+			{
+				const auto& nextFrame = FramesToScore[i + 1];
+				frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
+			}
+		}
+
+		accumulatedScore += frameScore;
+		currentFrame.score = accumulatedScore;
+	}
+}
 
 void ABowlingPlayerState::ReportPins(int numPins)
 {
@@ -54,7 +143,7 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		}
 	}
 
-	//TODO: Calc score
+	RecalculateScore(Frames);
 
 	CurrentBall++;
 
@@ -87,9 +176,14 @@ void ABowlingPlayerState::ReportPins(int numPins)
 
 void ABowlingPlayerState::TestPins()
 {
-	static int lastValue = 0;
+	int lastValue = Frames.Num() == 0 ||
+	                Frames.Last().ball1Pins == -1 ||
+	                Frames.Last().ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld())
+		                ? 0
+		                : Frames.Last().ball1Pins;
 	static int lastFrame = CurrentFrame;
 	int nextValue = FMath::RandRange(lastValue, 10);
+	UE_LOGFMT(LogTemp, Error, "{0}", nextValue);
 	ReportPins(nextValue);
 	if (lastFrame != CurrentFrame)
 	{

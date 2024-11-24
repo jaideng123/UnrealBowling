@@ -27,6 +27,6 @@ protected:
 public:
 	void SetScore(int I);
 	void SetBall1(int ball1);
-	void SetBall2(int ball2, bool wasSpare);
-	void SetBall3(int ball3, bool wasSpare);
+	void SetBall2(int ball2, bool possibleSpare);
+	void SetBall3(int ball3, bool possibleSpare);
 };
