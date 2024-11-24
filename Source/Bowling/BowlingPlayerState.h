@@ -31,7 +31,6 @@ class BOWLING_API ABowlingPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 public:
-	void RecalculateScore(const TArray<FBowlingFrame>& Array);
 	UFUNCTION(BlueprintCallable)
 	void ReportPins(int numPins);
 	UFUNCTION(CallInEditor)
@@ -46,4 +45,6 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerScoreChanged OnScoreChangedDelegate;
+private:
+	void RecalculateScore(const TArray<FBowlingFrame>& Array) const;
 };

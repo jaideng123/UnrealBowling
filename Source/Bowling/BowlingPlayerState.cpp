@@ -7,7 +7,7 @@
 #include "Logging/StructuredLog.h"
 #include "UI/BowlingScoreCard.h"
 
-void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesToScore)
+void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesToScore) const
 {
 	int accumulatedScore = 0;
 	for (int i = 0; i < FramesToScore.Num(); ++i)
