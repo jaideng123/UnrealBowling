@@ -84,40 +84,36 @@ void ABowlerPawn::BeginPlay()
 void ABowlerPawn::HideUI()
 {
 	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if (bowlingPlayerController)
+	if (ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
-		bowlingPlayerController->HideControlUI();
+		bowlingPlayerController->HideUI();
 	}
 }
 
 void ABowlerPawn::ShowUI()
 {
 	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if (bowlingPlayerController)
+	if (ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
-		bowlingPlayerController->ShowControlUI();
-	}
-}
-
-void ABowlerPawn::HidePreBowlUI()
-{
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if (bowlingPlayerController)
-	{
-		bowlingPlayerController->HidePreBowlUI();
+		bowlingPlayerController->ShowUI();
 	}
 }
 
 void ABowlerPawn::ShowPreBowlUI()
 {
 	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController);
-	if (bowlingPlayerController)
+	if (ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->ShowPreBowlUI();
+	}
+}
+
+void ABowlerPawn::ShowControlUI()
+{
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
+	{
+		bowlingPlayerController->ShowControlUI();
 	}
 }
 

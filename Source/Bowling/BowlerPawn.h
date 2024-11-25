@@ -192,9 +192,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ShowUI();
 	UFUNCTION(BlueprintCallable)
-	void HidePreBowlUI();
-	UFUNCTION(BlueprintCallable)
 	void ShowPreBowlUI();
+	UFUNCTION(BlueprintCallable)
+	void ShowControlUI();
 	void PossiblyStartRunUpTween();
 	void CancelRunUpTween();
 

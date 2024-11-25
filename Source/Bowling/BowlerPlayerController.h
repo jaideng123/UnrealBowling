@@ -31,11 +31,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopContinuousMove();
 	UFUNCTION(BlueprintImplementableEvent)
-	void HideControlUI();
+	void HideUI();
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowUI();
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowControlUI();
-	UFUNCTION(BlueprintImplementableEvent)
-	void HidePreBowlUI();
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowPreBowlUI();
 
