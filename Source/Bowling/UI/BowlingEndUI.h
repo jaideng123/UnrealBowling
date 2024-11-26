@@ -4,23 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "BowlingTitleScreen.generated.h"
+#include "BowlingEndUI.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BOWLING_API UBowlingTitleScreen : public UUserWidget
+class BOWLING_API UBowlingEndUI : public UUserWidget
 {
 	GENERATED_BODY()
-	
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	FName GameplayMapUrl;
-
+	FName TitleMapUrl;
+	
 	UFUNCTION(BlueprintCallable)
-	void OnStartGame(int numPlayers);
-
+	void RestartGame();
+	
 	UFUNCTION(BlueprintCallable)
-	void OnQuitGame();
+	void ReturnToTitleScreen();
 };

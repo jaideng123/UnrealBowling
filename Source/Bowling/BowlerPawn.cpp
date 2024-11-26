@@ -117,6 +117,15 @@ void ABowlerPawn::ShowControlUI()
 	}
 }
 
+void ABowlerPawn::ShowEndUI()
+{
+	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
+	{
+		bowlingPlayerController->ShowEndUI();
+	}
+}
+
 void ABowlerPawn::PossiblyStartRunUpTween()
 {
 	if (MoveTweenHandle == nullptr)

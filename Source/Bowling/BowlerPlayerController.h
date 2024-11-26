@@ -38,6 +38,8 @@ public:
 	void ShowControlUI();
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowPreBowlUI();
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowEndUI();
 
 	UPROPERTY(BlueprintReadOnly)
 	ABowlerPawn* ControlledBowler;
