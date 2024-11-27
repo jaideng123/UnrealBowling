@@ -29,7 +29,6 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void ReturnToTitleScreen();
-	
 
 	UFUNCTION()
 	void SyncWithPlayerState(ABowlingPlayerState* playerState);
