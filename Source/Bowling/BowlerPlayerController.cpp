@@ -3,7 +3,9 @@
 
 #include "BowlerPlayerController.h"
 
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/BowlingScoreCard.h"
 
 void ABowlerPlayerController::BeginPlay()
@@ -28,11 +30,14 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
+
+	TouchTimerInstance = Cast<UTouchTimer>(CreateWidget(this, TouchTimerClass));
+	TouchTimerInstance->AddToViewport();
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
 {
-	if(CurrentContinuousMove == 0.0f)
+	if (CurrentContinuousMove == 0.0f)
 	{
 		ControlledBowler->MoveX(value);
 	}
@@ -41,32 +46,61 @@ void ABowlerPlayerController::AttemptMoveX(float value)
 void ABowlerPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if(CurrentContinuousMove != 0.0f)
+	if (CurrentContinuousMove != 0.0f)
 	{
 		ControlledBowler->MoveX(CurrentContinuousMove);
+	}
+	if (bPressing)
+	{
+		HoldTimeElapsed += DeltaSeconds;
+		if (HoldTimeElapsed > TimeToGrip && !ControlledBowler->BallGripped)
+		{
+			ControlledBowler->GripBall();
+		}
+		if (!ControlledBowler->BallGripped)
+		{
+			TouchTimerInstance->UpdateTimerProgress(HoldTimeElapsed / TimeToGrip);
+		}
+		else
+		{
+			TouchTimerInstance->UpdateTimerProgress(0);
+		}
 	}
 }
 
 void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
-	ControlledBowler->GripBall();
+	// ControlledBowler->GripBall();
+	bPressing = true;
+	HoldTimeElapsed = 0.0f;
+	TouchTimerInstance->UpdatePosition(FVector2D(location));
 }
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
 	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange,
 	//                                  FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
+	HoldTimeElapsed = 0.0f;
 	ControlledBowler->ReleaseBall();
 	LastHoldPosition = NullPos;
+	bPressing = false;
+	TouchTimerInstance->UpdateTimerProgress(0);
 }
 
 void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	if(LastHoldPosition == NullPos)
+	TouchTimerInstance->UpdatePosition(FVector2D(location));
+	if (HoldTimeElapsed < TimeToGrip)
+	{
+		return;
+	}
+
+	if (LastHoldPosition == NullPos)
 	{
 		LastHoldPosition = location;
 	}
+
 	int screenSizeX;
 	int screenSizeY;
 	GetViewportSize(screenSizeX, screenSizeY);
@@ -89,4 +123,3 @@ void ABowlerPlayerController::StopContinuousMove()
 {
 	CurrentContinuousMove = 0.0f;
 }
-

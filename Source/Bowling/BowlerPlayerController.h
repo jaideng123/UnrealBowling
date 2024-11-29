@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "BowlerPawn.h"
 #include "GameFramework/PlayerController.h"
+#include "UI/TouchTimer.h"
 #include "BowlerPlayerController.generated.h"
 
+class UTouchTimer;
 class UBowlingScoreCard;
 /**
  * 
@@ -24,6 +26,10 @@ class BOWLING_API ABowlerPlayerController : public APlayerController
 	UE::Math::TVector<double> LastHoldPosition = UE::Math::TVector<double>(-1, -1, -1);
 	inline static const UE::Math::TVector<double> NullPos = UE::Math::TVector<double>(-1, -1, -1);
 	float CurrentContinuousMove = 0.0f;
+	bool bPressing = false;
+	
+	UPROPERTY()
+	UTouchTimer* TouchTimerInstance;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -41,6 +47,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowEndUI();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TimeToGrip = 0.0f;
+
+	// Which ball to spawn and throw
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UTouchTimer> TouchTimerClass = UTouchTimer::StaticClass();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float HoldTimeElapsed = 0.0f;
+	
 	UPROPERTY(BlueprintReadOnly)
 	ABowlerPawn* ControlledBowler;
 };
