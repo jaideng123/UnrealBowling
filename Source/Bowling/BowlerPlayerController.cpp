@@ -75,6 +75,7 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 	bPressing = true;
 	HoldTimeElapsed = 0.0f;
 	TouchTimerInstance->UpdatePosition(FVector2D(location));
+	LastHoldPosition = location;
 }
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
