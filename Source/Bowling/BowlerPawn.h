@@ -98,19 +98,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float ThrowForceDecay = 2.0f;
 
-	// Limits the lateral movement of the bowler
+	// Limits the lateral movement of the throw
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	double MaxZVelocity = 100.0f;
 
+	// Minimum amount of force required to release the bacll
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	double ReleaseForceThreshold = 10.0f;
+
+	// Minimum amount of windup required to release the ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	float WindupDistanceThreshold = 20.0f;
+
+	// How far back to start the run up sequence
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	float StartDistance = 100.0f;
 
+	// The total time the runup sequence takes
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	float RunUpTimeMS = 1.0f;
 
+	// Movement curve for the runup sequence
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	FRuntimeFloatCurve RunUpCurve;
 
+	// How fast to reset the bowler after the runup sequence is cancelled
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	float ResetSpeed = 1.0f;
 
@@ -139,6 +151,10 @@ public:
 	// Current distance travelled during throw
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowDistance = 0.0f;
+
+	// Overall distance travelled winding up throw
+	UPROPERTY(VisibleInstanceOnly)
+	float ThrowWindupDistance = 0.0f;
 
 	// Current time of throw
 	UPROPERTY(VisibleInstanceOnly)
@@ -180,31 +196,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	float MaxRotation = 30.0;
 
-	// Sets default values for this pawn's properties
 	ABowlerPawn();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable)
-	void HideUI();
-	UFUNCTION(BlueprintCallable)
-	void ShowUI();
-	UFUNCTION(BlueprintCallable)
-	void ShowPreBowlUI();
-	UFUNCTION(BlueprintCallable)
-	void ShowControlUI();
-	UFUNCTION(BlueprintCallable)
-	void ShowEndUI();
-	void PossiblyStartRunUpTween();
-	void CancelRunUpTween();
-
-public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -248,8 +243,28 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnMoveReset();
 
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	void HideUI();
+	UFUNCTION(BlueprintCallable)
+	void ShowUI();
+	UFUNCTION(BlueprintCallable)
+	void ShowPreBowlUI();
+	UFUNCTION(BlueprintCallable)
+	void ShowControlUI();
+	UFUNCTION(BlueprintCallable)
+	void ShowEndUI();
+	void PossiblyStartRunUpTween();
+	void CancelRunUpTween();
+
 private:
 	float CalculateReleaseForce() const;
 
 	FActiveDUETweenHandle MoveTweenHandle;
+
+	
 };
