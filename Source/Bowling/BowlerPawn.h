@@ -156,6 +156,11 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowWindupDistance = 0.0f;
 
+	// Whether we have passed the threshold required for a windup
+	UPROPERTY(VisibleInstanceOnly)
+	bool ThrowWindupThresholdPassed = false;
+
+
 	// Current time of throw
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowTime = 0.0f;
@@ -228,6 +233,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnRelease();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnWindupThresholdPassed();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnGrip();

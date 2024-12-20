@@ -275,6 +275,11 @@ void ABowlerPawn::MoveBallY(float input)
 	if(input < 0.0f)
 	{
 		ThrowWindupDistance += input;
+		if(!ThrowWindupThresholdPassed && FMath::Abs(ThrowWindupDistance) > WindupDistanceThreshold)
+		{
+			OnWindupThresholdPassed();
+			ThrowWindupThresholdPassed = true;
+		}
 	}
 }
 
@@ -312,6 +317,7 @@ void ABowlerPawn::ResetBallGripState()
 {
 	ThrowDistance = 0;
 	ThrowWindupDistance = 0;
+	ThrowWindupThresholdPassed = false;
 	ThrowTime = 0;
 	BallSpinAmount = 0;
 	GrippedTime = 0;
@@ -325,12 +331,13 @@ void ABowlerPawn::ReleaseBall()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Ball released"));
 	BallGripped = false;
-	if(FMath::Abs(CalculateReleaseForce()) < ReleaseForceThreshold || FMath::Abs(ThrowWindupDistance) <= WindupDistanceThreshold)
+	if(FMath::Abs(CalculateReleaseForce()) < ReleaseForceThreshold || !ThrowWindupThresholdPassed)
 	{
 		GuideDecalComp->SetVisibility(true);
 		UpdateMovementModeDisplay();
 		ShowUI();
 		ResetBallGripState();
+		OnNoReleaseForce();
 		return;
 	}
 	BallGripStartPosition.Reset();
@@ -372,11 +379,8 @@ void ABowlerPawn::ReleaseBall()
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
 	//                                  FString::Printf(TEXT("Release force: %f / %f"), releaseForce, MaxBallForce));
 
-	if(releaseForce >= 0 && releaseForce <= 20.0f)
-	{
-		UE_LOG(LogTemp, Display, TEXT("No Release Force!"));
-		OnNoReleaseForce();
-	}
+	// Ensure we are releasing with at least some force
+	check(FMath::Abs(releaseForce) > 0);
 
 	ThrownBall = CurrentBall;
 	CurrentBall = nullptr;
