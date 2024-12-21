@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TimeToGrip = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool MotionControlsEnabled = false;
+
 	// Which ball to spawn and throw
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UTouchTimer> TouchTimerClass = UTouchTimer::StaticClass();

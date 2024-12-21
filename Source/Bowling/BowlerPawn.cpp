@@ -269,7 +269,6 @@ void ABowlerPawn::MoveBallY(float input)
 		// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Resetting Ball Force")));
 		ThrowDistance = 0;
 		ThrowTime = 0;
-		BallSpinAmount = 0;
 	}
 	ThrowDistance += input;
 	if(input < 0.0f)

@@ -51,14 +51,17 @@ void ABowlerPlayerController::Tick(float DeltaSeconds)
 	}
 	if(bPressing)
 	{
-		FVector Tilt;
-		FVector RotationRate;
-		FVector Gravity;
-		FVector Acceleration;
-		GetInputMotionState(Tilt, RotationRate, Gravity, Acceleration);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green,
-		                                 FString::Printf(
-			                                 TEXT("Rotation: %f, %f, %f"), RotationRate.X, RotationRate.Y, RotationRate.Z));
+		if(MotionControlsEnabled)
+		{
+			FVector Tilt;
+			FVector RotationRate;
+			FVector Gravity;
+			FVector Acceleration;
+			GetInputMotionState(Tilt, RotationRate, Gravity, Acceleration);
+			
+			ControlledBowler->MoveBallY(RotationRate.X*2);
+			ControlledBowler->MoveBallX(RotationRate.Y*4);
+		}
 		HoldTimeElapsed += DeltaSeconds;
 		if(HoldTimeElapsed > TimeToGrip && !ControlledBowler->BallGripped)
 		{
@@ -117,8 +120,11 @@ void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::
 	float totalY = ControlledBowler->MaxArmAngle - ControlledBowler->MinArmAngle;
 	float totalX = ControlledBowler->MaxBallSpin / 2;
 
-	ControlledBowler->MoveBallX(xPercentageMoved * 1 * totalX * -1);
-	ControlledBowler->MoveBallY(yPercentageMoved * 3 * totalY);
+	if(!MotionControlsEnabled)
+	{
+		ControlledBowler->MoveBallX(xPercentageMoved * 1 * totalX * -1);
+		ControlledBowler->MoveBallY(yPercentageMoved * 3 * totalY);
+	}
 	LastHoldPosition = location;
 }
 
