@@ -30,14 +30,13 @@ void ABowlerPlayerController::BeginPlay()
 	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
 	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
 	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
-
 	TouchTimerInstance = Cast<UTouchTimer>(CreateWidget(this, TouchTimerClass));
 	TouchTimerInstance->AddToViewport();
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
 {
-	if (CurrentContinuousMove == 0.0f)
+	if(CurrentContinuousMove == 0.0f)
 	{
 		ControlledBowler->MoveX(value);
 	}
@@ -46,18 +45,26 @@ void ABowlerPlayerController::AttemptMoveX(float value)
 void ABowlerPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (CurrentContinuousMove != 0.0f)
+	if(CurrentContinuousMove != 0.0f)
 	{
 		ControlledBowler->MoveX(CurrentContinuousMove);
 	}
-	if (bPressing)
+	if(bPressing)
 	{
+		FVector Tilt;
+		FVector RotationRate;
+		FVector Gravity;
+		FVector Acceleration;
+		GetInputMotionState(Tilt, RotationRate, Gravity, Acceleration);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green,
+		                                 FString::Printf(
+			                                 TEXT("Rotation: %f, %f, %f"), RotationRate.X, RotationRate.Y, RotationRate.Z));
 		HoldTimeElapsed += DeltaSeconds;
-		if (HoldTimeElapsed > TimeToGrip && !ControlledBowler->BallGripped)
+		if(HoldTimeElapsed > TimeToGrip && !ControlledBowler->BallGripped)
 		{
 			ControlledBowler->GripBall();
 		}
-		if (!ControlledBowler->BallGripped)
+		if(!ControlledBowler->BallGripped)
 		{
 			TouchTimerInstance->UpdateTimerProgress(HoldTimeElapsed / TimeToGrip);
 		}
@@ -92,12 +99,12 @@ void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, U
 void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
 	TouchTimerInstance->UpdatePosition(FVector2D(location));
-	if (HoldTimeElapsed < TimeToGrip)
+	if(HoldTimeElapsed < TimeToGrip)
 	{
 		return;
 	}
 
-	if (LastHoldPosition == NullPos)
+	if(LastHoldPosition == NullPos)
 	{
 		LastHoldPosition = location;
 	}
