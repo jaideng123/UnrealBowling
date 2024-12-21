@@ -47,4 +47,5 @@ public:
 	FOnPlayerScoreChanged OnScoreChangedDelegate;
 private:
 	void RecalculateScore(const TArray<FBowlingFrame>& Array) const;
+	void ReportStrikeOrSpare();
 };

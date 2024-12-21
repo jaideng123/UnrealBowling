@@ -34,6 +34,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ShouldResetPinsEarly();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStrike();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSpare();
+
 	static float GetFinalFrame(UWorld* worldRef);
 
 	static float GetNumPins(UWorld* worldRef);

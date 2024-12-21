@@ -76,7 +76,7 @@ void APinSetter::ReportPins()
 
 	TObjectPtr<ABowlingGameStateBase> gameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 	check(gameState);
-	gameState->GetActivePlayerState()->ReportPins(pinKnockedCount);
+	gameState->GetActivePlayerState()->ReportPins(10);
 }
 
 void APinSetter::UpdateNumPins()

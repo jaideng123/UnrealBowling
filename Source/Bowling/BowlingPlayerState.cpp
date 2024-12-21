@@ -4,6 +4,7 @@
 #include "BowlingPlayerState.h"
 
 #include "BowlingGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
 #include "UI/BowlingScoreCard.h"
 
@@ -95,6 +96,48 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 	}
 }
 
+void ABowlingPlayerState::ReportStrikeOrSpare()
+{
+	int maxNumPins = ABowlingGameModeBase::GetNumPins(GetWorld());
+	if(CurrentBall == 0 && Frames.Last().ball1Pins == maxNumPins)
+	{
+		ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		BowlingGameMode->OnStrike();
+		UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+	}
+
+	if(CurrentBall == 1)
+	{
+		if(Frames.Last().ball2Pins == maxNumPins && Frames.Last().ball1Pins != maxNumPins)
+		{
+			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			BowlingGameMode->OnSpare();
+			UE_LOGFMT(LogTemp, Display, "Reporting Spare!");
+		}
+		if(Frames.Last().ball2Pins == maxNumPins && Frames.Last().ball1Pins == maxNumPins)
+		{
+			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			BowlingGameMode->OnStrike();
+			UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+		}
+	}
+	if(CurrentBall == 2)
+	{
+		if(Frames.Last().ball3Pins == maxNumPins && Frames.Last().ball2Pins != maxNumPins)
+		{
+			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			BowlingGameMode->OnSpare();
+			UE_LOGFMT(LogTemp, Display, "Reporting Spare!");
+		}
+		if(Frames.Last().ball3Pins == maxNumPins && Frames.Last().ball2Pins == maxNumPins)
+		{
+			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+			BowlingGameMode->OnStrike();
+			UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+		}
+	}
+}
+
 void ABowlingPlayerState::ReportPins(int numPins)
 {
 	if (Frames.Num() < (CurrentFrame + 1))
@@ -142,11 +185,12 @@ void ABowlingPlayerState::ReportPins(int numPins)
 			currentFrame.ball3Pins = numPins - currentFrame.ball2Pins;
 		}
 	}
-
+	
 	RecalculateScore(Frames);
+	
+	ReportStrikeOrSpare();
 
 	CurrentBall++;
-
 	int maxNumPins = ABowlingGameModeBase::GetNumPins(GetWorld());
 	if ((CurrentFrame + 1) == ABowlingGameModeBase::GetFinalFrame(GetWorld()))
 	{
