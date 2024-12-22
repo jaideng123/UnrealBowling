@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
 #include "BowlingOptionsMenu.generated.h"
 
 /**
@@ -16,7 +18,6 @@ class BOWLING_API UBowlingOptionsMenu : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
-
 	virtual void NativeConstruct() override;
 	
 	UPROPERTY(meta = (BindWidget))
@@ -30,6 +31,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UWidget* MotionControlToggleContainer;
+
+	UPROPERTY(meta = (BindWidget))
+	UWidgetSwitcher* MotionControlToggleTextSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ToggleMotionControlsButton;
 
 	UPROPERTY(meta = (BindWidget))
 	USlider* MusicSlider;
@@ -48,10 +55,16 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateSoundEffectVolume(float value);
+
+	UFUNCTION()
+	void ToggleMotionControls();
 	
 	UFUNCTION(BlueprintCallable)
 	void RestartGame();
 
 	UFUNCTION(BlueprintCallable)
 	void ReturnToTitleScreen();
+
+	UFUNCTION(BlueprintCallable)
+	void OnClose();
 };

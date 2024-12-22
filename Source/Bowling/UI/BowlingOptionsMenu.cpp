@@ -19,7 +19,12 @@ void UBowlingOptionsMenu::NativeConstruct()
 		ResolutionContainer->SetVisibility(ESlateVisibility::Visible);
 		WindowModeContainer->SetVisibility(ESlateVisibility::Visible);
 
+#if WITH_EDITOR
+		MotionControlToggleContainer->SetVisibility(ESlateVisibility::Visible);
+#else
 		MotionControlToggleContainer->SetVisibility(ESlateVisibility::Collapsed);
+#endif
+		
 		// FScreenResolutionArray Resolutions;
 		// RHIGetAvailableResolutions(Resolutions, false);
 		// for(const auto& Resolution : Resolutions)
@@ -43,12 +48,15 @@ void UBowlingOptionsMenu::NativeConstruct()
 	// Settings->ApplyResolutionSettings(false);
 	// Settings->ApplySettings(false);
 	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
-	
+
 	MusicSlider->SetValue(GameUserSettings->GetMusicVolume());
-	MusicSlider->OnValueChanged.AddDynamic(this,&UBowlingOptionsMenu::UpdateMusicVolume);
-	
+	MusicSlider->OnValueChanged.AddDynamic(this, &UBowlingOptionsMenu::UpdateMusicVolume);
+
 	SoundEffectSlider->SetValue(GameUserSettings->GetSoundEffectVolume());
-	SoundEffectSlider->OnValueChanged.AddDynamic(this,&UBowlingOptionsMenu::UpdateSoundEffectVolume);
+	SoundEffectSlider->OnValueChanged.AddDynamic(this, &UBowlingOptionsMenu::UpdateSoundEffectVolume);
+
+	MotionControlToggleTextSwitcher->SetActiveWidgetIndex(GameUserSettings->GetMotionControlsEnabled() ? 1 : 0);
+	ToggleMotionControlsButton->OnClicked.AddDynamic(this, &UBowlingOptionsMenu::ToggleMotionControls);
 }
 
 void UBowlingOptionsMenu::UpdateMusicVolume_Implementation(float value)
@@ -63,6 +71,17 @@ void UBowlingOptionsMenu::UpdateSoundEffectVolume_Implementation(float value)
 	GameUserSettings->SetSoundEffectVolume(value);
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UBowlingOptionsMenu::ToggleMotionControls()
+{
+	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
+	GameUserSettings->SetMotionControlsEnabled(!GameUserSettings->GetMotionControlsEnabled());
+
+	MotionControlToggleTextSwitcher->SetActiveWidgetIndex(GameUserSettings->GetMotionControlsEnabled() ? 1 : 0);
+
+	GameUserSettings->ApplySettings(false);
+}
+
 void UBowlingOptionsMenu::RestartGame()
 {
 	// TODO: reset all state instead of reopening the level
@@ -72,4 +91,10 @@ void UBowlingOptionsMenu::RestartGame()
 void UBowlingOptionsMenu::ReturnToTitleScreen()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), TitleMapUrl);
+}
+
+void UBowlingOptionsMenu::OnClose()
+{
+	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
+	GameUserSettings->ApplySettings(false);
 }

@@ -7,6 +7,7 @@ UBowlingGameUserSettings::UBowlingGameUserSettings(const FObjectInitializer& Obj
 {
 	MusicVolumeSetting = 1;
 	SoundEffectVolumeSetting = 1;
+	MotionControlsEnabledSetting = false;
 }
 
 void UBowlingGameUserSettings::SetMusicVolume(float NewVolume)
@@ -27,6 +28,16 @@ void UBowlingGameUserSettings::SetSoundEffectVolume(float NewVolume)
 float UBowlingGameUserSettings::GetSoundEffectVolume() const
 {
 	return SoundEffectVolumeSetting;
+}
+
+void UBowlingGameUserSettings::SetMotionControlsEnabled(bool NewValue)
+{
+	MotionControlsEnabledSetting = NewValue;
+}
+
+bool UBowlingGameUserSettings::GetMotionControlsEnabled() const
+{
+	return MotionControlsEnabledSetting;
 }
 
 UBowlingGameUserSettings* UBowlingGameUserSettings::GetBowlingGameUserSettings()

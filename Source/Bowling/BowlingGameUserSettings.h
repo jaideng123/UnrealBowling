@@ -28,6 +28,12 @@ public:
 	float GetSoundEffectVolume() const;
 
 	UFUNCTION(BlueprintCallable)
+	void SetMotionControlsEnabled(bool NewValue);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetMotionControlsEnabled() const;
+
+	UFUNCTION(BlueprintCallable)
 	static UBowlingGameUserSettings* GetBowlingGameUserSettings();
 
 protected:
@@ -36,4 +42,7 @@ protected:
 
 	UPROPERTY(Config)
 	float SoundEffectVolumeSetting;
+
+	UPROPERTY(Config)
+	bool MotionControlsEnabledSetting;
 };

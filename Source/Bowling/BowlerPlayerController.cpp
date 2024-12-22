@@ -3,6 +3,7 @@
 
 #include "BowlerPlayerController.h"
 
+#include "BowlingGameUserSettings.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -58,9 +59,9 @@ void ABowlerPlayerController::Tick(float DeltaSeconds)
 			FVector Gravity;
 			FVector Acceleration;
 			GetInputMotionState(Tilt, RotationRate, Gravity, Acceleration);
-			
-			ControlledBowler->MoveBallY(RotationRate.X*2);
-			ControlledBowler->MoveBallX(RotationRate.Y*4);
+
+			ControlledBowler->MoveBallY(RotationRate.X * 2);
+			ControlledBowler->MoveBallX(RotationRate.Y * 4);
 		}
 		HoldTimeElapsed += DeltaSeconds;
 		if(HoldTimeElapsed > TimeToGrip && !ControlledBowler->BallGripped)
@@ -83,6 +84,8 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
 	// ControlledBowler->GripBall();
 	bPressing = true;
+	// Update cached setting so we dont have to do a cast every frame
+	MotionControlsEnabled = UBowlingGameUserSettings::GetBowlingGameUserSettings()->GetMotionControlsEnabled();
 	HoldTimeElapsed = 0.0f;
 	TouchTimerInstance->UpdatePosition(FVector2D(location));
 	LastHoldPosition = location;
