@@ -48,11 +48,10 @@ void UBowlingOptionsMenu::NativeConstruct()
 	MusicSlider->OnValueChanged.AddDynamic(this,&UBowlingOptionsMenu::UpdateMusicVolume);
 }
 
-void UBowlingOptionsMenu::UpdateMusicVolume(float value)
+void UBowlingOptionsMenu::UpdateMusicVolume_Implementation(float value)
 {
 	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
 	GameUserSettings->SetMusicVolume(value);
-	
 }
 
 void UBowlingOptionsMenu::RestartGame()

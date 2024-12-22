@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FName TitleMapUrl;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
 	void UpdateMusicVolume(float value);
 	
 	UFUNCTION(BlueprintCallable)
