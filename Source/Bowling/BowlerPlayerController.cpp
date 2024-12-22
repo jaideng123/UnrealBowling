@@ -86,6 +86,7 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 	bPressing = true;
 	// Update cached setting so we dont have to do a cast every frame
 	MotionControlsEnabled = UBowlingGameUserSettings::GetBowlingGameUserSettings()->GetMotionControlsEnabled();
+	bShowMouseCursor = false;
 	HoldTimeElapsed = 0.0f;
 	TouchTimerInstance->UpdatePosition(FVector2D(location));
 	LastHoldPosition = location;
@@ -97,6 +98,7 @@ void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, U
 	//                                  FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
 	HoldTimeElapsed = 0.0f;
 	ControlledBowler->ReleaseBall();
+	bShowMouseCursor = true;
 	LastHoldPosition = NullPos;
 	bPressing = false;
 	TouchTimerInstance->UpdateTimerProgress(0);

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/ComboBoxString.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
@@ -44,11 +45,24 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USlider* SoundEffectSlider;
 
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* ResolutionComboBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UComboBoxString* ScreenModeComboBox;
+	
+
 	UPROPERTY(EditAnywhere)
 	TArray<UWidget*> MobileOnlyWidgets;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FName TitleMapUrl;
+
+	UFUNCTION()
+	void OnResolutionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+	UFUNCTION()
+	void OnScreenModeChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateMusicVolume(float value);
