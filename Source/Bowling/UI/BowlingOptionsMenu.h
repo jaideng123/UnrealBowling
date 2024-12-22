@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "BowlingOptionsMenu.generated.h"
 
@@ -17,17 +18,30 @@ class BOWLING_API UBowlingOptionsMenu : public UUserWidget
 protected:
 
 	virtual void NativeConstruct() override;
+	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ToggleMotionControlsText;
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray<UWidget*> DesktopOnlyWidgets;
+	UPROPERTY(meta = (BindWidget))
+	UWidget* ResolutionContainer;
+	
+	UPROPERTY(meta = (BindWidget))
+	UWidget* WindowModeContainer;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(meta = (BindWidget))
+	UWidget* MotionControlToggleContainer;
+
+	UPROPERTY(meta = (BindWidget))
+	USlider* MusicSlider;
+
+	UPROPERTY(EditAnywhere)
 	TArray<UWidget*> MobileOnlyWidgets;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FName TitleMapUrl;
+
+	UFUNCTION()
+	void UpdateMusicVolume(float value);
 	
 	UFUNCTION(BlueprintCallable)
 	void RestartGame();
