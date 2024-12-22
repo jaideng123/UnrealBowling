@@ -43,15 +43,24 @@ void UBowlingOptionsMenu::NativeConstruct()
 	// Settings->ApplyResolutionSettings(false);
 	// Settings->ApplySettings(false);
 	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
+	
 	MusicSlider->SetValue(GameUserSettings->GetMusicVolume());
-
 	MusicSlider->OnValueChanged.AddDynamic(this,&UBowlingOptionsMenu::UpdateMusicVolume);
+	
+	SoundEffectSlider->SetValue(GameUserSettings->GetSoundEffectVolume());
+	SoundEffectSlider->OnValueChanged.AddDynamic(this,&UBowlingOptionsMenu::UpdateSoundEffectVolume);
 }
 
 void UBowlingOptionsMenu::UpdateMusicVolume_Implementation(float value)
 {
 	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
 	GameUserSettings->SetMusicVolume(value);
+}
+
+void UBowlingOptionsMenu::UpdateSoundEffectVolume_Implementation(float value)
+{
+	UBowlingGameUserSettings* GameUserSettings = UBowlingGameUserSettings::GetBowlingGameUserSettings();
+	GameUserSettings->SetSoundEffectVolume(value);
 }
 
 void UBowlingOptionsMenu::RestartGame()

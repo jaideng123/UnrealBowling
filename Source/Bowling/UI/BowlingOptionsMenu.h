@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USlider* MusicSlider;
 
+	UPROPERTY(meta = (BindWidget))
+	USlider* SoundEffectSlider;
+
 	UPROPERTY(EditAnywhere)
 	TArray<UWidget*> MobileOnlyWidgets;
 	
@@ -42,6 +45,9 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateMusicVolume(float value);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateSoundEffectVolume(float value);
 	
 	UFUNCTION(BlueprintCallable)
 	void RestartGame();

@@ -22,9 +22,18 @@ public:
 	float GetMusicVolume() const;
 
 	UFUNCTION(BlueprintCallable)
+	void SetSoundEffectVolume(float NewVolume);
+
+	UFUNCTION(BlueprintCallable)
+	float GetSoundEffectVolume() const;
+
+	UFUNCTION(BlueprintCallable)
 	static UBowlingGameUserSettings* GetBowlingGameUserSettings();
 
 protected:
 	UPROPERTY(Config)
 	float MusicVolumeSetting;
+
+	UPROPERTY(Config)
+	float SoundEffectVolumeSetting;
 };
