@@ -22,14 +22,14 @@ void UBowlingOptionsMenu::NativeConstruct()
 		{
 			Widget->SetVisibility(ESlateVisibility::Collapsed);
 		}
-		FScreenResolutionArray Resolutions;
-		RHIGetAvailableResolutions(Resolutions, false);
-		for(const auto& Resolution : Resolutions)
-		{
-			
-		}
+		// FScreenResolutionArray Resolutions;
+		// RHIGetAvailableResolutions(Resolutions, false);
+		// for(const auto& Resolution : Resolutions)
+		// {
+		// 	
+		// }
 		
-		UGameUserSettings* Settings = GEngine->GetGameUserSettings();
+		// UGameUserSettings* Settings = GEngine->GetGameUserSettings();
 		// Settings->GetScreenResolution();
 		// Settings->SetFullscreenMode(EWindowMode::Fullscreen);
 		// Settings->SetScreenResolution()
