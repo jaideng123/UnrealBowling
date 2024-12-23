@@ -72,10 +72,6 @@
 			"SupportedTargetPlatforms": [
 				"Android"
 			]
-		},
-		{
-			"Name": "OpenImageDenoise",
-			"Enabled": false
 		}
 	]
 }
