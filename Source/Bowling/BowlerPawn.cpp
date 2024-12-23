@@ -425,7 +425,8 @@ void ABowlerPawn::AttachBallToHand()
 	const FAttachmentTransformRules ballAttachmentRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative,
 	                                                    EAttachmentRule::KeepWorld,
 	                                                    false);
-	check(CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules));
+	bool IsAttached = CurrentBall->AttachToComponent(BallAnchorComp, ballAttachmentRules);
+	check(IsAttached);
 }
 
 void ABowlerPawn::SpawnNewBall()

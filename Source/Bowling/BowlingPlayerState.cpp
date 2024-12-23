@@ -104,6 +104,7 @@ void ABowlingPlayerState::ReportStrikeOrSpare()
 		ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 		BowlingGameMode->OnStrike();
 		UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+		return;
 	}
 
 	if(CurrentBall == 1)
@@ -113,12 +114,14 @@ void ABowlingPlayerState::ReportStrikeOrSpare()
 			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 			BowlingGameMode->OnSpare();
 			UE_LOGFMT(LogTemp, Display, "Reporting Spare!");
+			return;
 		}
 		if(Frames.Last().ball2Pins == maxNumPins && Frames.Last().ball1Pins == maxNumPins)
 		{
 			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 			BowlingGameMode->OnStrike();
 			UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+			return;
 		}
 	}
 	if(CurrentBall == 2)
@@ -128,12 +131,14 @@ void ABowlingPlayerState::ReportStrikeOrSpare()
 			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 			BowlingGameMode->OnSpare();
 			UE_LOGFMT(LogTemp, Display, "Reporting Spare!");
+			return;
 		}
 		if(Frames.Last().ball3Pins == maxNumPins && Frames.Last().ball2Pins == maxNumPins)
 		{
 			ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 			BowlingGameMode->OnStrike();
 			UE_LOGFMT(LogTemp, Display, "Reporting Strike!");
+			return;
 		}
 	}
 }
