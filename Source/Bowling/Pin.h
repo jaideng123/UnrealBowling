@@ -11,6 +11,10 @@ UCLASS()
 class BOWLING_API APin : public AActor {
 	GENERATED_BODY()
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 public:
 	UPROPERTY(VisibleInstanceOnly)
 	UPrimitiveComponent* PrimitiveComponent;
@@ -18,14 +22,11 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	APinSpawnPoint* OriginalSpawn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool ShowCenterOfMass;
+	
 	// Sets default values for this actor's properties
 	APin();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

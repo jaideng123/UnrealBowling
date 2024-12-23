@@ -22,14 +22,18 @@ void APin::BeginPlay()
 void APin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// DrawDebugCircle(GetWorld(), PrimitiveComponent->GetCenterOfMass(), 4.0, 10, FColor::Magenta,false,0,SDPG_Foreground,1);
+	if(ShowCenterOfMass)
+	{
+		DrawDebugCircle(GetWorld(), PrimitiveComponent->GetCenterOfMass(), 4.0, 10, FColor::Magenta, false, 0, SDPG_Foreground, 1);
+	}
 }
 
 void APin::ResetToSpawn()
 {
 	PrimitiveComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
 	PrimitiveComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
-	SetActorLocationAndRotation(OriginalSpawn->GetActorLocation(), Cast<AActor>(StaticClass()->GetDefaultObject())->GetActorRotation());
+	SetActorLocationAndRotation(OriginalSpawn->GetActorLocation(),
+	                            Cast<AActor>(StaticClass()->GetDefaultObject())->GetActorRotation());
 }
 
 bool APin::IsToppled() const
