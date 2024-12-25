@@ -33,7 +33,7 @@ class BOWLING_API ABowlingPlayerState : public APlayerState
 public:
 	UFUNCTION(BlueprintCallable)
 	void ReportPins(int numPins);
-	UFUNCTION(CallInEditor)
+	UFUNCTION(CallInEditor, BlueprintCallable)
 	void TestPins();
 	
 	UPROPERTY(VisibleAnywhere)
