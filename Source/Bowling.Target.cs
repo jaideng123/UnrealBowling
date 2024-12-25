@@ -11,6 +11,7 @@ public class BowlingTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		ExtraModuleNames.AddRange( new string[] { "Bowling" } );
 		RegisterModulesCreatedByRider();
+		bUseLoggingInShipping = true;
 	}
 
 	private void RegisterModulesCreatedByRider()
