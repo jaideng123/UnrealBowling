@@ -55,7 +55,7 @@ bool ABowlingGameModeBase::ShouldResetPinsEarly()
 			return true;
 		}
 	
-		if(currentFrame.ball2Pins == NumPins && activePlayerState->CurrentBall == 2)
+		if(currentFrame.ball1Pins + currentFrame.ball2Pins == NumPins && activePlayerState->CurrentBall == 2)
 		{
 			return true;
 		}
