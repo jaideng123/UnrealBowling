@@ -29,7 +29,7 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 			frameScore += currentFrame.ball1Pins == -1 ? 0 : currentFrame.ball1Pins;
 			frameScore += currentFrame.ball2Pins == -1 ? 0 : currentFrame.ball2Pins;
 			frameScore += currentFrame.ball3Pins == -1 ? 0 : currentFrame.ball3Pins;
-			
+
 			accumulatedScore += frameScore;
 			currentFrame.score = accumulatedScore;
 			continue;
@@ -64,9 +64,9 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 				}
 			}
 		}
-		else if(currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		else if(currentFrame.ball1Pins + currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
 		{
-			if(FramesToScore.Num() < i + 1)
+			if(FramesToScore.Num() > i + 1)
 			{
 				const auto& nextFrame = FramesToScore[i + 1];
 				frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
