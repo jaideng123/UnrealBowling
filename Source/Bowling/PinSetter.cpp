@@ -18,7 +18,7 @@ APinSetter::APinSetter()
 
 void APinSetter::SpawnPins()
 {
-	for (auto spawnPoint : PinSpawnPoints)
+	for(auto spawnPoint : PinSpawnPoints)
 	{
 		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType, spawnPoint->GetActorLocation(),
 		                                                spawnPoint->GetActorRotation());
@@ -33,7 +33,7 @@ void APinSetter::SweepPins_Implementation()
 
 void APinSetter::ResetPins()
 {
-	for (const auto spawnedPin : SpawnedPins)
+	for(const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
 		spawnedPin->TouchedByBall = false;
@@ -42,9 +42,9 @@ void APinSetter::ResetPins()
 
 void APinSetter::RaiseStandingPins()
 {
-	for (const auto spawnedPin : SpawnedPins)
+	for(const auto spawnedPin : SpawnedPins)
 	{
-		if (!spawnedPin->IsToppled())
+		if(!spawnedPin->IsToppled())
 		{
 			spawnedPin->RaisePin(GetActorLocation().Y);
 			spawnedPin->TouchedByBall = false;
@@ -55,7 +55,7 @@ void APinSetter::RaiseStandingPins()
 
 void APinSetter::LowerStandingPins()
 {
-	for (const auto spawnedPin : RaisedPins)
+	for(const auto spawnedPin : RaisedPins)
 	{
 		spawnedPin->LowerPin();
 	}
@@ -64,9 +64,9 @@ void APinSetter::LowerStandingPins()
 
 void APinSetter::ReportPins()
 {
-	
+
 	int pinKnockedCount = 0;
-	for (auto pin : SpawnedPins)
+	for(auto pin : SpawnedPins)
 	{
 		if(pin->IsToppled())
 		{
@@ -76,7 +76,17 @@ void APinSetter::ReportPins()
 
 	TObjectPtr<ABowlingGameStateBase> gameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 	check(gameState);
-	gameState->GetActivePlayerState()->ReportPins(pinKnockedCount);
+	
+	bool alwaysSpare = false;
+	bool alwaysStrike = false;
+	if((gameState->GetActivePlayerState()->CurrentBall >= 1 && alwaysSpare) || alwaysStrike)
+	{
+		gameState->GetActivePlayerState()->ReportPins(10);
+	}
+	else
+	{
+		gameState->GetActivePlayerState()->ReportPins(pinKnockedCount);
+	}
 }
 
 void APinSetter::UpdateNumPins()
