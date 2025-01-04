@@ -49,15 +49,15 @@ void UBowlingScoreCardEntry::SetBall1(int ball1)
 	}
 }
 
-void UBowlingScoreCardEntry::SetBall2(int ball2)
+void UBowlingScoreCardEntry::SetBall2(int ball2, bool wasSpare)
 {
 	if (ball2 < 0)
 	{
 		Ball2Text->SetText(FText::FromString(TEXT("")));
 	}
-	else if (ball2 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if (wasSpare)
 	{
-		Ball1Text->SetText(FText::FromString(TEXT("/")));
+		Ball2Text->SetText(FText::FromString(TEXT("/")));
 	}
 	else
 	{

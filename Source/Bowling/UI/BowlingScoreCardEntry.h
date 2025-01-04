@@ -28,5 +28,5 @@ public:
 	void SetFrameNumber(int I);
 	void SetScore(int I);
 	void SetBall1(int ball1);
-	void SetBall2(int ball2);
+	void SetBall2(int ball2, bool wasSpare);
 };
