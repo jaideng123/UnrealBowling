@@ -92,8 +92,10 @@ void APinSetter::ReportPins()
 void APinSetter::UpdateNumPins()
 {
 	TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	check(gameMode);
-	gameMode->NumPins = PinSpawnPoints.Num();
+	if(gameMode)
+	{
+		gameMode->NumPins = PinSpawnPoints.Num();
+	}
 }
 
 // Called when the game starts or when spawned

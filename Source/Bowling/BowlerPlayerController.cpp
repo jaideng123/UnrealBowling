@@ -15,24 +15,28 @@ void ABowlerPlayerController::BeginPlay()
 	APlayerController::SetupInputComponent();
 	check(InputComponent);
 	ControlledBowler = Cast<ABowlerPawn>(GetPawn());
-	SetViewTarget(ControlledBowler);
-	check(ControlledBowler != nullptr);
+	if(ControlledBowler!=nullptr)
+	{
+		SetViewTarget(ControlledBowler);
+	}
+	if(IsLocalController())
+	{
+		InputComponent->BindAxis("XMovement", this, &ABowlerPlayerController::AttemptMoveX);
 
-	InputComponent->BindAxis("XMovement", this, &ABowlerPlayerController::AttemptMoveX);
+		// InputComponent->BindAction("GripBall", IE_Pressed, ControlledBowler, &ABowlerPawn::GripBall);
+		// InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
 
-	// InputComponent->BindAction("GripBall", IE_Pressed, ControlledBowler, &ABowlerPawn::GripBall);
-	// InputComponent->BindAction("GripBall", IE_Released, ControlledBowler, &ABowlerPawn::ReleaseBall);
+		InputComponent->BindAction("ToggleMovement", IE_Released, ControlledBowler, &ABowlerPawn::ToggleMovementMode);
 
-	InputComponent->BindAction("ToggleMovement", IE_Released, ControlledBowler, &ABowlerPawn::ToggleMovementMode);
+		// InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
+		// InputComponent->BindAxis("XBallMovement", ControlledBowler, &ABowlerPawn::MoveBallX);
 
-	// InputComponent->BindAxis("YBallMovement", ControlledBowler, &ABowlerPawn::MoveBallY);
-	// InputComponent->BindAxis("XBallMovement", ControlledBowler, &ABowlerPawn::MoveBallX);
-
-	InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
-	InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
-	InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
-	TouchTimerInstance = Cast<UTouchTimer>(CreateWidget(this, TouchTimerClass));
-	TouchTimerInstance->AddToViewport();
+		InputComponent->BindTouch(IE_Pressed, this, &ABowlerPlayerController::HandleTouchPress);
+		InputComponent->BindTouch(IE_Released, this, &ABowlerPlayerController::HandleTouchRelease);
+		InputComponent->BindTouch(IE_Repeat, this, &ABowlerPlayerController::HandleTouchHeld);
+		TouchTimerInstance = Cast<UTouchTimer>(CreateWidget(this, TouchTimerClass));
+		TouchTimerInstance->AddToViewport();
+	}
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
