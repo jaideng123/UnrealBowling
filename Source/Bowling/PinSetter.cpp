@@ -33,6 +33,10 @@ void APinSetter::SweepPins_Implementation()
 
 void APinSetter::ResetPins()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	for(const auto spawnedPin : SpawnedPins)
 	{
 		spawnedPin->ResetToSpawn();
@@ -42,6 +46,10 @@ void APinSetter::ResetPins()
 
 void APinSetter::RaiseStandingPins()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	for(const auto spawnedPin : SpawnedPins)
 	{
 		if(!spawnedPin->IsToppled())
@@ -55,6 +63,10 @@ void APinSetter::RaiseStandingPins()
 
 void APinSetter::LowerStandingPins()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	for(const auto spawnedPin : RaisedPins)
 	{
 		spawnedPin->LowerPin();
@@ -64,7 +76,10 @@ void APinSetter::LowerStandingPins()
 
 void APinSetter::ReportPins()
 {
-
+	if(!HasAuthority())
+	{
+		return;
+	}
 	int pinKnockedCount = 0;
 	for(auto pin : SpawnedPins)
 	{
@@ -91,8 +106,11 @@ void APinSetter::ReportPins()
 
 void APinSetter::UpdateNumPins()
 {
-	TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(gameMode)
+	if(!HasAuthority())
+	{
+		return;
+	}
+	if(const TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
 	{
 		gameMode->NumPins = PinSpawnPoints.Num();
 	}

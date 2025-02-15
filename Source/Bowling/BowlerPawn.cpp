@@ -53,13 +53,18 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp->TargetArmLength = 400.f;
 	SpringArmComp->bEnableCameraLag = true;
 	SpringArmComp->CameraLagSpeed = 3.0f;
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if(!HasAuthority())
+	{
+		return;
+	}
 	InitialForward = GetActorForwardVector();
 	InitialRight = GetActorRightVector();
 	StartingOrientation = GetActorRotation();
@@ -77,13 +82,12 @@ void ABowlerPawn::BeginPlay()
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
 	MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
-
 	UpdateMovementModeDisplay();
 }
 
 void ABowlerPawn::HideUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AController* localPlayerController = GetController();
 	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->HideUI();
@@ -92,7 +96,7 @@ void ABowlerPawn::HideUI()
 
 void ABowlerPawn::ShowUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AController* localPlayerController = GetController();
 	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->ShowUI();
@@ -101,7 +105,7 @@ void ABowlerPawn::ShowUI()
 
 void ABowlerPawn::ShowPreBowlUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AController* localPlayerController = GetController();
 	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->ShowPreBowlUI();
@@ -110,7 +114,7 @@ void ABowlerPawn::ShowPreBowlUI()
 
 void ABowlerPawn::ShowControlUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AController* localPlayerController = GetController();
 	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->ShowControlUI();
@@ -119,7 +123,7 @@ void ABowlerPawn::ShowControlUI()
 
 void ABowlerPawn::ShowEndUI()
 {
-	APlayerController* localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AController* localPlayerController = GetController();
 	if(ABowlerPlayerController* bowlingPlayerController = Cast<ABowlerPlayerController>(localPlayerController))
 	{
 		bowlingPlayerController->ShowEndUI();
@@ -159,6 +163,11 @@ void ABowlerPawn::CancelRunUpTween()
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(!HasAuthority())
+	{
+		return;
+	}
+
 	if(CurrentBall != nullptr)
 	{
 		if(BallGripped)
@@ -227,6 +236,10 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABowlerPawn::MoveX(float input)
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	OnMove(input);
 	if(input == 0 || BallGripped)
 	{
@@ -256,6 +269,10 @@ void ABowlerPawn::MoveX(float input)
 
 void ABowlerPawn::MoveBallY(float input)
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(!BallGripped || FMath::Abs(input) < .001)
 	{
 		return;
@@ -284,6 +301,10 @@ void ABowlerPawn::MoveBallY(float input)
 
 void ABowlerPawn::MoveBallX(float input)
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(!BallGripped)
 	{
 		return;
@@ -293,6 +314,10 @@ void ABowlerPawn::MoveBallX(float input)
 
 void ABowlerPawn::GripBall()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(CurrentBall == nullptr || BowlingLocked)
 	{
 		return;
@@ -324,6 +349,11 @@ void ABowlerPawn::ResetBallGripState()
 
 void ABowlerPawn::ReleaseBall()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
+
 	if(CurrentBall == nullptr || !BallGripped)
 	{
 		return;
@@ -389,6 +419,10 @@ void ABowlerPawn::ReleaseBall()
 
 void ABowlerPawn::UpdateMovementModeDisplay() const
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
 		RotateModeDisplayComp->SetVisibility(false, true);
@@ -403,12 +437,20 @@ void ABowlerPawn::UpdateMovementModeDisplay() const
 
 void ABowlerPawn::HideMovementModeDisplay() const
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	RotateModeDisplayComp->SetVisibility(false, true);
 	MoveModeDisplayComp->SetVisibility(false, true);
 }
 
 void ABowlerPawn::ToggleMovementMode()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
 		CurrentMovementMode = EBowlerMovementMode::ROTATE;
@@ -431,6 +473,10 @@ void ABowlerPawn::AttachBallToHand()
 
 void ABowlerPawn::SpawnNewBall()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(CurrentBall != nullptr)
 	{
 		CurrentBall->Destroy();
@@ -443,6 +489,10 @@ void ABowlerPawn::SpawnNewBall()
 
 void ABowlerPawn::ResetBall()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if(ThrownBall == nullptr)
 	{
 		return;

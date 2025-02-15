@@ -9,6 +9,9 @@ APin::APin()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	bReplicates = true;
+	AActor::SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +33,10 @@ void APin::Tick(float DeltaTime)
 
 void APin::ResetToSpawn()
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	PrimitiveComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
 	PrimitiveComponent->SetAllPhysicsAngularVelocityInDegrees(FVector::Zero());
 	SetActorLocationAndRotation(OriginalSpawn->GetActorLocation(),

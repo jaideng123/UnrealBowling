@@ -32,6 +32,10 @@ ABallBase::ABallBase()
 	SpringArmComp->bEnableCameraLag = false;
 	SpringArmComp->CameraLagSpeed = 3.0f;
 	SpringArmComp->SetAbsolute(false, true, false);
+
+	bReplicates = true;
+
+	AActor::SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -44,7 +48,10 @@ void ABallBase::BeginPlay()
 void ABallBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if(!HasAuthority())
+	{
+		return;
+	}
 	// Fov Ramping
 	float currentSpeed = PhysicsComponent->GetPhysicsLinearVelocity().Size();
 	float normalizedSpeed = FMath::Clamp(currentSpeed / SpeedFovMaxSpeed, 0.0f, 1.1f);
@@ -54,6 +61,10 @@ void ABallBase::Tick(float DeltaTime)
 
 void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 {
+	if(!HasAuthority())
+	{
+		return;
+	}
 	if (pin == nullptr || PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold || pin->TouchedByBall)
 	{
 		return;
