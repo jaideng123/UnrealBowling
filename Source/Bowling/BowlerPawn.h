@@ -207,13 +207,17 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void MoveX(float value);
+	UFUNCTION(Server, Reliable)
 	void MoveBallY(float value);
+	UFUNCTION(Server, Reliable)
 	void MoveBallX(float value);
+	UFUNCTION(Server, Reliable)
 	void GripBall();
+	UFUNCTION(Server, Reliable)
 	void ReleaseBall();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ToggleMovementMode();
 
 	float CalculateBallSpin();

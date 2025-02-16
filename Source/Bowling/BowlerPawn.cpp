@@ -234,7 +234,7 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABowlerPawn::MoveX(float input)
+void ABowlerPawn::MoveX_Implementation(float input)
 {
 	if(!HasAuthority())
 	{
@@ -267,7 +267,7 @@ void ABowlerPawn::MoveX(float input)
 	}
 }
 
-void ABowlerPawn::MoveBallY(float input)
+void ABowlerPawn::MoveBallY_Implementation(float input)
 {
 	if(!HasAuthority())
 	{
@@ -299,7 +299,7 @@ void ABowlerPawn::MoveBallY(float input)
 	}
 }
 
-void ABowlerPawn::MoveBallX(float input)
+void ABowlerPawn::MoveBallX_Implementation(float input)
 {
 	if(!HasAuthority())
 	{
@@ -312,7 +312,7 @@ void ABowlerPawn::MoveBallX(float input)
 	BallSpinAmount += input;
 }
 
-void ABowlerPawn::GripBall()
+void ABowlerPawn::GripBall_Implementation()
 {
 	if(!HasAuthority())
 	{
@@ -347,7 +347,7 @@ void ABowlerPawn::ResetBallGripState()
 	GrippedTime = 0;
 }
 
-void ABowlerPawn::ReleaseBall()
+void ABowlerPawn::ReleaseBall_Implementation()
 {
 	if(!HasAuthority())
 	{
@@ -372,7 +372,8 @@ void ABowlerPawn::ReleaseBall()
 	BallGripStartPosition.Reset();
 	CancelRunUpTween();
 	OnRelease();
-	GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
+	// TODO: Fix This
+	// GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 
 	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
@@ -445,7 +446,7 @@ void ABowlerPawn::HideMovementModeDisplay() const
 	MoveModeDisplayComp->SetVisibility(false, true);
 }
 
-void ABowlerPawn::ToggleMovementMode()
+void ABowlerPawn::ToggleMovementMode_Implementation()
 {
 	if(!HasAuthority())
 	{

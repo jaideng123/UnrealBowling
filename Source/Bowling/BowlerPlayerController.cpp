@@ -15,7 +15,7 @@ void ABowlerPlayerController::BeginPlay()
 	APlayerController::SetupInputComponent();
 	check(InputComponent);
 	ControlledBowler = Cast<ABowlerPawn>(GetPawn());
-	if(ControlledBowler!=nullptr)
+	if(ControlledBowler != nullptr)
 	{
 		SetViewTarget(ControlledBowler);
 	}
