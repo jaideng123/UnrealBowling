@@ -15,10 +15,6 @@ void ABowlerPlayerController::BeginPlay()
 	APlayerController::SetupInputComponent();
 	check(InputComponent);
 	ControlledBowler = Cast<ABowlerPawn>(GetPawn());
-	if(ControlledBowler != nullptr)
-	{
-		SetViewTarget(ControlledBowler);
-	}
 	if(IsLocalController())
 	{
 		InputComponent->BindAxis("XMovement", this, &ABowlerPlayerController::AttemptMoveX);

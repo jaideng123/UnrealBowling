@@ -14,16 +14,21 @@ APinSetter::APinSetter()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	bReplicates = true;
 }
 
 void APinSetter::SpawnPins()
 {
-	for(auto spawnPoint : PinSpawnPoints)
+	if(HasAuthority())
 	{
-		APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType, spawnPoint->GetActorLocation(),
-		                                                spawnPoint->GetActorRotation());
-		SpawnedPin->OriginalSpawn = spawnPoint;
-		SpawnedPins.Add(SpawnedPin);
+		for(auto spawnPoint : PinSpawnPoints)
+		{
+			APin* SpawnedPin = GetWorld()->SpawnActor<APin>(PinType, spawnPoint->GetActorLocation(),
+			                                                spawnPoint->GetActorRotation());
+			SpawnedPin->OriginalSpawn = spawnPoint;
+			SpawnedPins.Add(SpawnedPin);
+		}
 	}
 }
 
@@ -91,7 +96,7 @@ void APinSetter::ReportPins()
 
 	TObjectPtr<ABowlingGameStateBase> gameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 	check(gameState);
-	
+
 	bool alwaysSpare = false;
 	bool alwaysStrike = false;
 	if((gameState->GetActivePlayerState()->CurrentBall >= 1 && alwaysSpare) || alwaysStrike)

@@ -4,6 +4,7 @@
 #include "BowlerPawn.h"
 
 #include "BowlerPlayerController.h"
+#include "BowlingUtilFunctionLibrary.h"
 #include "DUETween.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -55,6 +56,7 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp->CameraLagSpeed = 3.0f;
 
 	bReplicates = true;
+	AActor::SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -372,8 +374,9 @@ void ABowlerPawn::ReleaseBall_Implementation()
 	BallGripStartPosition.Reset();
 	CancelRunUpTween();
 	OnRelease();
-	// TODO: Fix This
-	// GetLocalViewingPlayerController()->SetViewTargetWithBlend(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
+
+	// TODO: move to On Release BP
+	UBowlingUtilFunctionLibrary::SetViewTargetWithBlendForAllPlayerControllers(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
 
 	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
