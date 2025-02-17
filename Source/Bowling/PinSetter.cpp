@@ -115,9 +115,9 @@ void APinSetter::UpdateNumPins()
 	{
 		return;
 	}
-	if(const TObjectPtr<ABowlingGameModeBase> gameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())))
+	if(const TObjectPtr<ABowlingGameStateBase> GameState = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(GetWorld())))
 	{
-		gameMode->NumPins = PinSpawnPoints.Num();
+		GameState->NumPins = PinSpawnPoints.Num();
 	}
 }
 

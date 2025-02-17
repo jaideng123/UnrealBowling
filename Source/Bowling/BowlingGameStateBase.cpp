@@ -4,6 +4,7 @@
 #include "BowlingGameStateBase.h"
 
 #include "BowlingPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 
 void ABowlingGameStateBase::CyclePlayer()
 {
@@ -13,4 +14,16 @@ void ABowlingGameStateBase::CyclePlayer()
 ABowlingPlayerState* ABowlingGameStateBase::GetActivePlayerState()
 {
 	return Cast<ABowlingPlayerState>(PlayerArray[ActivePlayerIndex]);
+}
+
+float ABowlingGameStateBase::GetFinalFrame(UWorld* WorldRef)
+{
+	ABowlingGameStateBase* bowlingGameMode = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(WorldRef));
+	return bowlingGameMode->FinalFrame;
+}
+
+float ABowlingGameStateBase::GetNumPins(UWorld* WorldRef)
+{
+	ABowlingGameStateBase* bowlingGameMode = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(WorldRef));
+	return bowlingGameMode->NumPins;
 }

@@ -18,13 +18,6 @@ class BOWLING_API ABowlingGameModeBase : public AGameModeBase
 
 	virtual void StartPlay() override;
 public:
-	// TODO: hook this up
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int FinalFrame = 10;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int NumPins = 10;
-
 	UFUNCTION(BlueprintCallable)
 	bool HasRoundEnded();
 
@@ -39,8 +32,4 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnSpare();
-
-	static float GetFinalFrame(UWorld* worldRef);
-
-	static float GetNumPins(UWorld* worldRef);
 };

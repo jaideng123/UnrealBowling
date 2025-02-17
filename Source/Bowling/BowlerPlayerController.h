@@ -31,6 +31,8 @@ class BOWLING_API ABowlerPlayerController : public APlayerController
 	UPROPERTY()
 	UTouchTimer* TouchTimerInstance;
 
+	virtual void BeginPlayingState() override;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void StartContinuousMove(float Direction);
@@ -46,6 +48,9 @@ public:
 	void ShowPreBowlUI();
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowEndUI();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBeginPlayingState();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TimeToGrip = 0.0f;

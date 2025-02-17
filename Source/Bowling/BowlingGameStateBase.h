@@ -15,6 +15,13 @@ class BOWLING_API ABowlingGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int FinalFrame = 10;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int NumPins = 10;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int ActivePlayerIndex;
 
@@ -23,4 +30,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	ABowlingPlayerState* GetActivePlayerState();
+
+	static float GetFinalFrame(UWorld* WorldRef);
+
+	static float GetNumPins(UWorld* WorldRef);
 };

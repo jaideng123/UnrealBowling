@@ -133,6 +133,12 @@ void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::
 	LastHoldPosition = location;
 }
 
+void ABowlerPlayerController::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+	OnBeginPlayingState();
+}
+
 void ABowlerPlayerController::StartContinuousMove(float Direction)
 {
 	CurrentContinuousMove = Direction;

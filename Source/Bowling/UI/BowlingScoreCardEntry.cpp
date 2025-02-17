@@ -3,7 +3,7 @@
 
 #include "BowlingScoreCardEntry.h"
 
-#include "Bowling/BowlingGameModeBase.h"
+#include "Bowling/BowlingGameStateBase.h"
 #include "Components/TextBlock.h"
 
 
@@ -39,7 +39,7 @@ void UBowlingScoreCardEntry::SetBall1(int ball1)
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("")));
 	}
-	else if (ball1 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if (ball1 == ABowlingGameStateBase::GetNumPins(GetWorld()))
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("X")));
 	}

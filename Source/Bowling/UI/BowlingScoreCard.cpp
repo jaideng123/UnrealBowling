@@ -26,6 +26,7 @@ void UBowlingScoreCard::NativeConstruct()
 
 void UBowlingScoreCard::SyncWithPlayerState(ABowlingPlayerState* PlayerState)
 {
+	// TODO: Functionality to Show Active Player Only
 	if (!Rows.Contains(PlayerState->GetPlayerId()))
 	{
 		auto widget = CreateWidget<UBowlingScoreCardRow>(GetOwningPlayer(), RowTemplate);

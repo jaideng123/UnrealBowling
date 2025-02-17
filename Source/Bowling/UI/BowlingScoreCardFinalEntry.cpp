@@ -3,7 +3,7 @@
 
 #include "BowlingScoreCardFinalEntry.h"
 
-#include "Bowling/BowlingGameModeBase.h"
+#include "Bowling/BowlingGameStateBase.h"
 #include "Components/TextBlock.h"
 
 
@@ -35,7 +35,7 @@ void UBowlingScoreCardFinalEntry::SetBall1(int ball1)
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("")));
 	}
-	else if(ball1 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if(ball1 == ABowlingGameStateBase::GetNumPins(GetWorld()))
 	{
 		Ball1Text->SetText(FText::FromString(TEXT("X")));
 	}
@@ -55,7 +55,7 @@ void UBowlingScoreCardFinalEntry::SetBall2(int ball2, bool wasSpare)
 	{
 		Ball2Text->SetText(FText::FromString(TEXT("/")));
 	}
-	else if(ball2 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if(ball2 == ABowlingGameStateBase::GetNumPins(GetWorld()))
 	{
 		Ball2Text->SetText(FText::FromString(TEXT("X")));
 	}
@@ -75,7 +75,7 @@ void UBowlingScoreCardFinalEntry::SetBall3(int ball3, bool wasSpare)
 	{
 		Ball3Text->SetText(FText::FromString(TEXT("/")));
 	}
-	else if(ball3 == ABowlingGameModeBase::GetNumPins(GetWorld()))
+	else if(ball3 == ABowlingGameStateBase::GetNumPins(GetWorld()))
 	{
 		Ball3Text->SetText(FText::FromString(TEXT("X")));
 	}

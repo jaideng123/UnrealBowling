@@ -4,9 +4,21 @@
 #include "BowlingPlayerState.h"
 
 #include "BowlingGameModeBase.h"
+#include "BowlingGameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/BowlingScoreCard.h"
+
+void ABowlingPlayerState::MulticastScoreChanged_Implementation()
+{
+	OnScoreChangedDelegate.Broadcast(this);
+}
+
+void ABowlingPlayerState::OnRep_Frames()
+{
+	OnScoreChangedDelegate.Broadcast(this);
+}
 
 void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesToScore) const
 {
@@ -23,7 +35,7 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 		}
 
 		// Handle Final Frame
-		if(i == ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1)
+		if(i == ABowlingGameStateBase::GetFinalFrame(GetWorld()) - 1)
 		{
 			// The score in the final frame is just the total number of pins knocked over
 			frameScore += currentFrame.ball1Pins == -1 ? 0 : currentFrame.ball1Pins;
@@ -38,17 +50,17 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 		frameScore += currentFrame.ball1Pins == -1 ? 0 : currentFrame.ball1Pins;
 		frameScore += currentFrame.ball2Pins == -1 ? 0 : currentFrame.ball2Pins;
 
-		if(currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		if(currentFrame.ball1Pins == ABowlingGameStateBase::GetNumPins(GetWorld()))
 		{
 			if(FramesToScore.Num() > i + 1)
 			{
 				const auto& nextFrame = FramesToScore[i + 1];
-				if(i + 1 == (ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1))
+				if(i + 1 == (ABowlingGameStateBase::GetFinalFrame(GetWorld()) - 1))
 				{
 					frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
 					frameScore += nextFrame.ball2Pins == -1 ? 0 : nextFrame.ball2Pins;
 				}
-				else if(nextFrame.ball1Pins != ABowlingGameModeBase::GetNumPins(GetWorld()))
+				else if(nextFrame.ball1Pins != ABowlingGameStateBase::GetNumPins(GetWorld()))
 				{
 					frameScore += nextFrame.ball1Pins == -1 ? 0 : nextFrame.ball1Pins;
 					frameScore += nextFrame.ball2Pins == -1 ? 0 : (nextFrame.ball2Pins - nextFrame.ball1Pins);
@@ -64,7 +76,7 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 				}
 			}
 		}
-		else if(currentFrame.ball1Pins + currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		else if(currentFrame.ball1Pins + currentFrame.ball2Pins == ABowlingGameStateBase::GetNumPins(GetWorld()))
 		{
 			if(FramesToScore.Num() > i + 1)
 			{
@@ -80,7 +92,7 @@ void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesTo
 
 void ABowlingPlayerState::ReportStrikeOrSpare()
 {
-	int maxNumPins = ABowlingGameModeBase::GetNumPins(GetWorld());
+	int maxNumPins = ABowlingGameStateBase::GetNumPins(GetWorld());
 	if(CurrentBall == 0 && Frames.Last().ball1Pins == maxNumPins)
 	{
 		ABowlingGameModeBase* BowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
@@ -125,6 +137,15 @@ void ABowlingPlayerState::ReportStrikeOrSpare()
 	}
 }
 
+void ABowlingPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABowlingPlayerState, Frames);
+	DOREPLIFETIME(ABowlingPlayerState, CurrentBall);
+	DOREPLIFETIME(ABowlingPlayerState, CurrentFrame);
+}
+
 void ABowlingPlayerState::ReportPins(int numPins)
 {
 	if(Frames.Num() < (CurrentFrame + 1))
@@ -140,9 +161,9 @@ void ABowlingPlayerState::ReportPins(int numPins)
 	}
 	if(CurrentBall == 1)
 	{
-		if(CurrentFrame == ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1)
+		if(CurrentFrame == ABowlingGameStateBase::GetFinalFrame(GetWorld()) - 1)
 		{
-			if(currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+			if(currentFrame.ball1Pins == ABowlingGameStateBase::GetNumPins(GetWorld()))
 			{
 				currentFrame.ball2Pins = numPins;
 			}
@@ -159,11 +180,11 @@ void ABowlingPlayerState::ReportPins(int numPins)
 	if(CurrentBall == 2)
 	{
 		// We should only be throwing a 3rd ball in the final frame
-		check(CurrentFrame == ABowlingGameModeBase::GetFinalFrame(GetWorld()) - 1);
+		check(CurrentFrame == ABowlingGameStateBase::GetFinalFrame(GetWorld()) - 1);
 
 		// Check if we got a strike or a spare on ball 2
-		if(currentFrame.ball2Pins == ABowlingGameModeBase::GetNumPins(GetWorld()) ||
-			currentFrame.ball2Pins + currentFrame.ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld()))
+		if(currentFrame.ball2Pins == ABowlingGameStateBase::GetNumPins(GetWorld()) ||
+			currentFrame.ball2Pins + currentFrame.ball1Pins == ABowlingGameStateBase::GetNumPins(GetWorld()))
 		{
 			currentFrame.ball3Pins = numPins;
 		}
@@ -178,8 +199,8 @@ void ABowlingPlayerState::ReportPins(int numPins)
 	ReportStrikeOrSpare();
 
 	CurrentBall++;
-	int maxNumPins = ABowlingGameModeBase::GetNumPins(GetWorld());
-	if((CurrentFrame + 1) == ABowlingGameModeBase::GetFinalFrame(GetWorld()))
+	int maxNumPins = ABowlingGameStateBase::GetNumPins(GetWorld());
+	if((CurrentFrame + 1) == ABowlingGameStateBase::GetFinalFrame(GetWorld()))
 	{
 		// Allow a 3rd ball when a strike or spare occurs
 		if(currentFrame.ball1Pins == maxNumPins || currentFrame.ball1Pins + currentFrame.ball2Pins == maxNumPins)
@@ -202,14 +223,17 @@ void ABowlingPlayerState::ReportPins(int numPins)
 		CurrentFrame++;
 	}
 
-	OnScoreChangedDelegate.Broadcast(this);
+	if(HasAuthority())
+	{
+		OnScoreChangedDelegate.Broadcast(this);
+	}
 }
 
 void ABowlingPlayerState::TestPins()
 {
 	int lastValue = Frames.Num() == 0 ||
 	                Frames.Last().ball1Pins == -1 ||
-	                Frames.Last().ball1Pins == ABowlingGameModeBase::GetNumPins(GetWorld())
+	                Frames.Last().ball1Pins == ABowlingGameStateBase::GetNumPins(GetWorld())
 		                ? 0
 		                : Frames.Last().ball1Pins;
 	static int lastFrame = CurrentFrame;

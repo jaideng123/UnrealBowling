@@ -31,7 +31,7 @@ bool ABowlingGameModeBase::HasGameEnded()
 	for (auto playerState : gameState->PlayerArray)
 	{
 		ABowlingPlayerState* bowlingPlayerState = Cast<ABowlingPlayerState>(playerState);
-		if (bowlingPlayerState->CurrentFrame < FinalFrame)
+		if (bowlingPlayerState->CurrentFrame < ABowlingGameStateBase::GetFinalFrame(GetWorld()))
 		{
 			return false;
 		}
@@ -47,15 +47,15 @@ bool ABowlingGameModeBase::ShouldResetPinsEarly()
 	ABowlingPlayerState* activePlayerState = gameState->GetActivePlayerState();
 	check(activePlayerState)
 	
-	if((activePlayerState->CurrentFrame + 1) == FinalFrame)
+	if((activePlayerState->CurrentFrame + 1) == ABowlingGameStateBase::GetFinalFrame(GetWorld()))
 	{
 		FBowlingFrame& currentFrame = activePlayerState->Frames.Last();
-		if(currentFrame.ball1Pins == NumPins && activePlayerState->CurrentBall == 1)
+		if(currentFrame.ball1Pins == ABowlingGameStateBase::GetNumPins(GetWorld()) && activePlayerState->CurrentBall == 1)
 		{
 			return true;
 		}
 	
-		if(currentFrame.ball1Pins + currentFrame.ball2Pins == NumPins && activePlayerState->CurrentBall == 2)
+		if(currentFrame.ball1Pins + currentFrame.ball2Pins == ABowlingGameStateBase::GetNumPins(GetWorld()) && activePlayerState->CurrentBall == 2)
 		{
 			return true;
 		}
@@ -64,14 +64,4 @@ bool ABowlingGameModeBase::ShouldResetPinsEarly()
 	return false;
 }
 
-float ABowlingGameModeBase::GetFinalFrame(UWorld* worldRef)
-{
-	ABowlingGameModeBase* bowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(worldRef));
-	return bowlingGameMode->FinalFrame;
-}
 
-float ABowlingGameModeBase::GetNumPins(UWorld* worldRef)
-{
-	ABowlingGameModeBase* bowlingGameMode = Cast<ABowlingGameModeBase>(UGameplayStatics::GetGameMode(worldRef));
-	return bowlingGameMode->NumPins;
-}

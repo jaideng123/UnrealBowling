@@ -36,16 +36,24 @@ public:
 	UFUNCTION(CallInEditor, BlueprintCallable)
 	void TestPins();
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, VisibleAnywhere, ReplicatedUsing = OnRep_Frames)
 	TArray<FBowlingFrame> Frames;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
 	int CurrentFrame = 0;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
 	int CurrentBall = 0;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerScoreChanged OnScoreChangedDelegate;
+
+	UFUNCTION(Reliable, NetMulticast )
+	void MulticastScoreChanged();
+
+	UFUNCTION()
+	void OnRep_Frames();
 private:
 	void RecalculateScore(const TArray<FBowlingFrame>& Array) const;
 	void ReportStrikeOrSpare();
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
