@@ -63,6 +63,10 @@ ABowlerPawn::ABowlerPawn()
 void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	SpringArmComp->TargetOffset = BallSpawnOffset;
+	
+	UpdateMovementModeDisplay();
+	
 	if(!HasAuthority())
 	{
 		return;
@@ -78,13 +82,11 @@ void ABowlerPawn::BeginPlay()
 
 	StartingPosition = GetActorLocation();
 
-	SpringArmComp->TargetOffset = BallSpawnOffset;
 
 	GuideDecalComp->SetRelativeLocation(
 		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
 	MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
-	UpdateMovementModeDisplay();
 }
 
 void ABowlerPawn::HideUI()
@@ -423,10 +425,6 @@ void ABowlerPawn::ReleaseBall_Implementation()
 
 void ABowlerPawn::UpdateMovementModeDisplay() const
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
 	if(CurrentMovementMode == EBowlerMovementMode::MOVE)
 	{
 		RotateModeDisplayComp->SetVisibility(false, true);
