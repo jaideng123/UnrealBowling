@@ -11,6 +11,7 @@
 #include "Components/DecalComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABowlerPawn::ABowlerPawn()
@@ -515,6 +516,12 @@ void ABowlerPawn::ResetBall()
 	SetActorRotation(StartingOrientation);
 }
 
+void ABowlerPawn::OnRep_CurrentMovementMode()
+{
+	UpdateMovementModeDisplay();
+}
+
+
 void ABowlerPawn::OnMove_Implementation(float moveDist)
 {
 }
@@ -523,4 +530,11 @@ float ABowlerPawn::CalculateReleaseForce() const
 {
 	return FMath::Clamp((ThrowDistance / (ThrowTime * ThrowForceDecay)) * BallReleaseMultiplier, -MaxBallForce,
 	                    MaxBallForce);
+}
+
+void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABowlerPawn, CurrentMovementMode);
 }

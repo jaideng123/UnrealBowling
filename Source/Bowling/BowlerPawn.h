@@ -188,8 +188,11 @@ public:
 	TOptional<FVector> BallGripStartPosition;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, ReplicatedUsing=OnRep_CurrentMovementMode)
 	TEnumAsByte<EBowlerMovementMode> CurrentMovementMode = MOVE;
+
+	UFUNCTION()
+	void OnRep_CurrentMovementMode();
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
 	bool IsZoomedIn = false;
@@ -278,5 +281,6 @@ private:
 
 	FActiveDUETweenHandle MoveTweenHandle;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 };

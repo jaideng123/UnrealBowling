@@ -56,4 +56,5 @@ private:
 	void ReportStrikeOrSpare();
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 };
