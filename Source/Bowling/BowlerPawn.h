@@ -129,7 +129,7 @@ public:
 	// State Variables
 
 	// Ball currently held
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Replicated)
 	ABallBase* CurrentBall;
 
 	// Ball currently held

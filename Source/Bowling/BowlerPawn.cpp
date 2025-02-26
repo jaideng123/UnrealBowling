@@ -65,16 +65,22 @@ void ABowlerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	SpringArmComp->TargetOffset = BallSpawnOffset;
-	
+
 	UpdateMovementModeDisplay();
-	
+
+	InitialForward = GetActorForwardVector();
+	InitialRight = GetActorRightVector();
+	StartingOrientation = GetActorRotation();
+
+	GuideDecalComp->SetRelativeLocation(
+	GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
+
+
 	if(!HasAuthority())
 	{
 		return;
 	}
-	InitialForward = GetActorForwardVector();
-	InitialRight = GetActorRightVector();
-	StartingOrientation = GetActorRotation();
+
 	// Center the ball
 	SetActorLocation(GetActorLocation() - BallSpawnOffset);
 
@@ -82,10 +88,6 @@ void ABowlerPawn::BeginPlay()
 	SetActorLocation(GetActorLocation() - InitialForward * StartDistance);
 
 	StartingPosition = GetActorLocation();
-
-
-	GuideDecalComp->SetRelativeLocation(
-		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
 	MoveTweenHandle = FActiveDUETweenHandle::NULL_HANDLE();
 }
@@ -537,4 +539,5 @@ void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABowlerPawn, CurrentMovementMode);
+	DOREPLIFETIME(ABowlerPawn, CurrentBall);
 }
