@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABallBase::ABallBase()
@@ -61,11 +62,14 @@ void ABallBase::Tick(float DeltaTime)
 
 void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 {
-	if(!HasAuthority())
+	if (pin == nullptr || PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold || pin->TouchedByBall)
 	{
 		return;
 	}
-	if (pin == nullptr || PhysicsComponent->GetPhysicsLinearVelocity().Length() < PinHitThreshold || pin->TouchedByBall)
+	
+	OnSuccessfulPinHit(pin, hitResult);
+
+	if(!HasAuthority())
 	{
 		return;
 	}
@@ -78,6 +82,12 @@ void ABallBase::OnPinContact(APin* pin, FHitResult hitResult)
 	hitForce *= PinHitForceMultiplier;
 
 	pin->PrimitiveComponent->AddImpulseAtLocation(hitForce, hitResult.Location);
+	
+}
 
-	OnSuccessfulPinHit(pin, hitResult);
+void ABallBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABallBase, IsActive);
 }

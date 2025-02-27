@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Speed Effects")
 	float SpeedFovMaxSpeed;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Replicated)
 	bool IsActive;
 
 	// Sets default values for this actor's properties

@@ -3,6 +3,8 @@
 
 #include "Pin.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 APin::APin()
@@ -58,3 +60,11 @@ void APin::RaisePin_Implementation(double X)
 void APin::LowerPin_Implementation()
 {
 }
+
+void APin::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APin, TouchedByBall);
+}
+

@@ -57,7 +57,7 @@ ABowlerPawn::ABowlerPawn()
 	SpringArmComp->CameraLagSpeed = 3.0f;
 
 	bReplicates = true;
-	AActor::SetReplicateMovement(true);
+	AActor::SetReplicateMovement(false);
 }
 
 // Called when the game starts or when spawned
