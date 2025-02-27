@@ -169,17 +169,17 @@ public:
 	UPROPERTY(VisibleInstanceOnly)
 	float GrippedTime = 0.0f;
 
-	// Current time of throw
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	// Whether Bowling is allowed
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Replicated)
 	bool BowlingLocked = false;
 
 	// Starting position when the player spawns
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	FVector
 	StartingPosition = FVector(0);
 
 	// Starting rotation when the player spawns
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	FRotator StartingOrientation = FRotator::ZeroRotator;
 	UPROPERTY(VisibleInstanceOnly)
 	FVector InitialForward;
@@ -194,7 +194,7 @@ public:
 	UFUNCTION()
 	void OnRep_CurrentMovementMode();
 	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Replicated)
 	bool IsZoomedIn = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
@@ -210,8 +210,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintCallable)
 	void MoveX(float value);
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SetLocationAndRotationServer(FVector Location, FRotator Rotation);
 	UFUNCTION(Server, Reliable)
 	void MoveBallY(float value);
 	UFUNCTION(Server, Reliable)
@@ -249,8 +251,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ZoomIn();
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ZoomInServer();
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ZoomOut();
+	UFUNCTION( BlueprintCallable, Server, Reliable)
+	void ZoomOutServer();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnMove(float moveDist);
@@ -284,3 +290,4 @@ private:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 };
+

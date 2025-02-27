@@ -60,6 +60,16 @@ ABowlerPawn::ABowlerPawn()
 	AActor::SetReplicateMovement(false);
 }
 
+void ABowlerPawn::ZoomInServer_Implementation()
+{
+	BowlingLocked = true;
+}
+
+void ABowlerPawn::ZoomOutServer_Implementation()
+{
+	BowlingLocked = false;
+}
+
 // Called when the game starts or when spawned
 void ABowlerPawn::BeginPlay()
 {
@@ -241,12 +251,8 @@ void ABowlerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ABowlerPawn::MoveX_Implementation(float input)
+void ABowlerPawn::MoveX(float input)
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
 	OnMove(input);
 	if(input == 0 || BallGripped)
 	{
@@ -272,6 +278,16 @@ void ABowlerPawn::MoveX_Implementation(float input)
 	{
 		unimplemented();
 	}
+	SetLocationAndRotationServer(GetActorLocation(), GetActorRotation());
+}
+
+inline void ABowlerPawn::SetLocationAndRotationServer_Implementation(FVector Location,FRotator Rotation)
+{
+	if(!HasAuthority())
+	{
+		return;
+	}
+	SetActorLocationAndRotation(Location,Rotation);
 }
 
 void ABowlerPawn::MoveBallY_Implementation(float input)
@@ -318,6 +334,7 @@ void ABowlerPawn::MoveBallX_Implementation(float input)
 	}
 	BallSpinAmount += input;
 }
+
 
 void ABowlerPawn::GripBall_Implementation()
 {
@@ -513,7 +530,7 @@ void ABowlerPawn::ResetBall()
 	GuideDecalComp->SetVisibility(true);
 	UpdateMovementModeDisplay();
 	AttachBallToHand();
-	// BallRotationOffset = MaxArmAngle;
+
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
 }
@@ -540,4 +557,7 @@ void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(ABowlerPawn, CurrentMovementMode);
 	DOREPLIFETIME(ABowlerPawn, CurrentBall);
+	DOREPLIFETIME(ABowlerPawn, StartingPosition);
+	DOREPLIFETIME(ABowlerPawn, StartingOrientation);
+	DOREPLIFETIME(ABowlerPawn, BowlingLocked);
 }
