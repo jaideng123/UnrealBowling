@@ -55,7 +55,7 @@ public:
 	TSubclassOf<ABallBase> BallClass = ABallBase::StaticClass();
 
 	// Where to spawn + hold ball relative to player
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	FVector BallSpawnOffset = FVector(0);
 
 	// Force multiplier for velocity of ball
@@ -137,11 +137,14 @@ public:
 	ABallBase* ThrownBall;
 
 	// Is ball being gripped? (being wound up)
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, ReplicatedUsing=OnRep_BallGripped)
 	bool BallGripped = false;
 
+	UFUNCTION()
+	void OnRep_BallGripped();
+
 	// Current rotation of the ball
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Replicated)
 	float BallRotationOffset = 0.0f;
 
 	// Current spin amount

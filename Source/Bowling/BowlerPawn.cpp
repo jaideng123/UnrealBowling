@@ -83,7 +83,7 @@ void ABowlerPawn::BeginPlay()
 	StartingOrientation = GetActorRotation();
 
 	GuideDecalComp->SetRelativeLocation(
-	GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
+		GuideDecalComp->GetRelativeLocation() + BallSpawnOffset + InitialRight * 3);
 
 
 	if(!HasAuthority())
@@ -180,20 +180,17 @@ void ABowlerPawn::CancelRunUpTween()
 void ABowlerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(!HasAuthority())
-	{
-		return;
-	}
-
 	if(CurrentBall != nullptr)
 	{
 		if(BallGripped)
 		{
-			check(BallGripStartPosition.IsSet());
-			PossiblyStartRunUpTween();
-
-			ThrowTime += DeltaTime;
-			GrippedTime += DeltaTime;
+			if(HasAuthority())
+			{
+				check(BallGripStartPosition.IsSet());
+				PossiblyStartRunUpTween();
+				ThrowTime += DeltaTime;
+				GrippedTime += DeltaTime;
+			}
 			FRotator CurrentPivotRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
 			BallPivotComp->SetRelativeRotation(CurrentPivotRotation);
 			BallPivotComp->SetRelativeLocation(BallSpawnOffset);
@@ -227,10 +224,13 @@ void ABowlerPawn::Tick(float DeltaTime)
 
 			if(BallGripStartPosition.IsSet())
 			{
-				CancelRunUpTween();
-				SetActorLocation(BallGripStartPosition.GetValue());
-				BallGripStartPosition.Reset();
-				OnMoveReset();
+				if(HasAuthority())
+				{
+					CancelRunUpTween();
+					SetActorLocation(BallGripStartPosition.GetValue());
+					BallGripStartPosition.Reset();
+					OnMoveReset();
+				}
 			}
 		}
 	}
@@ -238,8 +238,12 @@ void ABowlerPawn::Tick(float DeltaTime)
 	{
 		// Follow Through
 		// TODO: convert to tunable var
-		BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 250.0f), MinArmAngle, MaxArmAngle);
+		if(HasAuthority())
+		{
+			BallRotationOffset = FMath::Clamp<float>(BallRotationOffset + (DeltaTime * 250.0f), MinArmAngle, MaxArmAngle);
+		}
 		FRotator CurrentBallRotation = FRotator::MakeFromEuler(FVector(0, BallRotationOffset, 0));
+			
 		BallPivotComp->SetRelativeRotation(CurrentBallRotation);
 		BallPivotComp->SetRelativeLocation(BallSpawnOffset);
 	}
@@ -281,13 +285,13 @@ void ABowlerPawn::MoveX(float input)
 	SetLocationAndRotationServer(GetActorLocation(), GetActorRotation());
 }
 
-inline void ABowlerPawn::SetLocationAndRotationServer_Implementation(FVector Location,FRotator Rotation)
+inline void ABowlerPawn::SetLocationAndRotationServer_Implementation(FVector Location, FRotator Rotation)
 {
 	if(!HasAuthority())
 	{
 		return;
 	}
-	SetActorLocationAndRotation(Location,Rotation);
+	SetActorLocationAndRotation(Location, Rotation);
 }
 
 void ABowlerPawn::MoveBallY_Implementation(float input)
@@ -349,11 +353,11 @@ void ABowlerPawn::GripBall_Implementation()
 	UE_LOG(LogTemp, Display, TEXT("Ball gripped"));
 	BallGripped = true;
 	BallGripStartPosition = GetActorLocation();
+	BallRotationOffset = MaxArmAngle;
+	OnGrip();
 	GuideDecalComp->SetVisibility(false);
 	HideMovementModeDisplay();
 	HideUI();
-	BallRotationOffset = MaxArmAngle;
-	OnGrip();
 }
 
 float ABowlerPawn::CalculateBallSpin()
@@ -535,6 +539,25 @@ void ABowlerPawn::ResetBall()
 	SetActorRotation(StartingOrientation);
 }
 
+void ABowlerPawn::OnRep_BallGripped()
+{
+	if(BallGripped)
+	{
+		GuideDecalComp->SetVisibility(false);
+		HideMovementModeDisplay();
+		HideUI();
+		OnGrip();
+	}
+	else
+	{
+		GuideDecalComp->SetVisibility(true);
+		UpdateMovementModeDisplay();
+		ShowUI();
+		ResetBallGripState();
+		OnNoReleaseForce();
+	}
+}
+
 void ABowlerPawn::OnRep_CurrentMovementMode()
 {
 	UpdateMovementModeDisplay();
@@ -560,4 +583,7 @@ void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	DOREPLIFETIME(ABowlerPawn, StartingPosition);
 	DOREPLIFETIME(ABowlerPawn, StartingOrientation);
 	DOREPLIFETIME(ABowlerPawn, BowlingLocked);
+	DOREPLIFETIME(ABowlerPawn, BallGripped);
+	DOREPLIFETIME(ABowlerPawn, BallSpawnOffset);
+	DOREPLIFETIME(ABowlerPawn, BallRotationOffset);
 }
