@@ -585,5 +585,5 @@ void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	DOREPLIFETIME(ABowlerPawn, BowlingLocked);
 	DOREPLIFETIME(ABowlerPawn, BallGripped);
 	DOREPLIFETIME(ABowlerPawn, BallSpawnOffset);
-	DOREPLIFETIME(ABowlerPawn, BallRotationOffset);
+	DOREPLIFETIME_CONDITION(ABowlerPawn, BallRotationOffset, COND_SkipOwner);
 }
