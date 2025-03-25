@@ -217,14 +217,20 @@ public:
 	void MoveX(float value);
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SetLocationAndRotationServer(FVector Location, FRotator Rotation);
-	UFUNCTION(Server, Reliable)
+	UFUNCTION()
 	void MoveBallY(float value);
 	UFUNCTION(Server, Reliable)
-	void MoveBallX(float value);
+	void SetBallYServer(float NewBallRotationOffset);
 	UFUNCTION(Server, Reliable)
+	void MoveBallX(float value);
+	UFUNCTION()
 	void GripBall();
 	UFUNCTION(Server, Reliable)
+	void GripBallServer();
+	UFUNCTION()
 	void ReleaseBall();
+	UFUNCTION(Server, Reliable)
+	void ReleaseBallServer(FVector Location, FVector Force, FVector AngularForce);
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ToggleMovementMode();
 

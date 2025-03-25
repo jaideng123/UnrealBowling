@@ -294,9 +294,9 @@ inline void ABowlerPawn::SetLocationAndRotationServer_Implementation(FVector Loc
 	SetActorLocationAndRotation(Location, Rotation);
 }
 
-void ABowlerPawn::MoveBallY_Implementation(float input)
+void ABowlerPawn::MoveBallY(float input)
 {
-	if(!HasAuthority())
+	if(GetLocalRole() == ROLE_SimulatedProxy)
 	{
 		return;
 	}
@@ -326,6 +326,11 @@ void ABowlerPawn::MoveBallY_Implementation(float input)
 	}
 }
 
+void ABowlerPawn::SetBallYServer_Implementation(const float NewBallRotationOffset)
+{
+	BallRotationOffset = NewBallRotationOffset;
+}
+
 void ABowlerPawn::MoveBallX_Implementation(float input)
 {
 	if(!HasAuthority())
@@ -340,12 +345,8 @@ void ABowlerPawn::MoveBallX_Implementation(float input)
 }
 
 
-void ABowlerPawn::GripBall_Implementation()
+void ABowlerPawn::GripBall()
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
 	if(CurrentBall == nullptr || BowlingLocked)
 	{
 		return;
@@ -358,6 +359,11 @@ void ABowlerPawn::GripBall_Implementation()
 	GuideDecalComp->SetVisibility(false);
 	HideMovementModeDisplay();
 	HideUI();
+}
+
+void ABowlerPawn::GripBallServer_Implementation()
+{
+	BallGripped = true;
 }
 
 float ABowlerPawn::CalculateBallSpin()
@@ -375,13 +381,8 @@ void ABowlerPawn::ResetBallGripState()
 	GrippedTime = 0;
 }
 
-void ABowlerPawn::ReleaseBall_Implementation()
+void ABowlerPawn::ReleaseBall()
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
-
 	if(CurrentBall == nullptr || !BallGripped)
 	{
 		return;
@@ -400,14 +401,7 @@ void ABowlerPawn::ReleaseBall_Implementation()
 	BallGripStartPosition.Reset();
 	CancelRunUpTween();
 	OnRelease();
-
-	// TODO: move to On Release BP
-	UBowlingUtilFunctionLibrary::SetViewTargetWithBlendForAllPlayerControllers(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
-
-	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
-	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
-	CurrentBall->IsActive = true;
+	
 	float releaseForce = CalculateReleaseForce();
 	if(releaseForce >= 0 && releaseForce < MinBallForce)
 	{
@@ -427,12 +421,10 @@ void ABowlerPawn::ReleaseBall_Implementation()
 		forceVector.Z = FMath::Clamp(forceVector.Z, -MaxZVelocity, MaxZVelocity * 3);
 		forceVector.X *= 0.5f;
 	}
-	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(forceVector);
 
 	const float BallSpin = CalculateBallSpin();
 	BallSpinAmount = BallSpin;
-	CurrentBall->PhysicsComponent->SetPhysicsAngularVelocityInDegrees(
-		GetActorForwardVector() * -BallSpin);
+	const FVector angularForce = GetActorForwardVector() * -BallSpin;
 
 	UE_LOG(LogTemp, Display, TEXT("Release force: %f / %f"), releaseForce, MaxBallForce);
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
@@ -441,10 +433,32 @@ void ABowlerPawn::ReleaseBall_Implementation()
 	// Ensure we are releasing with at least some force
 	check(FMath::Abs(releaseForce) > 0);
 
-	ThrownBall = CurrentBall;
-	CurrentBall = nullptr;
+	ReleaseBallServer(CurrentBall->GetActorLocation(), forceVector, angularForce);
 
 	ResetBallGripState();
+}
+
+void ABowlerPawn::ReleaseBallServer_Implementation(FVector Location, FVector Force, FVector AngularForce)
+{
+	if(!HasAuthority())
+	{
+		return;
+	}
+	// TODO: move to On Release BP
+	UBowlingUtilFunctionLibrary::SetViewTargetWithBlendForAllPlayerControllers(CurrentBall, 0.8, VTBlend_EaseInOut, 2.0, false);
+
+	CurrentBall->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	CurrentBall->SetActorLocation(Location);
+	CurrentBall->PhysicsComponent->SetSimulatePhysics(true);
+	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(FVector::Zero());
+	CurrentBall->IsActive = true;
+
+	CurrentBall->PhysicsComponent->SetPhysicsLinearVelocity(Force);
+
+	CurrentBall->PhysicsComponent->SetPhysicsAngularVelocityInDegrees(AngularForce);
+
+	ThrownBall = CurrentBall;
+	CurrentBall = nullptr;
 }
 
 void ABowlerPawn::UpdateMovementModeDisplay() const
