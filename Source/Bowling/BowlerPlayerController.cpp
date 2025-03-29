@@ -33,10 +33,15 @@ void ABowlerPlayerController::BeginPlay()
 		TouchTimerInstance = Cast<UTouchTimer>(CreateWidget(this, TouchTimerClass));
 		TouchTimerInstance->AddToViewport();
 	}
+	
 }
 
 void ABowlerPlayerController::AttemptMoveX(float value)
 {
+	if (GetStateName() == NAME_Spectating)
+	{
+		return;
+	}
 	if(CurrentContinuousMove == 0.0f)
 	{
 		ControlledBowler->MoveX(value);
@@ -46,6 +51,10 @@ void ABowlerPlayerController::AttemptMoveX(float value)
 void ABowlerPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (GetStateName() == NAME_Spectating)
+	{
+		return;
+	}
 	if(CurrentContinuousMove != 0.0f)
 	{
 		ControlledBowler->MoveX(CurrentContinuousMove);
@@ -94,6 +103,10 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
+	if (GetStateName() == NAME_Spectating)
+	{
+		return;
+	}
 	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange,
 	//                                  FString::Printf(TEXT("Touch Release: %d Location: %s"), touchIndex, *location.ToString()));
 	HoldTimeElapsed = 0.0f;
@@ -106,6 +119,10 @@ void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, U
 
 void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
+	if (GetStateName() == NAME_Spectating)
+	{
+		return;
+	}
 	TouchTimerInstance->UpdatePosition(FVector2D(location));
 	if(HoldTimeElapsed < TimeToGrip)
 	{

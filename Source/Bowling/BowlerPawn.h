@@ -110,6 +110,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
 	float WindupDistanceThreshold = 20.0f;
 
+	// How fast the arm keeps moving after the ball is released
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ball Throw")
+	float FollowThroughSpeed = 250.0f;
+
 	// How far back to start the run up sequence
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	float StartDistance = 100.0f;
@@ -125,6 +129,11 @@ public:
 	// How fast to reset the bowler after the runup sequence is cancelled
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
 	float ResetSpeed = 1.0f;
+
+	// How fast to reset the arm angle after the runup sequence is cancelled
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Run Up")
+	float BallResetSpeed = 100.0f;
+
 
 	// State Variables
 
@@ -167,10 +176,6 @@ public:
 	// Current time of throw
 	UPROPERTY(VisibleInstanceOnly)
 	float ThrowTime = 0.0f;
-
-	// Current time of throw
-	UPROPERTY(VisibleInstanceOnly)
-	float GrippedTime = 0.0f;
 
 	// Whether Bowling is allowed
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Replicated)
@@ -290,6 +295,9 @@ protected:
 	void ShowEndUI();
 	void PossiblyStartRunUpTween();
 	void CancelRunUpTween();
+	void UpdateBallGrip(float DeltaTime);
+	void UpdateReset(float DeltaTime);
+	void UpdateFollowThrough(float DeltaTime);
 
 private:
 	float CalculateReleaseForce() const;
