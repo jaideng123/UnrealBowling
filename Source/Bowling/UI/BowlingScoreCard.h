@@ -21,8 +21,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* RowContainer;
 
+	UFUNCTION()
+	void OnPlayerStateAdded(ABowlingPlayerState* PlayerState);
 	virtual void NativeConstruct() override;
-	
+	UFUNCTION()
+	void OnPlayerStateRemoved(int32 PlayerId);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBowlingScoreCardRow> RowTemplate;
 	// Rows mapped from player id

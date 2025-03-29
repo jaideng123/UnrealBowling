@@ -6,6 +6,10 @@
 #include "GameFramework/GameStateBase.h"
 #include "BowlingGameStateBase.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateAdded, ABowlingPlayerState*, PlayerState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateRemoved, int32, PlayerId);
+
 class ABowlingPlayerState;
 /**
  * 
@@ -34,4 +38,10 @@ public:
 	static float GetFinalFrame(UWorld* WorldRef);
 
 	static float GetNumPins(UWorld* WorldRef);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStateAdded OnPlayerStateAdded;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStateRemoved OnPlayerStateRemoved;
 };

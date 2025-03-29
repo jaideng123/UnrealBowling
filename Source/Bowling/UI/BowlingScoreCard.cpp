@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
+
 void UBowlingScoreCard::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -22,6 +23,29 @@ void UBowlingScoreCard::NativeConstruct()
 			SyncWithPlayerState(BowlingPlayerState);
 		}
 	}
+	ABowlingGameStateBase* BowlingGameState = Cast<ABowlingGameStateBase>(GetWorld()->GetGameState());
+	if(BowlingGameState)
+	{
+		BowlingGameState->OnPlayerStateAdded.AddUniqueDynamic(this, &UBowlingScoreCard::OnPlayerStateAdded);
+		BowlingGameState->OnPlayerStateRemoved.AddUniqueDynamic(this, &UBowlingScoreCard::OnPlayerStateRemoved);
+	}
+}
+
+void UBowlingScoreCard::OnPlayerStateAdded(ABowlingPlayerState* PlayerState)
+{
+	PlayerState->OnScoreChangedDelegate.AddUniqueDynamic(this, &UBowlingScoreCard::SyncWithPlayerState);
+	SyncWithPlayerState(PlayerState);
+}
+
+void UBowlingScoreCard::OnPlayerStateRemoved(int32 PlayerId)
+{
+	if (!Rows.Contains(PlayerId))
+	{
+		return;
+	}
+	UBowlingScoreCardRow* playerRow = Rows[PlayerId];
+	playerRow->RemoveFromParent();
+	Rows.Remove(PlayerId);
 }
 
 void UBowlingScoreCard::SyncWithPlayerState(ABowlingPlayerState* PlayerState)

@@ -20,6 +20,26 @@ void ABowlingPlayerState::OnRep_Frames()
 	OnScoreChangedDelegate.Broadcast(this);
 }
 
+void ABowlingPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	ABowlingGameStateBase* BowlingGameState = Cast<ABowlingGameStateBase>(GetWorld()->GetGameState());
+	if(BowlingGameState)
+	{
+		BowlingGameState->OnPlayerStateAdded.Broadcast(this);
+	}
+}
+
+void ABowlingPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	ABowlingGameStateBase* BowlingGameState = Cast<ABowlingGameStateBase>(GetWorld()->GetGameState());
+	if(BowlingGameState)
+	{
+		BowlingGameState->OnPlayerStateRemoved.Broadcast(this->GetPlayerId());
+	}
+}
+
 void ABowlingPlayerState::RecalculateScore(const TArray<FBowlingFrame>& FramesToScore) const
 {
 	int accumulatedScore = 0;

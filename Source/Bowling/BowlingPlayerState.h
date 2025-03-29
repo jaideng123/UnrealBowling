@@ -51,6 +51,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_Frames();
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 private:
 	void RecalculateScore(const TArray<FBowlingFrame>& Array) const;
 	void ReportStrikeOrSpare();

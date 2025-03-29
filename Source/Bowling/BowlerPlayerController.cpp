@@ -165,3 +165,10 @@ void ABowlerPlayerController::StopContinuousMove()
 {
 	CurrentContinuousMove = 0.0f;
 }
+
+void ABowlerPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	
+}

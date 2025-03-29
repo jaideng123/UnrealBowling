@@ -49,6 +49,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowEndUI();
 
+	virtual void OnRep_PlayerState() override;
+	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnBeginPlayingState();
 
