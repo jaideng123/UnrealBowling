@@ -540,6 +540,15 @@ void ABowlerPawn::ResetBall()
 
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
+	
+	ResetBallClient();
+}
+
+void ABowlerPawn::ResetBallClient_Implementation()
+{
+	SetActorLocation(StartingPosition);
+	SetActorRotation(StartingOrientation);
+	OnMoveReset();
 }
 
 void ABowlerPawn::ZoomInServer_Implementation()

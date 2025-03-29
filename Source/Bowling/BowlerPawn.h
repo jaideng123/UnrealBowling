@@ -251,6 +251,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetBall();
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ResetBallClient();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnNoReleaseForce();
 
