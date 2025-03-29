@@ -466,10 +466,6 @@ void ABowlerPawn::UpdateMovementModeDisplay() const
 
 void ABowlerPawn::HideMovementModeDisplay() const
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
 	RotateModeDisplayComp->SetVisibility(false, true);
 	MoveModeDisplayComp->SetVisibility(false, true);
 }
@@ -549,6 +545,9 @@ void ABowlerPawn::ResetBallClient_Implementation()
 	SetActorLocation(StartingPosition);
 	SetActorRotation(StartingOrientation);
 	OnMoveReset();
+	ShowUI();
+	GuideDecalComp->SetVisibility(true);
+	UpdateMovementModeDisplay();
 }
 
 void ABowlerPawn::ZoomInServer_Implementation()
@@ -605,7 +604,7 @@ void ABowlerPawn::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	DOREPLIFETIME(ABowlerPawn, StartingPosition);
 	DOREPLIFETIME(ABowlerPawn, StartingOrientation);
 	DOREPLIFETIME(ABowlerPawn, BowlingLocked);
-	DOREPLIFETIME(ABowlerPawn, BallGripped);
+	DOREPLIFETIME_CONDITION(ABowlerPawn, BallGripped, COND_SkipOwner);
 	DOREPLIFETIME(ABowlerPawn, BallSpawnOffset);
 	DOREPLIFETIME_CONDITION(ABowlerPawn, BallRotationOffset, COND_SkipOwner);
 }
