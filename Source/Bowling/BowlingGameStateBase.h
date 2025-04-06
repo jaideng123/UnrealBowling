@@ -10,6 +10,34 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateAdded, ABowlingPlayerState*, PlayerState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateRemoved, int32, PlayerId);
 
+UENUM(BlueprintType)
+enum EMatchState
+{
+	START,
+	PRE_BOWL,
+	BOWL_SETUP,
+	THROWING,
+	THROWN,
+	OUT_OF_BOUNDS,
+	BOWL_COMPLETE,
+	CYCLE_BOWLER,
+	GAME_END,
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateEntered);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateExited);
+
+UCLASS(BlueprintType)
+class UStateCallbacks : public UObject
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnStateEntered OnStateEntered;
+	UPROPERTY(BlueprintAssignable)
+	FOnStateExited OnStateExited;
+};
+
 class ABowlingPlayerState;
 /**
  * 
@@ -19,6 +47,11 @@ class BOWLING_API ABowlingGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	TMap<TEnumAsByte<EMatchState>, UStateCallbacks*> StateCallbacks;
+	
+	UFUNCTION(BlueprintCallable)
+	UStateCallbacks* GetStateCallbacks(EMatchState state);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int FinalFrame = 10;
@@ -38,6 +71,7 @@ public:
 	static float GetFinalFrame(UWorld* WorldRef);
 
 	static float GetNumPins(UWorld* WorldRef);
+	void SetupStateCallbacks();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateAdded OnPlayerStateAdded;

@@ -6,6 +6,16 @@
 #include "BowlingPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
+UStateCallbacks* ABowlingGameStateBase::GetStateCallbacks(EMatchState state)
+{
+	if(!StateCallbacks.Contains(state))
+	{
+		StateCallbacks.Add(state, NewObject<UStateCallbacks>());
+	}
+	
+	return StateCallbacks[state];
+}
+
 void ABowlingGameStateBase::CyclePlayer()
 {
 	ActivePlayerIndex = FMath::Wrap(ActivePlayerIndex + 1,0,PlayerArray.Num()-1);
