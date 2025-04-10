@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+#include "Net/UnrealNetwork.h"
 #include "BowlingGameStateBase.generated.h"
 
 
@@ -13,6 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateRemoved, int32, Player
 UENUM(BlueprintType)
 enum EMatchState
 {
+	UNSET,
 	START,
 	PRE_BOWL,
 	BOWL_SETUP,
@@ -31,7 +33,7 @@ UCLASS(BlueprintType)
 class UStateCallbacks : public UObject
 {
 	GENERATED_BODY()
-	
+public:
 	UPROPERTY(BlueprintAssignable)
 	FOnStateEntered OnStateEntered;
 	UPROPERTY(BlueprintAssignable)
@@ -50,9 +52,21 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	TMap<TEnumAsByte<EMatchState>, UStateCallbacks*> StateCallbacks;
 	
-	UFUNCTION(BlueprintCallable)
-	UStateCallbacks* GetStateCallbacks(EMatchState state);
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static UStateCallbacks* GetCallbacksForBowlingState(UObject* Context, TEnumAsByte<EMatchState> State);
 
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static ABowlingGameStateBase* GetBowlingGameState(UObject* Context);
+
+	UFUNCTION()
+	void OnRepMatchState(TEnumAsByte<EMatchState> PreviousState);
+
+	UFUNCTION(BlueprintCallable)
+	void SetMatchState(EMatchState NewMatchState);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	EMatchState GetMatchState() const;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int FinalFrame = 10;
 
@@ -70,12 +84,30 @@ public:
 
 	static float GetFinalFrame(UWorld* WorldRef);
 
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils")
 	static float GetNumPins(UWorld* WorldRef);
-	void SetupStateCallbacks();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateAdded OnPlayerStateAdded;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateRemoved OnPlayerStateRemoved;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+protected:
+	
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRepMatchState)
+	TEnumAsByte<EMatchState> CurrentMatchState;
 };
+
+inline EMatchState ABowlingGameStateBase::GetMatchState() const
+{
+	return CurrentMatchState;
+}
+
+inline void ABowlingGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABowlingGameStateBase, CurrentMatchState);
+}
