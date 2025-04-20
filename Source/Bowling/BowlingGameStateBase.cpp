@@ -35,6 +35,36 @@ ABowlingGameStateBase* ABowlingGameStateBase::GetBowlingGameState(UObject* Conte
 	return BowlingGameState;
 }
 
+int32 ABowlingGameStateBase::GetActivePlayerId(UObject* Context)
+{
+	ABowlingGameStateBase* BowlingGameState = GetBowlingGameState(Context);
+	if(BowlingGameState != nullptr && BowlingGameState->GetActivePlayerState())
+	{
+		return BowlingGameState->GetActivePlayerState()->GetPlayerId();
+	}
+	return -1;
+}
+
+bool ABowlingGameStateBase::IsActivePlayer(UObject* Context)
+{
+	int32 ActivePlayerId = GetActivePlayerId(Context);
+	if(ActivePlayerId == -1)
+	{
+		return false;
+	}
+	class APlayerController* FirstLocalPlayerController = GEngine->GetFirstLocalPlayerController(Context->GetWorld());
+	if(FirstLocalPlayerController == nullptr || FirstLocalPlayerController->PlayerState == nullptr)
+	{
+		return false;
+	}
+	return FirstLocalPlayerController->PlayerState->GetPlayerId() == ActivePlayerId;
+}
+
+EMatchState ABowlingGameStateBase::GetMatchState() const
+{
+	return CurrentMatchState;
+}
+
 void ABowlingGameStateBase::OnRepMatchState(TEnumAsByte<EMatchState> PreviousState)
 {
 	if(PreviousState != UNSET && StateCallbacks.Contains(PreviousState))
@@ -72,6 +102,10 @@ void ABowlingGameStateBase::CyclePlayer()
 
 ABowlingPlayerState* ABowlingGameStateBase::GetActivePlayerState()
 {
+	if(ActivePlayerIndex >= PlayerArray.Num())
+	{
+		return nullptr;
+	}
 	return Cast<ABowlingPlayerState>(PlayerArray[ActivePlayerIndex]);
 }
 
@@ -85,4 +119,12 @@ float ABowlingGameStateBase::GetNumPins(UWorld* WorldRef)
 {
 	ABowlingGameStateBase* bowlingGameMode = Cast<ABowlingGameStateBase>(UGameplayStatics::GetGameState(WorldRef));
 	return bowlingGameMode->NumPins;
+}
+
+void ABowlingGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABowlingGameStateBase, CurrentMatchState);
+	DOREPLIFETIME(ABowlingGameStateBase, ActivePlayerIndex);
 }

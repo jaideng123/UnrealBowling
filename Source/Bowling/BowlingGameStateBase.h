@@ -52,12 +52,6 @@ class BOWLING_API ABowlingGameStateBase : public AGameStateBase
 public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	TMap<TEnumAsByte<EMatchState>, UStateCallbacks*> StateCallbacks;
-	
-	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
-	static UStateCallbacks* GetCallbacksForBowlingState(UObject* Context, TEnumAsByte<EMatchState> State);
-
-	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
-	static ABowlingGameStateBase* GetBowlingGameState(UObject* Context);
 
 	UFUNCTION()
 	void OnRepMatchState(TEnumAsByte<EMatchState> PreviousState);
@@ -74,7 +68,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int NumPins = 10;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	int ActivePlayerIndex;
 
 	UFUNCTION(BlueprintCallable)
@@ -94,21 +88,22 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateRemoved OnPlayerStateRemoved;
 
+	// Blueprint Statics
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static UStateCallbacks* GetCallbacksForBowlingState(UObject* Context, TEnumAsByte<EMatchState> State);
+
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static ABowlingGameStateBase* GetBowlingGameState(UObject* Context);
+
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static int32 GetActivePlayerId(UObject* Context);
+	
+	UFUNCTION(BlueprintCallable, Category = "BowlingUtils", BlueprintPure, meta=( WorldContext = "Context" ))
+	static bool IsActivePlayer(UObject* Context);
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRepMatchState)
 	TEnumAsByte<EMatchState> CurrentMatchState;
 };
-
-inline EMatchState ABowlingGameStateBase::GetMatchState() const
-{
-	return CurrentMatchState;
-}
-
-inline void ABowlingGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ABowlingGameStateBase, CurrentMatchState);
-}

@@ -3,6 +3,7 @@
 
 #include "BowlerPlayerController.h"
 
+#include "BowlingGameStateBase.h"
 #include "BowlingGameUserSettings.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -38,7 +39,7 @@ void ABowlerPlayerController::BeginPlay()
 
 void ABowlerPlayerController::AttemptMoveX(float value)
 {
-	if (GetStateName() == NAME_Spectating)
+	if (GetStateName() == NAME_Spectating || !ABowlingGameStateBase::IsActivePlayer(this))
 	{
 		return;
 	}
@@ -51,7 +52,7 @@ void ABowlerPlayerController::AttemptMoveX(float value)
 void ABowlerPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (GetStateName() == NAME_Spectating)
+	if (GetStateName() == NAME_Spectating || !ABowlingGameStateBase::IsActivePlayer(this))
 	{
 		return;
 	}
@@ -90,6 +91,10 @@ void ABowlerPlayerController::Tick(float DeltaSeconds)
 
 void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
+	if (GetStateName() == NAME_Spectating || !ABowlingGameStateBase::IsActivePlayer(this))
+	{
+		return;
+	}
 	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Touch Press: %d Location: %s"), touchIndex, *location.ToString()));
 	// ControlledBowler->GripBall();
 	bPressing = true;
@@ -103,7 +108,7 @@ void ABowlerPlayerController::HandleTouchPress(ETouchIndex::Type touchIndex, UE:
 
 void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	if (GetStateName() == NAME_Spectating)
+	if (GetStateName() == NAME_Spectating || !ABowlingGameStateBase::IsActivePlayer(this))
 	{
 		return;
 	}
@@ -119,7 +124,7 @@ void ABowlerPlayerController::HandleTouchRelease(ETouchIndex::Type touchIndex, U
 
 void ABowlerPlayerController::HandleTouchHeld(ETouchIndex::Type touchIndex, UE::Math::TVector<double> location)
 {
-	if (GetStateName() == NAME_Spectating)
+	if (GetStateName() == NAME_Spectating || !ABowlingGameStateBase::IsActivePlayer(this))
 	{
 		return;
 	}
