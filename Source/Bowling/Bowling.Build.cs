@@ -8,7 +8,7 @@ public class Bowling : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "SlateCore","ApplicationCore"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "DUETween" });
 
@@ -19,5 +19,16 @@ public class Bowling : ModuleRules
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		
+		if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			PrivateIncludePaths.Add("Private/Android");
+
+			PrivateDependencyModuleNames.AddRange(
+				new string[] {
+					"Launch",
+				}
+			);
+		}
 	}
 }

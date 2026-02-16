@@ -23,4 +23,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnQuitGame();
+	
+	UFUNCTION(BlueprintCallable)
+	void OnHapticTest();
 };
