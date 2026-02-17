@@ -30,5 +30,12 @@ public class Bowling : ModuleRules
 				}
 			);
 		}
+		if (Target.Platform == UnrealTargetPlatform.IOS)
+		{
+			bEnableObjCAutomaticReferenceCounting = true;
+			PCHUsage = ModuleRules.PCHUsageMode.NoPCHs;
+			
+			PrivateIncludePaths.Add("Private/IOS");
+		}
 	}
 }

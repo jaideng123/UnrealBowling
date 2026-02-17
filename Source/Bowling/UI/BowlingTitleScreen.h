@@ -6,6 +6,19 @@
 #include "Blueprint/UserWidget.h"
 #include "BowlingTitleScreen.generated.h"
 
+UENUM(BlueprintType)
+enum EAndroidHapticFeedbackConstant
+{
+	None = 0xffffffff,
+	Long_Press = 0,
+	Virtual_Key = 1,
+	Keyboard_Press = 3,
+	Clock_Tick = 4,
+	Context_Click = 6,
+	Confirm = 16,
+	Reject = 17,
+};
+
 /**
  * 
  */
@@ -13,9 +26,9 @@ UCLASS()
 class BOWLING_API UBowlingTitleScreen : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName GameplayMapUrl;
 
 	UFUNCTION(BlueprintCallable)
@@ -23,7 +36,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnQuitGame();
-	
+
 	UFUNCTION(BlueprintCallable)
-	void OnHapticTest();
+	void PlayHaptic(TEnumAsByte<EAndroidHapticFeedbackConstant> HapticType);
 };
